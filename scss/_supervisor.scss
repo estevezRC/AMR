@@ -1,0 +1,27 @@
+// Propiedades de elementos
+$enable-rounded: false;
+$enable-shadows: true;
+$enable-gradients: true;
+$enable-responsive-font-sizes: true;
+
+$btn-border-width: 0;
+
+/* Color Theme Swatches in RGBA */
+$supervisor-celeste: rgba(36,148,194, 1);
+$supervisor-red: rgba(133,19,34, 1);
+$supervisor-lightblue: rgba(180,194,250, 1);
+$supervisor-darkblue: rgba(20,19,66, 1);
+$supervisor-lightgreen: rgba(201,232,220, 1);
+
+$theme-colors: () !default;
+// stylelint-disable-next-line scss/dollar-variable-default
+$theme-colors: map-merge(
+  (
+  "supervisor-celeste": $supervisor-celeste,
+          "supervisor-red": $supervisor-red,
+          "supervisor-lightblue":lighten($supervisor-lightblue, 15%),
+          "supervisor-darkblue": $supervisor-darkblue,
+          "supervisor-lightgreen": $supervisor-lightgreen,
+  ),
+  $theme-colors
+);

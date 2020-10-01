@@ -1,0 +1,25 @@
+@import "sistema";
+
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::: BOOTSTRAP ::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+// Importando variables del Tema
+@import "variables";
+
+// Importando estilos de Bootstrap Nativo
+@import "../vendor/twbs/bootstrap/scss/bootstrap";
+
+// Importando BootSwatch
+@import "bootswatch";
+
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::: SUPERVISOR ::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+@import "menu";
+
+@import "general";
+
+@import "campos_dinamicos";
+
+@import "./select2/layout";

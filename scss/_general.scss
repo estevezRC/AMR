@@ -1,0 +1,117 @@
+body {
+  margin-top: 58px;
+}
+
+.blur .modal-backdrop {
+  background-color: #000;
+  opacity: .9;
+}
+
+.br-top {
+  border-radius: 10px 10px 0 0;
+}
+
+table {
+  font-size: 0.8rem;
+
+  thead {
+    th {
+      text-align: center;
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.form-reporte {
+  label {
+    font-weight: 700;
+  }
+
+  .container-file {
+    padding: 10px;
+
+    &:hover {
+      background: #870e0612;
+      box-shadow: 5px 5px 10px #e0e0e0,
+      -5px -5px 10px #ffffff;
+    }
+  }
+}
+
+.panel-resumen-content {
+  .form-group {
+    border-bottom: 1px solid $color-primary-2;
+  }
+}
+
+.linea-separadora {
+  display: block;
+  background-color: $color-secondary-2-2;
+  border: none;
+  height: 2px;
+}
+
+.dropdown-item {
+  color: $secondary !important;
+
+  &:hover {
+    color: white !important;
+  }
+}
+
+/************************** VISTA CAMPOS REPORTES *******************************/
+
+.toggle-minimalist {
+  box-shadow: 3px 3px 14px -3px rgba(0, 0, 0, 0.5);
+}
+
+/*************************** CIRCULOS DE ESTADOS DEL REPORTE ***********************/
+
+.sizeIconEstadoReporte {
+  font-size: 20px !important;
+}
+
+.estadoReporteAbierto {
+  font-size: 14px;
+  color: #bf1c24e0;
+}
+
+.estadoReporteProceso {
+  font-size: 14px;
+  color: #F58226;
+}
+
+.estadoReporteAtendido {
+  font-size: 14px;
+  color: #F2C540;
+}
+
+.estadoReporteValidado {
+  font-size: 14px;
+  color: #569934;
+}
+/* DIMENSIONES DE LAS GRÁFICAS */
+.chartdiv {
+  width: 95%;
+  height: 500px;
+}
+.chartdiv-600 {
+  width: 90%;
+  height: 600px;
+}
+.chartdiv-700 {
+  width: 95%;
+  height: 700px;
+}
+
+.galeria {
+  min-height: 300px;
+  background: #000;
+}

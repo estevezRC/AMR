@@ -1,0 +1,5 @@
+[02-Oct-2019 15:11:20 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/getit/public_html/reportech/view/formularios_llenar/Reporte_Generico_Modificar2.php on line 82
+[02-Oct-2019 15:11:20 UTC] PHP Fatal error:  Uncaught Error: Using $this when not in object context in /home/getit/public_html/reportech/view/formularios_llenar/Reporte_Generico_Modificar2.php:124
+Stack trace:
+#0 {main}
+  thrown in /home/getit/public_html/reportech/view/formularios_llenar/Reporte_Generico_Modificar2.php on line 124

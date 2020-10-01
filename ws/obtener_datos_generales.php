@@ -1,0 +1,101 @@
+<?php
+
+require 'Consultas.php';
+
+$tabla=$_GET['tabla'];
+$modulo=$_GET['modulo'];
+$fecha = $_GET['fecha'];
+
+$fecha_sinc = str_replace("_"," ",$fecha);
+
+$usuario = $_GET['usuario'];
+$idReporte = $_GET['idReporte'];
+
+$idEmpresa = $_GET['idEmpresa'];
+
+session_start();
+$_SESSION['id_empresa_movil'] = $idEmpresa;
+
+//echo $idEmpresa;
+
+$fecha_sinc = str_replace("_"," ",$fecha);
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+
+    switch ($tabla) {
+        case "areas_empresas":
+            $consulta = Consultas::getAreasEmpresas();
+            break;
+        case "usuarios":
+            $consulta = Consultas::getUsuarios();
+            break;
+        case "fotografias":
+            $consulta = Consultas::getFotografias($modulo);
+            break;
+        case "dispositivos":
+            $consulta = Consultas::getDispositivos();
+            break;
+        case "clasificaFotos":
+            $consulta = Consultas::getCatClasificacionFotografias();
+            break;
+        case "versionApp":
+            $arreglo = array('version' => '1.0','versionCode' => 1);
+            $consulta = array($arreglo);
+            break;
+        case "catMonitoreoDiario":
+            $consulta = Consultas::getCatMonitoreoDiario();
+            break;
+        case "catalogoCategoria":
+            $consulta = Consultas::getCatalogoCategoria();
+            break;
+        case "countNotificacionesUser":
+            //echo "ok";
+            $consulta = Consultas::getCountNotificacionesUser($usuario);
+            break;
+        case "notificacionesUser":
+            //echo "ok";
+            $consulta = Consultas::getNotificacionesUser($usuario);
+            break;
+        case "countComentariosReporte":
+            //echo "ok...".$idReporte;
+            $consulta = Consultas::getCountComentariosReporte($idReporte);
+            break;
+        case "proyectos":
+            $consulta = Consultas::getProyectos();
+            break;
+        case "UsuariosProyectos":
+            $consulta = Consultas::getUsuariosProyectos();
+            break;
+        case "procesos":
+            $consulta = Consultas::getProcesos();
+            break;
+        case "gantt":
+            $consulta = Consultas::getGantt();
+            break;
+        case "ganttValores":
+            $consulta = Consultas::getGanttValores($fecha_sinc);
+            break;
+            case "empleados";
+                $consulta = Consultas::getEmpleados();
+            break;
+    }
+
+        // Manejar peticion GET
+      //  $comando = Consultas::getCatReportes();
+
+        if ($consulta) {
+
+            $datos["estado"] = 1;
+            $datos["datos"] = $consulta;
+
+            print json_encode($datos,JSON_UNESCAPED_UNICODE);
+        } else {
+            //print $usuarios;
+            print json_encode(array(
+                "estado" => 2,
+                "mensaje" => "Ha ocurrido un error  ".$tabla
+            ));
+        }
+}
+
+?>
