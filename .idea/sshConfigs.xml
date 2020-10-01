@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SshConfigs">
-    <configs>
-      <sshConfig host="get-s.dev" id="8e238936-0f1f-4687-9c43-b1e0086096f8" keyPath="$USER_HOME$/Documents/Claves de SSH/supervisor/claveSS-supervisor_Desarrollo/id_rsa" port="22022" nameFormat="DESCRIPTIVE" username="getitsupervisor" />
-      <sshConfig host="supervisor.uno" id="38c061ab-13b6-4cf6-9bf1-7fc31708b1a6" keyPath="$USER_HOME$/Documents/Claves de SSH/supervisor/claveSS-supervisor/id_rsa_supervisor" port="22" nameFormat="DESCRIPTIVE" username="supervisor2" />
-    </configs>
-  </component>
-</project>
