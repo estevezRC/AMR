@@ -101,7 +101,7 @@ class FuncionesCompartidas extends ControladorBase
     function sendPushNotification($to = '', $data = array())
     {
 
-        $apiKey = 'AAAA9T0GHIE:APA91bFnV2HQP1C0dSNMNwkfwjI9T8Kc5poiF9DitywyWAijDQgXk7WGQSBvdg1qInL9869hwON53EYTzYBahVkPNUjo4jAbzhbXP6xnGKzErx1wOaEsQ8-ANmgHNX40KwgLhgPxFy9j';
+        $apiKey = 'AAAAeZkawMg:APA91bFcfF-JTphhdD3whmuCA2sK9Bfw6WkA7PhMVdptyh8bZVLyq5JBHAKKwmCp5ySlSMTet8NCLjbpvwFHhnFAhBJrrQBEnvrt6QLTGuV6g0zTLPrR46jXy3zGCdwCb4h82Jk_wCEx';
 
         $fields = array(
             'to' => $to,
