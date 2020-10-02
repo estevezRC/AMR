@@ -184,7 +184,18 @@ class UsuariosController extends ControladorBase
 
             $correoUser = $_POST["usuarioemail"];
             $pwdUser = $_POST["usuariopassword"];
+            $participante = $_REQUEST["participante"] ?? 0;
+            $puesto = $_REQUEST['puesto'] ?? '';
+            $empresa = $_REQUEST['empresa'] ?? '';
 
+            // ********************** VALIDAR SECCION DE PARTICIPANTE **********************
+            if ($participante == 1) {
+                if (empty($puesto) && empty($empresa)) {
+                    $insercion = 4;
+                    $mensaje = "Los campos puesto y empresa son obligatorios";
+                    $this->redirect("Usuarios", "index&insercion=$insercion&newElemento=$mensaje");
+                }
+            }
 
             $usuariotodos = new Usuario($this->adapter);
             $allusers = $usuariotodos->getAllUserActivosAndInactivos();
@@ -202,7 +213,9 @@ class UsuariosController extends ControladorBase
                 $usuario->setFecha($fecha_hora);
                 $usuario->setArea($_POST["usuarioarea"]);
                 $usuario->set_Empresa($_SESSION[ID_EMPRESA_SUPERVISOR]);
-                $usuario->set_participante($_POST["participante"]);
+                $usuario->set_participante($participante);
+                $usuario->setPuesto($puesto);
+                $usuario->setEmpresa($empresa);
                 $save = $usuario->save($allusers);
 
                 // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
@@ -211,10 +224,7 @@ class UsuariosController extends ControladorBase
                     $mensaje = 'Se ha creado el usuario: "' . $nombreUser . ' ' . $apellidoUSer . '"';
 
                     // ESTA SECCION OBTIENE EL ULTIMO ID DE USUARIO INSERTADO
-                    $alluser = $usuariotodos->getAllUserOrderById();
-                    $total_usuarios = count($alluser);
-                    $id_ultimo = $total_usuarios + 1;
-
+                    $id_ultimo = (int)$usuario->getUltimoIdUsuario()[0]->id;
 
                     // ********************* INSERTAR EN LA TABLA DE EMPLEADOS_USUARIOS ************************
                     $empleado_usuario = new EmpleadoUsuario($this->adapter);
@@ -230,7 +240,6 @@ class UsuariosController extends ControladorBase
                         $empleado_usuario->setIdEmpleado(0);
                         $empleado_usuario->saveNewEmpleadoUsuario();
                     }
-
 
                     // ********************* INSERTAR EN LA TABLA DE USUARIOS-PROYECTOS ************************
                     $usuariosProyecto = new UsuarioProyecto($this->adapter);
@@ -272,7 +281,7 @@ class UsuariosController extends ControladorBase
             $mensaje = "Llenar todos los campos";
         } else {
             $usuario = new Usuario($this->adapter);
-            $allusers = $usuario->getAllUser2($this->id_Proyecto_constant);
+            $allusers = $usuario->getAllUser2();
 
             $id = $_POST["usuarioid"];
             $nombreUser = $_POST["name"];
@@ -296,13 +305,30 @@ class UsuariosController extends ControladorBase
                 $empleado_usuario->setApellidoMaterno($apellidoM);
                 $empleado_usuario->modificarEmpleadoUsuario();
 
+                $participante = $_REQUEST["participante"] ?? 0;
+                $puesto = $_REQUEST['puesto'];
+                $empresa = $_REQUEST['empresa'];
+
+                // ********************** VALIDAR SECCION DE PARTICIPANTE **********************
+                if ($participante == 1) {
+                    if (empty($puesto) && empty($empresa)) {
+                        $insercion = 4;
+                        $mensaje = "Los campos puesto y empresa son obligatorios";
+                        $this->redirect("Usuarios", "index&insercion=$insercion&newElemento=$mensaje");
+                    }
+                } else {
+                    $puesto = NULL;
+                    $empresa = NULL;
+                }
 
                 //ACTUALIZAR TABLA DE USUARIOS
                 $correoUser = $_POST["usuarioemail"];
                 $usuario->setCorreo($correoUser);
                 $usuario->setArea($_POST["usuarioarea"]);
                 $usuario->set_Empresa($_SESSION[ID_EMPRESA_SUPERVISOR]);
-                $usuario->set_participante($_POST["participante"]);
+                $usuario->set_participante($participante);
+                $usuario->setPuesto($puesto);
+                $usuario->setEmpresa($empresa);
                 $save = $usuario->modificarUsuario($id, $allusers);
 
                 // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
@@ -427,7 +453,7 @@ class UsuariosController extends ControladorBase
             $id = (int)$_GET["usuarioid"];
             $usuario = new Usuario($this->adapter);
             $datosusuario = $usuario->getUserById($id);
-            $allusers = $usuario->getAllUser($this->id_Proyecto_constant);
+            $allusers = $usuario->getAllUser();
             $modificar = 2;
 
             // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY d
@@ -546,7 +572,7 @@ class UsuariosController extends ControladorBase
             $usuario = new Usuario($this->adapter);
             $empleado = new Empleados($this->adapter);
 
-            $allusers = $usuario->getAllUser($this->id_Proyecto_constant);
+            $allusers = $usuario->getAllUser();
             $allEmpleados = $empleado->getAllEmpleados();
 
             $id = $_SESSION[ID_USUARIO_SUPERVISOR];

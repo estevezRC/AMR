@@ -11,7 +11,8 @@ class Usuario extends EntidadBase
     private $participante;
     private $areaid;
     private $id_Empresa;
-    private $id_emp;
+    private $puesto;
+    private $empresa;
 
     public function __construct($adapter)
     {
@@ -118,6 +119,17 @@ class Usuario extends EntidadBase
         $this->participante = $participante;
     }
 
+    // puesto
+    public function setPuesto($puesto)
+    {
+        $this->puesto = $puesto;
+    }
+
+    // empresa
+    public function setEmpresa($empresa)
+    {
+        $this->empresa = $empresa;
+    }
 
     /*--- USUARIOS: REGISTRAR USUARIO ---*/
     public function save($usuarios)
@@ -129,8 +141,10 @@ class Usuario extends EntidadBase
         }
 
         if ($validate) {
-            $query = "CALL SP_AddUpUsuario(NULL, $this->id_Empresa, $this->areaid, '$this->usuariocorreo',
-  					'$this->usuariopassword', NULL, NULL, $this->participante, 'Insertar')";
+            $query = "INSERT INTO Usuarios (id_Empresa, id_Area, correo_Usuario, password_Usuario, fecha_Usuario, 
+                fotografia_Usuario, id_Status_Usuario, participante, puesto, empresa)
+                VALUES ($this->id_Empresa, $this->areaid, '$this->usuariocorreo', AES_ENCRYPT('$this->usuariopassword', 'getitcom_2017'),
+                NOW(), null, 1, $this->participante, '$this->puesto', '$this->empresa')";
             if ($this->db()->query($query))
                 return 1;
             else
@@ -144,18 +158,19 @@ class Usuario extends EntidadBase
     {
         $validate = true;
         foreach ($usuarios as $usuario) {
-            if (($usuario->correo_Usuario == $this->usuariocorreo) && ($usuario->id_Usuario != $id)) {
+            if ($usuario->correo_Usuario == $this->usuariocorreo && $usuario->id_Usuario != $id) {
                 $validate = false;
             }
         }
 
         if ($validate) {
-            $query = "CALL SP_AddUpUsuario($id, $this->id_Empresa, $this->areaid, '$this->usuariocorreo', NULL, NULL,
-                NULL, $this->participante, 'Modificar')";
+            $query = "UPDATE Usuarios SET id_Empresa = $this->id_Empresa, id_Area = $this->areaid,
+                correo_Usuario = '$this->usuariocorreo', participante = $this->participante, puesto = '$this->puesto', 
+                empresa = '$this->empresa' WHERE id_Usuario = $id";
             if ($this->db()->query($query))
                 return 3;
             else
-                return 2;
+                return $query;
 
         } else {
             return 2;
@@ -202,8 +217,8 @@ class Usuario extends EntidadBase
   					NULL,
   					NULL,
   					NULL,
-  					NULL,
   					'Modificarpwd')";
+        //return $query;
         return $this->db()->query($query);
 
     }

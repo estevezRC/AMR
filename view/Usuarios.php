@@ -123,9 +123,67 @@
             $('#surnameM').removeAttr("hidden");
             $('#surnameM').removeAttr("required");
             $('#labelSurnameM').removeAttr("hidden");
-
-
         }
+    }
+
+    function showCamposParticipantes() {
+        let labelPuesto = $('#labelPuesto');
+        let labelEmpresa = $('#labelEmpresa');
+        let puesto = $('#puesto');
+        let empresa = $('#empresa');
+
+        labelPuesto.removeAttr("hidden");
+        labelEmpresa.removeAttr("hidden");
+        puesto.removeAttr("hidden");
+        empresa.removeAttr("hidden");
+
+        puesto.attr("required", true);
+        empresa.attr("required", true);
+    }
+
+    function hiddenCamposParticipantes() {
+        let labelPuesto = $('#labelPuesto');
+        let labelEmpresa = $('#labelEmpresa');
+        let puesto = $('#puesto');
+        let empresa = $('#empresa');
+
+        labelPuesto.attr("hidden", true);
+        labelEmpresa.attr("hidden", true);
+        puesto.attr("hidden", true);
+        empresa.attr("hidden", true);
+
+        puesto.removeAttr("required");
+        empresa.removeAttr("required");
+    }
+
+    function showCamposParticipantesM() {
+        let labelPuesto = $('#labelPuestoM');
+        let labelEmpresa = $('#labelEmpresaM');
+        let puesto = $('#puestoM');
+        let empresa = $('#empresaM');
+
+        labelPuesto.removeAttr("hidden");
+        labelEmpresa.removeAttr("hidden");
+        puesto.removeAttr("hidden");
+        empresa.removeAttr("hidden");
+
+        puesto.attr("required", true);
+        empresa.attr("required", true);
+    }
+
+    function hiddenCamposParticipantesM() {
+        let labelPuesto = $('#labelPuestoM');
+        let labelEmpresa = $('#labelEmpresaM');
+        let puesto = $('#puestoM');
+        let empresa = $('#empresaM');
+
+        labelPuesto.attr("hidden", true);
+        labelEmpresa.attr("hidden", true);
+        puesto.attr("hidden", true);
+        empresa.attr("hidden", true);
+
+        puesto.removeAttr("required");
+        empresa.removeAttr("required");
     }
 
 </script>
@@ -200,8 +258,20 @@
                     </select>
 
                     <label class="control-label">Participante:</label><br/>
-                    <input type="radio" name="participante" value="1" checked> Sí&nbsp;
-                    <input type="radio" name="participante" value="0"> No
+                    <input type="radio" name="participante" id="partipante1" value="1"
+                           onclick="showCamposParticipantes()"> Sí&nbsp;
+                    <input type="radio" name="participante" id="partipante2" value="0"
+                           onclick="hiddenCamposParticipantes()" checked> No
+
+                    <br>
+                    <label class="control-label" id="labelPuesto" hidden>*Puesto:</label>
+                    <input type="text" name="puesto" class="form-control" id="puesto" hidden
+                           required>
+
+                    <label class="control-label" id="labelEmpresa" hidden>*Empresa:</label>
+                    <input type="text" name="empresa" class="form-control" id="empresa" hidden
+                           required>
+
 
                     <div class="row" style="margin-top: 1em;">
                         <hr style="border: 1px solid #166D9B; margin: 0px;">
@@ -304,15 +374,26 @@ if ($modificar == 1) {
                                 <?php }
                             } ?>
                         </select>
-                        <label class="control-label">Participante:</label><br/>
-                        <?php if ($datosusuario->participante == 1) { ?>
-                            <input type="radio" name="participante" value="1" checked> Sí&nbsp;
-                            <input type="radio" name="participante" value="0"> No
-                        <?php } else { ?>
-                            <input type="radio" name="participante" value="1"> Si&nbsp;
-                            <input type="radio" name="participante" value="0" checked> No
 
-                        <?php } ?><br/><br/>
+                        <label class="control-label">Participante:</label><br/>
+                        <input type="radio" name="participante" onclick="showCamposParticipantesM()"
+                               value="1" <?= $datosusuario->participante == 1 ? 'checked' : ''; ?>> Sí &nbsp;
+
+                        <input type="radio" name="participante" onclick="hiddenCamposParticipantesM()"
+                               value="0" <?= $datosusuario->participante == 0 ? 'checked' : ''; ?>> No
+
+                        <input type="hidden" value="<?= $datosusuario->participante ?>" id="participante">
+
+                        <br>
+                        <label class="control-label" id="labelPuestoM">*Puesto:</label>
+                        <input type="text" value="<?= $datosusuario->puesto; ?>" name="puesto" class="form-control"
+                               id="puestoM" required>
+
+                        <label class="control-label" id="labelEmpresaM">*Empresa:</label>
+                        <input type="text" value="<?= $datosusuario->empresa; ?>" name="empresa" class="form-control"
+                               id="empresaM" required>
+
+                        <br/><br/>
                         <div class="row">
                             <div class="col-md-12 text-right">
                                 <button type="submit" class="btn btn-w-m btn-danger" id="btnModificar">

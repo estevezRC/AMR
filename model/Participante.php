@@ -102,8 +102,13 @@ class Participante extends EntidadBase
     }
 
     // ********************************** METODO PARA CAMBIAR STATUS DE UN PARTICIPANTE ********************************
-    public function validate($datos) {
+    public function validate($campos) {
         $status=true;
+        foreach ($campos as $campo) {
+            if ($campos['obligatorio'] && $campos['']) {
+
+            }
+        }
 
         return $status;
     }

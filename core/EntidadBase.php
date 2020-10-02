@@ -345,6 +345,17 @@ class EntidadBase
         return $resultSet;
     }
 
+    public function getUltimoIdUsuario()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT MAX(id_Usuario) as id FROM Usuarios");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     /*--- USUARIOS: CONSULTAR TODOS LOS USUARIOS ---*/
     public function getAllUserCorreo($id_Proyecto)
     {
@@ -374,7 +385,7 @@ class EntidadBase
     {
         $query = $this->db->query("SELECT u.id_Usuario, u.id_Empresa, u.id_Area, eu.nombre, eu.apellido_paterno,
             IFNULL(eu.apellido_materno, '') AS apellido_materno, u.correo_Usuario, 
-            u.nip_Usuario, u.id_Status_Usuario, u.participante, ae.nombre_Area
+            u.nip_Usuario, u.id_Status_Usuario, u.participante, u.puesto, u.empresa, ae.nombre_Area
             FROM Usuarios u
 	            LEFT JOIN Areas_Empresas ae ON ae.id_Area = u.id_Area
                 JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario

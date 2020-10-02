@@ -76,9 +76,9 @@ class ParticipantesController extends ControladorBase
         $participante = new Participante($this->adapter);
 
         // *********************** VALIDAR DATOS OBLIGATORIOS Y FORMATO DE LOS DATOS ***********************
-        $validate = $participante->validate($datos);
+        $validateDatos = $participante->validate($datos);
 
-        if ($validate['status']) {
+        if ($validateDatos['status']) {
             // ****************** PROCESAR LOS DATOS PARA GUARDAR EN LA TABLA USUARIOS ******************
 
             // OBTENER TODOS LOS REGISTROS DE USUARIOS
@@ -139,7 +139,7 @@ class ParticipantesController extends ControladorBase
                     'status' => false
                 );
         } else
-            $data = $validate;
+            $data = $validateDatos;
 
         echo json_encode($data);
     }
@@ -159,6 +159,9 @@ class ParticipantesController extends ControladorBase
                 $datosParticipante = $participante->getParticipanteById($idParticipante)[0];
                 $mensaje = "El participante con id $idParticipante existe";
                 $status = true;
+                $data = array(
+
+                );
             } else {
                 $mensaje = "El participante con id $idParticipante no existe";
                 $status = false;
@@ -168,9 +171,7 @@ class ParticipantesController extends ControladorBase
             $status = false;
         }
 
-        echo json_encode([
-            'mensaje' => $mensaje, 'status' => $status, 'participante' => $datosParticipante
-        ]);
+        echo json_encode($data);
     }
 
 
