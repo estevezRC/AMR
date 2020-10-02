@@ -289,11 +289,11 @@
                                 </ul>
                             </li>
 
-                            <li>
+                            <!--<li>
                                 <a class="dropdown-item" href="index.php?controller=Participantes&action=index">
                                     <i class="fas fa-user-friends"></i> Participantes
                                 </a>
-                            </li>
+                            </li>-->
 
                             <!--<li class="dropdown">
                                 <a class="dropdown-item dropdown-toggle"
