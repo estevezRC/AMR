@@ -281,6 +281,56 @@ if ($noarchivos > 0 || $noimg > 0) {
                                 $valor = $allInfoProyecto->nombre_Proyecto;
                                 $likeLabel = true;
                                 break;
+                            case "multiple":
+                                $nombre = $reportellenado->nombre_Campo;
+                                //htmlspecialchars()
+                                $dataFromDB = str_replace("\n", "<br>", $reportellenado->valor_Texto_Reporte);
+                                $elementos = json_decode($dataFromDB, false, 512); ?>
+                                <span class="d-block lead font-weight-bold text-center border-0"><?= $nombre ?></span>
+                                <? foreach ($elementos->Valores as $key => $elemento) { ?>
+                                <div>
+                                    <span class="lead font-weight-bold"
+                                          style="font-size: 0.9rem"><?= $nombre ?> #<?= $key + 1 ?></span>
+                                    <ul>
+                                        <? foreach ($elemento->Valor as $index => $valor) {
+                                            foreach ($subCamposMultiple as $subCampo) {
+                                                if ($valor->idCampo == $subCampo->id_Campo_Reporte) {
+                                                    if ($subCampo->tipo_Reactivo_Campo === "text-cadenamiento") {
+                                                        $cadenamientos = explode(".", $valor->valorCampo);
+                                                        $cadenamientos = array_map(function ($valor) {
+                                                            return sprintf('%03d', (int)$valor);
+                                                        }, $cadenamientos);
+                                                        $valor->valorCampo = implode(" + ", $cadenamientos); ?>
+                                                        <li>
+                                                            <span
+                                                                    class="font-weight-bold"> <?= $subCampo->nombre_Campo ?>: </span>
+                                                            <?= $valor->valorCampo ?>
+                                                        </li>
+                                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "select-tabla") {
+                                                        foreach ($subCampo->Valor_Default as $dato) {
+                                                            if ($dato->id === $valor->valorCampo) { ?>
+                                                                <li>
+                                                                        <span class="font-weight-bold">
+                                                                            <?= $subCampo->nombre_Campo ?>: </span>
+                                                                    <?= $dato->nombre ?>
+                                                                </li>
+                                                            <? }
+                                                        }
+                                                    } else { ?>
+                                                        <li>
+                                                            <span
+                                                                    class="font-weight-bold"> <?= $subCampo->nombre_Campo ?>: </span><br>
+                                                            <?= $valor->valorCampo ?>
+                                                        </li>
+                                                    <? }
+                                                }
+                                            }
+                                        } ?>
+                                    </ul>
+                                </div>
+                            <? }
+                                $likeLabel = false;
+                                break;
                             default:
                                 $nombre = $reportellenado->nombre_Campo;
                                 $valor = $reportellenado->valor_Entero_Reporte;

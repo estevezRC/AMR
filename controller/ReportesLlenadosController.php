@@ -128,7 +128,7 @@ class ReportesLlenadosController extends ControladorBase
         $allcomentarios = $comentario->getAllComentariosReporte($id);
 
         // -----------------------------------------CAMPOS ESPECIALES------------------------------------------------
-        $id_usuario = 0;
+        /*$id_usuario = 0;
         foreach ($allreportellenado as $reporte) {
             switch ($reporte->tipo_Reactivo_Campo) {
                 //SELECT MONITOREO
@@ -149,7 +149,60 @@ class ReportesLlenadosController extends ControladorBase
                     break;
             }
             $id_usuario = $reporte->id_Usuario;
-        }
+        } */
+
+        // -----------------------------------------CAMPOS ESPECIALES------------------------------------------------
+        $id_usuario = 0;
+        $monitoreo = null;
+        $menucatalogo = null;
+        $allEmpleadosAsistencia = null;
+        $allInfoProyecto = null;
+        $subcampos = null;
+        $createData = function ($allreportellenado) use (
+            &$monitoreo,
+            &$menucatalogo,
+            &$allEmpleadosAsistencia,
+            &$allInfoProyecto,
+            &$subcampos,
+            &$id_usuario,
+            &$createData,
+            $comentario,
+            $llenadoreporte
+        ) {
+            foreach ($allreportellenado as $reporte) {
+                switch ($reporte->tipo_Reactivo_Campo) {
+                    //SELECT MONITOREO
+                    case "select-monitoreo":
+                        $monitoreo = $comentario->getAllCatMonitoreo();
+                        break;
+                    case "select-catalogo":
+                        $menucatalogo = $comentario->getCatCategoriaByIdCategoria($reporte->Valor_Default);
+                        break;
+                    case "check_list_asistencia":
+                        $idsEmpleados = str_replace('/', ',', $reporte->valor_Texto_Reporte);
+                        $allEmpleadosAsistencia = $comentario->getAllEmpleadosByInIdEmpleados($idsEmpleados);
+                        break;
+                    case "select-tabla":
+                        $idProyecto = str_replace('/', ',', $reporte->valor_Texto_Reporte);
+                        $allInfoProyecto = $comentario->getProyectoById($idProyecto);
+                        break;
+                    case "multiple":
+                        $IDSubcampos = explode("/", $reporte->Valor_Default);
+                        $subcampos = array_map(function ($id) use ($llenadoreporte) {
+                            return $llenadoreporte->getCampoById($id);
+                        }, $IDSubcampos);
+
+                        $reporte->Valor_Default = $createData($subcampos);
+                        break;
+                }
+
+                $id_usuario = $reporte->id_Usuario;
+            }
+
+            return $allreportellenado;
+        };
+
+        $allreportellenado = $createData($allreportellenado);
 
         $usuario = new Usuario($this->adapter);
         $llaveE = $usuario->getFirmaUserById($_SESSION[ID_USUARIO_SUPERVISOR]);
@@ -291,7 +344,7 @@ class ReportesLlenadosController extends ControladorBase
             "allSeguimientosReportesIncidentes" => $allSeguimientosReportesIncidentes, "id_Padre" => $id_Padre,
             "logos" => $logos, "porcentajeReporte" => $porcentaje, "id_Reporte_Seguimiento" => $id_Reporte_Seguimiento,
             "allEmpleadosAsistencia" => $allEmpleadosAsistencia, "allInfoProyecto" => $allInfoProyecto,
-            "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas
+            "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas, "subCamposMultiple" => $subcampos
         ));
         // */
 

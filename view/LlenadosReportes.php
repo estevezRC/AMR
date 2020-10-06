@@ -307,6 +307,7 @@ if ($action == "mostrarreporte" || $action == "mostrarreportenuevo") {
     <?php } ?>
 </div>
 
+<script src="js/campo_especial.js"></script>
 <script>
     var options = {
         enableHighAccuracy: true,
@@ -334,6 +335,8 @@ if ($action == "mostrarreporte" || $action == "mostrarreportenuevo") {
     }
 
     $(".form-reporte").submit(function () {
+        multiple.armarCampoEspecial();
+
         const inpFechaInicial = document.querySelector('#fecha_inicial'),
             inpFechaFinal = document.querySelector('#fecha_final'),
             containerAlerta = document.querySelector("#container_alert");
