@@ -437,9 +437,7 @@ class UsuariosController extends ControladorBase
         <h4 style='margin-bottom: 8px;'> <strong> Notificaciones mediante Telegram </strong> </h4>
         Nuestra plataforma se interconecta a Telegram para facilitar y dar seguridad a las notificaciones en tiempo 
         real; para activar este medio necesitas contar con una cuenta en dicho sistema de mensajería y que des 
-        clic en el siguiente enlace:
-        
-        Valida tu cuenta en el siguiente enlace: 
+        clic en el siguiente enlace: <br>
         https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "  <br> <br>";
 
         $dudas = "
@@ -448,14 +446,14 @@ class UsuariosController extends ControladorBase
         mail: contacto@getitcompany.com <br>
         móvil: 442 1151321 <br> <br>
         
-        O consulta nuestro manual de usuario localizado bajo el icono del usuario, localizado en la extrema derecha 
-        de la barra de herramientas de la plataforma web. <br> <br>";
+        O consulta nuestro manual de usuario localizado bajo el ícono del usuario ubicado en la extrema derecha de 
+        la barra de herramientas de la plataforma web. <br> <br>";
 
         $despedida = "
         <h4 style='margin-bottom: 8px;'> <strong> Lineamientos de Privacidad </strong> </h4>
         Nos tomamos muy enserio respetar tu privacidad, si deseas conocer el tratamiento que hacemos con tus datos, 
         visita la siguiente liga: <br>
-        https://" . $_SERVER["SERVER_NAME"] . "/supervisor/amr/descargables/material_ayuda/Manejo-Datos.pdf <br> <br>
+        https://www.getitcompany.com/descargables/Manejo-Datos.pdf <br> <br>
         
         <strong>
         Saludos! <br> 
