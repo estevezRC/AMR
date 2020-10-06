@@ -171,7 +171,8 @@ if ($total_cantidad_solicitadas == 0) {
                     <?php } else { ?>
                         <div class="form-group">
                             <label for=""> Tipo de Incidencia </label>
-                            <label class="form-control labelPerfil"> <?php echo $datosReporte[0]->campo_Tipo_Incidente; ?>
+                            <label
+                                class="form-control labelPerfil"> <?php echo $datosReporte[0]->campo_Tipo_Incidente; ?>
                                 / <?php echo $datosReporte[0]->campo_Fecha; ?> </label>
                         </div>
                         <input type="hidden" name="id_Gpo_Padre"
@@ -371,7 +372,8 @@ if ($total_cantidad_solicitadas == 0) {
             /* :::::::::::::::::::::::::::::::::::::::::::::::::::NUMERO::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
             if ($reporte->tipo_Reactivo_Campo == "number") { ?>
                 <div class="form-group">
-                    <label for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
+                    <label
+                        for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
                     <?php if ($allcamposreportes[0]->tipo_Reporte == 5) {
                         if (empty($titulo_ReportePlanos)) { ?>
                             <input type="<?php echo $reporte->tipo_Reactivo_Campo; ?>" min="1" max="1"
@@ -405,7 +407,8 @@ if ($total_cantidad_solicitadas == 0) {
             /* ::::::::::::::::::::::::::::::::::: NUMEROS DECIMALES :::::::::::::::::::::::::::::::::::::::::::::::: */
             if ($reporte->tipo_Reactivo_Campo == "decimal") { ?>
                 <div class="form-group">
-                    <label for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
+                    <label
+                        for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
                     <input type="" min="0" step="0.01"
                            name="<?php echo $reporte->descripcion_Campo; ?>"
                            id="<?php echo $reporte->descripcion_Campo; ?>" class="form-control"
@@ -613,6 +616,105 @@ if ($total_cantidad_solicitadas == 0) {
                 <?php
             }
 
+            /*:::::::::::::::::::::::::::::::::::::::: CAMPO MULTIPLE ::::::::::::::::::::::::::::::::::::::::::::::::*/
+            if ($reporte->tipo_Reactivo_Campo == "multiple") { ?>
+                <div class="accordion mb-3" id="multiple">
+                    <div class="d-flex justify-content-end py-1">
+                        <a href="#" class="text-primary btn-plus mr-2"
+                           data-toggle="tooltip" data-placement="top"
+                           title="Agregar <?= strtolower($reporte->nombre_Campo) ?>">
+                            <span><i class="fa fa-plus"></i></span></a>
+                        <a href="#" class="text-primary btn-minus"
+                           data-toggle="tooltip" data-placement="top"
+                           title="Eliminar último(a) <?= strtolower($reporte->nombre_Campo) ?>">
+                            <span><i class="fa fa-minus"></i></span></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="heading_1">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
+                                        data-target="#collapse_1" aria-expanded="true" aria-controls="collapse_1">
+                                    <?= $reporte->nombre_Campo ?> #1
+                                </button>
+                            </h2>
+                        </div>
+
+                        <span class="d-none" id="json_campos"
+                              data-campo='<?= json_encode($reporte) ?>'></span>
+
+                        <div id="collapse_1" class="collapse show" aria-labelledby="heading_1"
+                             data-parent="#multiple">
+                            <div class="card-body">
+                                <? foreach ($reporte->Valor_Default as $subCampo) {
+                                    $subCampo->descripcion_Campo = strtolower($subCampo->descripcion_Campo);
+                                    if ($subCampo->tipo_Reactivo_Campo === "select") { ?>
+                                        <div class="form-group">
+                                            <label for="<?= $subCampo->descripcion_Campo ?>">
+                                                <?= $subCampo->nombre_Campo ?>
+                                            </label>
+                                            <select id="<?= $subCampo->descripcion_Campo ?>"
+                                                    class="custom-select <?= $subCampo->descripcion_Campo ?>">
+                                                <? foreach (explode("/", $subCampo->Valor_Default) as $valor) { ?>
+                                                    <option value="<?= $valor ?>"><?= $valor ?></option>
+                                                <? } ?>
+                                            </select>
+                                        </div>
+                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "text-cadenamiento") { ?>
+                                        <div class="form-group">
+                                            <label><?= $subCampo->nombre_Campo ?></label>
+                                            <div class="input-group">
+                                                <input type="number" placeholder="Km"
+                                                       class="form-control text-center <?= $subCampo->descripcion_Campo ?>-inicio"
+                                                    <?= $isRequired ?>>
+                                                <div class="input-group-append">
+                                                     <span class="input-group-text"
+                                                           id="cadenamiento"><i class="fa fa-plus"></i></span>
+                                                </div>
+                                                <input type="number" placeholder="m"
+                                                       class="form-control text-center <?= $subCampo->descripcion_Campo ?>-fin"
+                                                    <?= $isRequired ?>>
+                                            </div>
+                                        </div>
+                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "select-tabla") { ?>
+                                        <div class="form-group">
+                                            <label for="<?= $subCampo->descripcion_Campo ?>">
+                                                <?= $subCampo->nombre_Campo ?>
+                                            </label>
+                                            <select id="<?= $subCampo->descripcion_Campo ?>"
+                                                    class="custom-select <?= $subCampo->descripcion_Campo ?>">
+                                                <? foreach ($subCampo->Valor_Default as $valor) { ?>
+                                                    <option value="<?= $valor->id ?>"><?= $valor->nombre ?></option>
+                                                <? } ?>
+                                            </select>
+                                        </div>
+                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "date") {
+                                        $date = new DateTime(); ?>
+                                        <div class="form-group">
+                                            <label for="<?= $subCampo->descripcion_Campo; ?>">
+                                                <?= $subCampo->nombre_Campo ?>
+                                            </label>
+                                            <input type="date" id="<?= $subCampo->descripcion_Campo; ?>"
+                                                   value="<?= $date->format('Y-m-d') ?>"
+                                                   class="form-control <?= $subCampo->descripcion_Campo ?>"
+                                                <?= $isRequired ?>>
+                                        </div>
+                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "textarea") { ?>
+                                        <div class="form-group">
+                                            <label
+                                                for="<?= $subCampo->descripcion_Campo ?>"><?= $subCampo->nombre_Campo ?></label>
+                                            <textarea id="<?= $subCampo->descripcion_Campo ?>"
+                                                      style="height: 150px; resize: none;"
+                                                      class="form-control <?= $subCampo->descripcion_Campo ?>"
+                                                <?= $isRequired ?>></textarea>
+                                        </div>
+                                    <? }
+                                } ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="campo_multiple" value='' name="<?= $reporte->descripcion_Campo ?>">
+            <? }
 
             $x++;
         } ?>
