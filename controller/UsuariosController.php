@@ -469,11 +469,6 @@ class UsuariosController extends ControladorBase
         $funciones->sendMail($correo_Usuario, $nombre_Usuario, $apellido_Usuario, 'Nuevo registro ' . NAMEAPP, $mensaje);
     }
 
-    public function prueba() {
-        $this->nuevoUsuario(1, "franciscoalejandrotorresortiz@gmail.com", "Fato123", "Prueba", "Uno", "SA");
-    }
-
-
     public function verpass()
     {
         if (isset($_GET["usuarioid"])) {
