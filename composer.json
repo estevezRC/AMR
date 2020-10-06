@@ -4,6 +4,7 @@
     "phpoffice/phpword": "^0.17.0",
     "kartik-v/bootstrap-fileinput": "^5.0",
     "ext-json": "*",
+    "ext-zip": "*",
     "phpoffice/phpspreadsheet": "^1.10",
     "mpdf/mpdf": "^8.0",
     "twbs/bootstrap": "^4.5",
