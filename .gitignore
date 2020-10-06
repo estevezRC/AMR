@@ -1,3 +1,6 @@
 /img
 /vendor
 /.idea
+composer.lock
+composer.json
+composer.phar
