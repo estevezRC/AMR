@@ -247,11 +247,13 @@ class UsuariosController extends ControladorBase
 
                     $usuariosProyecto->set_id_Usuario($id_ultimo);
                     $usuariosProyecto->set_id_Proyecto($_POST["usuarioproyecto"]);
-                    $usuariosProyecto->set_id_Perfil_Usuario($_POST["usuarioperfil"]);
+                    $perfil = $_POST["usuarioperfil"];
+                    $usuariosProyecto->set_id_Perfil_Usuario($perfil);
                     $usuariosProyecto->saveNewUsuarioProyecto($allUsuariosProyectos);
 
                     // ENVIAR CORREO DE BIENVENIDA Y PARA QUE SE REGISTRE EN EL BOT DE TELEGRAM
-                    $this->nuevoUsuario($id_ultimo, $correoUser, $pwdUser, $nombreUser, $apellidoUSer);
+                    $nombrePerfil = $usuario->getPerfilById($perfil)->nombre_Perfil;
+                    $this->nuevoUsuario($id_ultimo, $correoUser, $pwdUser, $nombreUser, $apellidoUSer, $nombrePerfil);
 
                     // ******************************** GUARDAR EN LA BASE GENERAL *****************************************
                     $userGral = new ConsultasGeneral();
@@ -402,48 +404,73 @@ class UsuariosController extends ControladorBase
     }
 
 
-    public function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario)
+    public function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario, $perfil)
     {
         $funciones = new FuncionesCompartidas();
+        $nombreApp = NAMEAPP;
 
-        $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
-        $_SESSION[NOMBRE_EMPRESA_SUPERVISOR];
+        $titulo = " <h3> <strong> ¡Hola $nombre_Usuario $apellido_Usuario! </strong> </h3> <br>";
 
-        $titulo = " <h4> ¡Hola $nombre_Usuario $apellido_Usuario! </h4> <br>";
+        $cuerpo = "Es un gusto para nosotros formar parte de tus proyectos, nuestro compromiso 
+            es poner el mayor esfuerzo e ingenio para ofrecerte productos confiables e innovadores que simplifiquen tus 
+            labores diarias. Por ello te enviamos el usuario y contraseña de $perfil en $nombreApp para tu ingreso 
+            via web a través de tu navegador favorito. <br> <br>";
 
-        $cuerpo = "Es un gusto para nosotros el ser parte de tus emprendimientos, nuestro compromiso contigo es poner 
-        nuestro mayor esfuerzo e ingenio en ofrecerte siempre productos confiables e innovadores que te simplifiquen 
-        las actividades laborales diarias.
-        Te enviamos el usuario y contraseña de administrador de " . NAMEAPP . " para que ingreses desde web a través de 
-        tu navegador favorito (recomendamos Chrome y Firefox).  Para la versión móvil, descárgala desde Google Play 
-        buscandonos como " . NAMEAPP . " <br> <br>";
-
-        $datosUser = "Usuario: " . $correo_Usuario . "<br> Contraseña: " . $pwd . "<br> <br>";
-
-        $botTelegram = "Valida tu cuenta en el siguiente enlace: 
-        https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "<br> <br>";
-
+        $datosUser = "
+        Página: https://supervisor.uno <br>
+        Usuario: $correo_Usuario <br> 
+        Contraseña: $pwd <br> <br>";
 
         $instruccionesInstalacion = "
-        <h4>INSTALACIÓN DE LA PLATAFORMA MÓVIL.</h4>
-        1. Descargar Aplicación <br>
-        2. En la primer ocasión que ingresan al sistema, les solicitará su usuario y contraseña para registrar el 
-            número de serie de su dispositivo en la base de datos del sistema. <br>
-        3. Una vez sale el mensaje de “Dispositivo registrado”, cerrar la ventana e ingresar datos en el login del 
-            sistema. <br>
-        4. Al cargar por primera vez la interfaz, les mostrará un menú vacío respecto a los proyectos que tiene el 
-            sistema cargados, se requiere que den clic en continuar o cancelar y el sistema iniciará con la carga 
-            de los proyectos definidos en el ambiente web. <br> <br>";
+        <h4 style='margin-bottom: 8px;'> <strong> Móvil </strong> </h4>
+        Te invitamos a que descargues desde Google Play la app, a través de la siguiente liga: <br>
+        https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.arm <br> <br>
+        
+        Una vez instalada, te solicitará acceso a tu galería fotográfica, a tu cámara, GPS y al identificador de llamadas 
+        entrantes, por favor acepta estas solicitudes para tener la mejor experiencia con nuestra solución.  
+        Luego, introduce los datos de usuario y contraseña que te estamos enviando.  Al ingresar por primera ocasión, 
+        en segundo plano se inicia la descarga de los distintos proyectos a los cuales tienes acceso, proceso que 
+        puede llevar hasta un minuto.
+        <br> <br>";
 
-        $despedida = "Estamos atentos a cualquier duda: <br> 
-        mail:  contacto@getitcompany.com <br>
-        móvil: 55 3412 5304 <br> <br>
-        Saludos! <br>
-        Equipo Get IT!";
+        $botTelegram = "
+        <h4 style='margin-bottom: 8px;'> <strong> Notificaciones mediante Telegram </strong> </h4>
+        Nuestra plataforma se interconecta a Telegram para facilitar y dar seguridad a las notificaciones en tiempo 
+        real; para activar este medio necesitas contar con una cuenta en dicho sistema de mensajería y que des 
+        clic en el siguiente enlace:
+        
+        Valida tu cuenta en el siguiente enlace: 
+        https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "  <br> <br>";
 
-        $mensaje = $titulo . $cuerpo . $datosUser . $botTelegram . $instruccionesInstalacion . $despedida;
+        $dudas = "
+        <h4 style='margin-bottom: 8px;'> <strong> ¿Tienes alguna duda? </strong> </h4>
+        No dudes en comunicarte con nosotros mediante los siguientes medios: <br>
+        mail: contacto@getitcompany.com <br>
+        móvil: 442 1151321 <br> <br>
+        
+        O consulta nuestro manual de usuario localizado bajo el icono del usuario, localizado en la extrema derecha 
+        de la barra de herramientas de la plataforma web. <br> <br>";
+
+        $despedida = "
+        <h4 style='margin-bottom: 8px;'> <strong> Lineamientos de Privacidad </strong> </h4>
+        Nos tomamos muy enserio respetar tu privacidad, si deseas conocer el tratamiento que hacemos con tus datos, 
+        visita la siguiente liga: <br>
+        https://" . $_SERVER["SERVER_NAME"] . "/supervisor/amr/descargables/material_ayuda/Manejo-Datos.pdf <br> <br>
+        
+        <strong>
+        Saludos! <br> 
+        Equipo Get IT! 
+        </strong>
+        ";
+
+        $mensaje = $titulo . $cuerpo . $datosUser . $instruccionesInstalacion . $botTelegram . $dudas . $despedida;
+
 
         $funciones->sendMail($correo_Usuario, $nombre_Usuario, $apellido_Usuario, 'Nuevo registro ' . NAMEAPP, $mensaje);
+    }
+
+    public function prueba() {
+        $this->nuevoUsuario(1, "franciscoalejandrotorresortiz@gmail.com", "Fato123", "Prueba", "Uno", "SA");
     }
 
 

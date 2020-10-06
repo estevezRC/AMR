@@ -26,6 +26,17 @@
         }
 
         hiddenNames();
+        hiddenCamposParticipantes();
+
+        let action = '<?= $action ?>';
+        if (action == 'modificar') {
+            let participante = document.getElementById("participante").value;
+            if (participante == 1)
+                showCamposParticipantesM();
+            else
+                hiddenCamposParticipantesM();
+        }
+
         //bloquearbtnNoEmpleados();
         validarDatos1(2);
 

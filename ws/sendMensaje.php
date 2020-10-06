@@ -104,47 +104,76 @@ $funcion = new FuncionesCompartidas();
 //$funcion->sendPushNotification($allNotificaciones[0]->token, $data);
 
 
-/*
-function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario)
+function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario, $perfil)
 {
+    session_start();
+    $funciones = new FuncionesCompartidas();
+    $nombreApp = NAMEAPP;
+    $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] = 7;
+    session_start();
 
-   $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
-   $_SESSION[NOMBRE_EMPRESA_SUPERVISOR];
 
-   $titulo = " <h4> ¡Hola " . $_SESSION[NOMBRE_EMPRESA_SUPERVISOR] . "! </h4> <br>";
+    $titulo = " <h4> <strong> ¡Hola $nombre_Usuario $apellido_Usuario! </strong> </h4> <br>";
 
-   $cuerpo = "Es un gusto para nosotros el ser parte de tus emprendimientos, nuestro compromiso contigo es poner
-       nuestro mayor esfuerzo e ingenio en ofrecerte siempre productos confiables e innovadores que te simplifiquen
-       las actividades laborales diarias.
-       Te enviamos el usuario y contraseña de administrador de " . NAMEAPP . " para que ingreses desde web a través de
-       tu navegador favorito (recomendamos Chrome y Firefox).  Para la versión móvil, descárgala desde Google Play
-       buscandonos como " . NAMEAPP . " <br> <br>";
+    $cuerpo = "Es un gusto para nosotros formar parte de tus proyectos, nuestro compromiso 
+            es poner el mayor esfuerzo e ingenio para ofrecerte productos confiables e innovadores que simplifiquen tus 
+            labores diarias. Por ello te enviamos el usuario y contraseña de ${$perfil} en ${$nombreApp} para tu ingreso 
+            via web a través de tu navegador favorito. <br> <br>";
 
-   $datosUser = "Usuario: " . $correo_Usuario . "<br> Contraseña: " . $pwd . "<br> <br>";
+    $datosUser = "
+        Página: https://supervisor.uno <br>
+        Usuario: $correo_Usuario <br> 
+        Contraseña: $pwd <br> <br>";
 
-   $botTelegram = "Valida tu cuenta en el siguiente enlace: https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "<br> <br>";
+    $instruccionesInstalacion = "
+        <h5> <strong> Móvil </strong> </h5>
+        Te invitamos a que descargues desde Google Play la app, a través de la siguiente liga: <br>
+        https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.arm <br> <br>
+        
+        Una vez instalada, te solicitará acceso a tu galería fotográfica, a tu cámara, GPS y al identificador de llamadas 
+        entrantes, por favor acepta estas solicitudes para tener la mejor experiencia con nuestra solución.  
+        Luego, introduce los datos de usuario y contraseña que te estamos enviando.  Al ingresar por primera ocasión, 
+        en segundo plano se inicia la descarga de los distintos proyectos a los cuales tienes acceso, proceso que 
+        puede llevar hasta un minuto.
+        <br> <br>";
 
-   $instruccionesInstalacion = "
-       <h4>INSTALACIÓN DE LA PLATAFORMA MÓVIL.</h4>
-       1. <a href='https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.hmk'>Descargar Aplicación</a> <br>
-       2. En la primer ocasión que ingresan al sistema, les solicitará su usuario y contraseña para registrar el número de serie de su dispositivo en la base de datos del sistema. <br>
-       3. Una vez sale el mensaje de “Dispositivo registrado”, cerrar la ventana e ingresar datos en el login del sistema. <br>
-       4. Al cargar por primera vez la interfaz, les mostrará un menú vacío respecto a los proyectos que tiene el sistema cargados, se requiere que den clic en continuar o cancelar y el sistema iniciará con la carga de los proyectos definidos en el ambiente web. <br> <br>";
+    $botTelegram = "
+        <h5> <strong> Notificaciones mediante Telegram </strong> </h5>
+        Nuestra plataforma se interconecta a Telegram para facilitar y dar seguridad a las notificaciones en tiempo 
+        real; para activar este medio necesitas contar con una cuenta en dicho sistema de mensajería y que des 
+        clic en el siguiente enlace:
+        
+        Valida tu cuenta en el siguiente enlace: 
+        https://t.me/SupervisorUnoBot?start=${$id_Usuario}-${$_SESSION[ID_EMPRE_GENERAL_SUPERVISOR]} <br> <br>";
 
-   $despedida = "Estamos atentos a cualquier duda: <br>
-       mail:  contacto@getitcompany.com <br>
-       móvil: 55 3412 5304 <br> <br>
-       Saludos! <br>
-       Equipo Get IT!";
+    $dudas = "
+        <h5> <strong> ¿Tienes alguna duda? </strong> </h5>
+        No dudes en comunicarte con nosotros mediante los siguientes medios: <br>
+        mail: contacto@getitcompany.com <br>
+        móvil: 442 1151321
+        
+        O consulta nuestro manual de usuario localizado bajo el icono del usuario, localizado en la extrema derecha 
+        de la barra de herramientas de la plataforma web. <br> <br>";
 
-   $mensaje = $titulo . $cuerpo . $datosUser . $botTelegram . $instruccionesInstalacion .$despedida;
+    $despedida = "
+        <h5> <strong> Lineamientos de Privacidad </strong> </h5>
+        Nos tomamos muy enserio respetar tu privacidad, si deseas conocer el tratamiento que hacemos con tus datos, 
+        visita la siguiente liga:
+        https://${$_SERVER["SERVER_NAME"]}/supervisor/amr/descargables/material_ayuda/Manejo-Datos.pdf <br> <br>
+        
+        Saludos! <br> 
+        Equipo Get IT!
+        ";
 
-   echo $mensaje;
+    $mensaje = $titulo . $cuerpo . $datosUser . $instruccionesInstalacion . $botTelegram  . $dudas . $despedida;
 
+    $funciones->sendMail($correo_Usuario, $nombre_Usuario, $apellido_Usuario, 'Nuevo registro ' . NAMEAPP, $mensaje);
 }
+//nuevoUsuario(1, 'atorres@getitcompany.com', '$FatoAmr$', 'Alejandro', 'Torres', 'SA');
+//nuevoUsuario(1, 'franciscoalejandrotorresortiz@gmail.com', '$FatoAmr$', 'Alejandro', 'Torres', 'SA');
 
-nuevoUsuario(1, 'fatotorresortiz@gmail.com', 'Atorres1995', 'Alejandro', 'Torres');
-//*/
+
+
 
 
 //$funcion->guardarAvanceActividad(2312,16785,602, 11);
@@ -185,7 +214,7 @@ $horaAsistencia = "14:18:35";
 //$funcion->ModificarAsistencia($idGpoValores,$arrayEmpleados);
 //var_dump($funcion->validarFechaDomingo('2020-06-07'));
 
-$funcion->modificarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $motivo, $id_Proyecto, $grupovalores);
+//$funcion->modificarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $motivo, $id_Proyecto, $grupovalores);
 
 
 //$a = $funcion->crearRegistrarReportes('Instalación de elemento', '', 7);

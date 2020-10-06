@@ -342,7 +342,7 @@ if ($action == "mapa") { ?>
             zoom: 8
         });
 
-        let server = `https://${document.domain}/supervisor/fpfc`;
+        let server = `https://${document.domain}/supervisor/amr`;
 
         map.on('load', function () {
             map.loadImage(server + '/img/iconos_ubicaciones/its.png', function (error1, image) {
@@ -639,7 +639,7 @@ if ($action == "mapaReportes") { ?>
         });
 
 
-        let server = `https://${document.domain}/supervisor/fpfc`;
+        let server = `https://${document.domain}/supervisor/amr`;
 
         map.on('load', function () {
             map.loadImage(server + '/img/iconos_ubicaciones/atendido.png', function (error, image7) {

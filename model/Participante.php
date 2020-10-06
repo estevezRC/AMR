@@ -96,21 +96,10 @@ class Participante extends EntidadBase
     }
 
     // ********************************** METODO PARA CAMBIAR STATUS DE UN PARTICIPANTE ********************************
-    public function updateStatus($id, $status) {
+    public function updateStatus($id, $status)
+    {
         $query = "UPDATE Usuarios SET participante = $status WHERE id_Usuario = $id";
         return $this->db()->query($query);
-    }
-
-    // ********************************** METODO PARA CAMBIAR STATUS DE UN PARTICIPANTE ********************************
-    public function validate($campos) {
-        $status=true;
-        foreach ($campos as $campo) {
-            if ($campos['obligatorio'] && $campos['']) {
-
-            }
-        }
-
-        return $status;
     }
 
 

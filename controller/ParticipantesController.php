@@ -69,16 +69,15 @@ class ParticipantesController extends ControladorBase
             ['nombreCampo' => 'Apellido Paterno', 'valorCampo' => $apellidoPaterno, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
             ['nombreCampo' => 'Apellido Materno', 'valorCampo' => $apellidoMaterno, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
             ['nombreCampo' => 'Correo', 'valorCampo' => $correo, 'obligatorio' => true, 'validacion' => '/^[A-z0-9\\._-]+@[A-z0-9][A-z0-9-]*(\\.[A-z0-9_-]+)*\\.([A-z]{2,6})$/'],
-            ['nombreCampo' => 'Puesto', 'puesto' => $puesto, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
-            ['nombreCampo' => 'Empresa', 'empresa' => $empresa, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/']
+            ['nombreCampo' => 'Puesto', 'valorCampo' => $puesto, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
+            ['nombreCampo' => 'Empresa', 'valorCampo' => $empresa, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/']
         );
 
-        $participante = new Participante($this->adapter);
-
         // *********************** VALIDAR DATOS OBLIGATORIOS Y FORMATO DE LOS DATOS ***********************
-        $validateDatos = $participante->validate($datos);
+        $validateDatos = $this->validate($datos);
 
         if ($validateDatos['status']) {
+            $participante = new Participante($this->adapter);
             // ****************** PROCESAR LOS DATOS PARA GUARDAR EN LA TABLA USUARIOS ******************
 
             // OBTENER TODOS LOS REGISTROS DE USUARIOS
@@ -157,19 +156,21 @@ class ParticipantesController extends ControladorBase
             $existe = $participante->getParticipanteExistById($idParticipante);
             if ($existe) {
                 $datosParticipante = $participante->getParticipanteById($idParticipante)[0];
-                $mensaje = "El participante con id $idParticipante existe";
-                $status = true;
                 $data = array(
-
+                    'participante' => $datosParticipante,
+                    'mensaje' => "El participante con id $idParticipante no existe",
+                    'status' => true
                 );
-            } else {
-                $mensaje = "El participante con id $idParticipante no existe";
-                $status = false;
-            }
-        } else {
-            $mensaje = 'Error, se debe enviar un identificador de participante valido';
-            $status = false;
-        }
+            } else
+                $data = array(
+                    'mensaje' => "El participante con id $idParticipante no existe",
+                    'status' => false
+                );
+        } else
+            $data = array(
+                'mensaje' => 'Error, se debe enviar un identificador de participante valido',
+                'status' => false
+            );
 
         echo json_encode($data);
     }
@@ -187,35 +188,29 @@ class ParticipantesController extends ControladorBase
         $puesto = $_REQUEST['puesto'];
         $empresa = $_REQUEST['empresa'];
 
-        // *********************** VALIDAR DATOS OBLIGATORIOS ***********************
-        if (empty($nombre) || empty($apellidoPaterno) || empty($apellidoMaterno) || empty($correo) || empty($puesto)
-            || empty($empresa)) {
-            $mensaje = 'Ingresar todos los campos obligatorios';
-            $status = false;
-        } else {
+        // VERIFICAR QUE VENGA SETTEADO EL ID DEL PARTICIPANTE
+        if (!$idParticipante)
+            $data = array(
+                'mensaje' => 'Error, se debe enviar un identificador de participante valido',
+                'status' => false
+            );
+        else {
+            // ***************************** DEFINIR ARRAY DE DATOS PARA VALIDAR *****************************
+            $datos = array(
+                ['nombreCampo' => 'Nombre', 'valorCampo' => $nombre, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
+                ['nombreCampo' => 'Apellido Paterno', 'valorCampo' => $apellidoPaterno, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
+                ['nombreCampo' => 'Apellido Materno', 'valorCampo' => $apellidoMaterno, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
+                ['nombreCampo' => 'Correo', 'valorCampo' => $correo, 'obligatorio' => true, 'validacion' => '/^[A-z0-9\\._-]+@[A-z0-9][A-z0-9-]*(\\.[A-z0-9_-]+)*\\.([A-z]{2,6})$/'],
+                ['nombreCampo' => 'Puesto', 'valorCampo' => $puesto, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/'],
+                ['nombreCampo' => 'Empresa', 'valorCampo' => $empresa, 'obligatorio' => true, 'validacion' => '/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/']
+            );
+
+            // *********************** VALIDAR DATOS OBLIGATORIOS Y FORMATO DE LOS DATOS ***********************
+            $validateDatos = $this->validate($datos);
+
             // ****************** VALIDAR TIPOS DE DATOS PARA CADA CAMPO ******************
-            if (!preg_match('/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/', $nombre)) {
-                $mensaje = "Formato no valido para el campo Nombre";
-                $status = false;
-            } elseif (!preg_match('/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/', $apellidoPaterno)) {
-                $mensaje = "Formato no valido para el campo Apellido Paterno";
-                $status = false;
-            } elseif (!preg_match('/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/', $apellidoMaterno)) {
-                $mensaje = "Formato no valido para el campo Apellido Materno";
-                $status = false;
-            } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-                $mensaje = "Formato no valido para el campo Correo";
-                $status = false;
-            } elseif (!preg_match('/^(?!-+)[a-zA-Z-ñáéíóú\s]*$/', $puesto)) {
-                $mensaje = "Formato no valido para el campo Puesto";
-                $status = false;
-            } elseif (!preg_match('/^(?!-+)[a-zA-Z0-9-ñáéíóú\s]*$/', $empresa)) {
-                $mensaje = "Formato no valido para el campo Empresa";
-                $status = false;
-            } elseif (!$idParticipante) {
-                $mensaje = 'Error, se debe enviar un identificador de participante valido';
-                $status = false;
-            } else {
+            if ($validateDatos['status']) {
+
                 // ****************** PROCESAR LOS DATOS PARA GUARDAR EN LA TABLA USUARIOS ******************
                 $participante = new Participante($this->adapter);
 
@@ -257,26 +252,30 @@ class ParticipantesController extends ControladorBase
                             $apellidos = "$apellidoPaterno $apellidoMaterno";
                             $userGral->ActualizarDatosUser($idParticipante, $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR], $nombre, $apellidos, $correo);
 
-                            $status = true;
-                            $mensaje = "Se ha actualizado el participante $nombre $apellidoPaterno $apellidoMaterno";
-                        } else {
-                            $status = false;
-                            $mensaje = "El correo $correo ya existe. No se puede actualizar";
-                        }
-                    } else {
-                        $status = false;
-                        $mensaje = "El identificador $idParticipante no existe";
-                    }
-                } else {
-                    $status = false;
-                    $mensaje = "El participante $nombre $apellidoPaterno $apellidoMaterno ya existe. No se puede actualizar";
-                }
-            }
+                            $data = array(
+                                'mensaje' => "Se ha actualizado el participante $nombre $apellidoPaterno $apellidoMaterno",
+                                'status' => true
+                            );
+                        } else
+                            $data = array(
+                                'mensaje' => "El correo $correo ya existe. No se puede actualizar",
+                                'status' => false
+                            );
+                    } else
+                        $data = array(
+                            'mensaje' => "El identificador $idParticipante no existe",
+                            'status' => false
+                        );
+                } else
+                    $data = array(
+                        'mensaje' => "El participante $nombre $apellidoPaterno $apellidoMaterno ya existe. No se puede actualizar",
+                        'status' => false
+                    );
+            } else
+                $data = $validateDatos;
         }
 
-        echo json_encode([
-            'mensaje' => $mensaje, 'status' => $status
-        ]);
+        echo json_encode($data);
     }
 
 

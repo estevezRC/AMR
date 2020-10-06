@@ -298,6 +298,35 @@ class ControladorBase
         return false;
     }
 
+    // ****************************** FUNCION PARA VALIDAR DATOS OBLIGATORIOS Y TIPO DE DATO ***************************
+    public function validate($campos)
+    {
+        foreach ($campos as $campo) {
+            if ($campo['obligatorio'] && empty($campo['valorCampo'])) {
+                $data = array(
+                    'mensaje' => 'Ingresar todos los campos que son obligatorios',
+                    'status' => false
+                );
+                break;
+            } elseif ($campo['nombreCampo']) {
+                if (!preg_match($campo["validacion"], $campo['valorCampo'])) {
+                    $data = array(
+                        'mensaje' => "Formato no valido para el campo {$campo['nombreCampo']}",
+                        'status' => false
+                    );
+                    break;
+                } else {
+                    $data = array(
+                        'mensaje' => "Continuar",
+                        'status' => true
+                    );
+                }
+            }
+        }
+
+        return $data;
+    }
+
 
     // ***************************** OBTENER TODOS LOS REGISTROS DE REPORTE TIPO 5 (BIM) *******************************
     public function getDatosCodigosLlenadosDocBim($id_Proyecto)
