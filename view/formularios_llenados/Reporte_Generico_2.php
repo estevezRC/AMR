@@ -209,20 +209,36 @@ if ($noarchivos > 0 || $noimg > 0) {
                                 $likeLabel = true;
                                 $nombre = $reportellenado->nombre_Campo;
 
-                                $empleados = array_map(function ($empleado) {
-                                    return "{$empleado->nombre} {$empleado->apellidos}";
-                                }, $allEmpleadosAsistencia);
+                                $datos = array_map(function ($datos) {
+                                    return $datos->nombre;
+                                }, $datosIdAndName);
 
-                                $valor = implode(' / ', $empleados);
+                                $valor = implode(' / ', $datos);
                                 if ($allreportellenado[0]->tipo_Reporte == 6) {
                                     $likeLabel = false; ?>
-                                    <p class="lead text-center border-0" style="box-shadow: unset;"><?= $nombre ?></p>
-                                    <ul class="list-group">
-                                        <? foreach ($empleados as $key => $empleado) { ?>
-                                            <li class="list-group-item bg-transparent d-flex justify-content-between">
-                                                <p class="m-0" style='box-shadow: unset;'>
-                                                    <?= "{$empleado}" ?> <br>
+                                    <p class="lead text-center border-0 font-weight-bold"
+                                       style="box-shadow: unset;"><?= $nombre ?></p>
+                                    <ul>
+                                        <? foreach ($datos as $dato) { ?>
+                                            <li>
+                                                <p class="m-0">
+                                                    <?= "{$dato}" ?> <br>
                                                     <strong>Tiempo laborado:</strong> <?= "{$horasTrabajadas[$key]}" ?>
+                                                </p>
+                                            </li>
+                                        <? } ?>
+                                    </ul>
+                                    <br>
+                                <? }
+                                if ($allreportellenado[0]->tipo_Reporte == 9) {
+                                    $likeLabel = false; ?>
+                                    <p class="lead text-center border-0 font-weight-bold"
+                                       style="box-shadow: unset;"><?= $nombre ?></p>
+                                    <ul>
+                                        <? foreach ($datos as $dato) { ?>
+                                            <li>
+                                                <p class="m-0" style='box-shadow: unset;'>
+                                                    <?= "{$dato}" ?> <br>
                                                 </p>
                                             </li>
                                         <? } ?>
@@ -278,7 +294,7 @@ if ($noarchivos > 0 || $noimg > 0) {
                                 break;
                             case "select-tabla":
                                 $nombre = $reportellenado->nombre_Campo;
-                                $valor = $allInfoProyecto->nombre_Proyecto;
+                                $valor = $allRegistrosTablas[0]->nombre;
                                 $likeLabel = true;
                                 break;
                             case "multiple":

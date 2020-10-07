@@ -511,8 +511,8 @@ if ($total_cantidad_solicitadas == 0) {
                             id="<?php echo $reporte->descripcion_Campo ?>"
                             class="custom-select" <?php echo $isRequired ?>>
                         <?php foreach ($allRegistrosTablas as $opcion) { ?>
-                            <option value="<?php echo $opcion->id_Proyecto; ?>">
-                                <?php echo $opcion->nombre_Proyecto; ?>
+                            <option value="<?php echo $opcion->id; ?>">
+                                <?php echo $opcion->nombre; ?>
                             </option>
                         <?php } ?>
                     </select>
@@ -579,10 +579,11 @@ if ($total_cantidad_solicitadas == 0) {
                     <small class="text-danger"> *Puedes realizar busqueda de empleados</small>
                     <select name="<?php echo $reporte->descripcion_Campo ?>[]"
                             id="<?php echo $reporte->descripcion_Campo ?>"
-                            class="select-asistencia" multiple="multiple" <?php echo $isRequired ?>>
-                        <?php foreach ($allEmpleados as $empleado) { ?>
-                            <option value="<?php echo $empleado->id_empleado; ?>">
-                                <?php echo $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno; ?>
+                            class="select-asistencia" multiple="multiple"
+                            data-placeholder="Selecciona uno o varios" <?php echo $isRequired ?>>
+                        <?php foreach ($datosIdAndName as $dato) { ?>
+                            <option value="<?= $dato->id; ?>">
+                                <?= $dato->nombre; ?>
                             </option>
                         <?php } ?>
                     </select>

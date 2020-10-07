@@ -51,10 +51,10 @@
                     ['file', 9, 'file', 'Imagen'],
                     ['label', 10, 'label', 'Etiqueta'],
                     ['label', 11, 'checkbox-incidencia', 'Incidencia'],
-                    ['check_list_asistencia', 12, 'check_list_asistencia', 'Asistencia'],
+                    ['check_list_asistencia', 12, 'check_list_asistencia', 'General(Tabla) Check list'],
                     ['label', 13, 'text-cadenamiento', 'Cadenamiento'],
                     ['rango_fechas', 14, 'rango_fechas', 'Rango de Fechas'],
-                    ['select-tabla', 15, 'select-tabla', 'General(Tabla)'],
+                    ['select-tabla', 15, 'select-tabla', 'General(Tabla) Menú'],
                     ['decimal', 16, 'decimal', 'Decimal']
                 ];
 
