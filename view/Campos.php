@@ -176,10 +176,10 @@
                             <option name="file" id="9" value="file">Imagen</option>
                             <option name="label" id="10" value="label">Etiqueta</option>
                             <option name="label" id="11" value="checkbox-incidencia">Incidencia</option>
-                            <option name="label" id="12" value="check_list_asistencia">Asistencia</option>
+                            <option name="label" id="12" value="check_list_asistencia">General(Tabla) Check list </option>
                             <option name="label" id="13" value="text-cadenamiento">Cadenamiento</option>
                             <option name="select" id="14" value="rango_fechas">Rango de Fechas</option>
-                            <option name="select" id="15" value="select-tabla">General(Tabla)</option>
+                            <option name="select" id="15" value="select-tabla">General(Tabla) Menú</option>
                             <option name="decimal" id="16" value="decimal">Decimal</option>
                         </select>
                     </div>
