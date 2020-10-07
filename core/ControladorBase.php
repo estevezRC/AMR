@@ -238,7 +238,7 @@ class ControladorBase
                 $nombre_reactivo = "Incidencia";
                 break;
             case "check_list_asistencia":
-                $nombre_reactivo = "Asistencia";
+                $nombre_reactivo = "General(Tabla) Check list";
                 break;
             case "text-cadenamiento":
                 $nombre_reactivo = "Cadenamiento";
@@ -250,7 +250,7 @@ class ControladorBase
                 $nombre_reactivo = "Rango de Fechas";
                 break;
             case "select-tabla":
-                $nombre_reactivo = "General(Tabla)";
+                $nombre_reactivo = "General(Tabla) Menú";
                 break;
             case "decimal":
                 $nombre_reactivo = "Decimal";

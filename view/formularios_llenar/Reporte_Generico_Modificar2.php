@@ -407,31 +407,29 @@ if ($total_cantidad_solicitadas == 0) {
                 </div>
             <?php }
 
-
             /*:::::::::::::::::::::::::::::::::::::::::::::::SELECT TABLAS :::::::::::::::::::::::::::::::::::::::::::*/
             if ($reporte->tipo_Reactivo_Campo == "select-tabla") { ?>
                 <div class="form-group">
-                    <label><?php echo $reporte->nombre_Campo ?></label>
-                    <select name="<?php echo $reporte->descripcion_Campo ?>"
-                            id="<?php echo $reporte->descripcion_Campo ?>"
-                            class="form-control" <?php echo $isRequired ?>>
+                    <label for="<?= $reporte->descripcion_Campo ?>"><?= $reporte->nombre_Campo ?></label>
+                    <select name="<?= $reporte->descripcion_Campo ?>"
+                            id="<?= $reporte->descripcion_Campo ?>"
+                            class="form-control" <?= $isRequired ?>>
 
-                        <?php foreach ($allRegistrosTablas as $datos) {
-                            if ($allreportellenado[$x]->valor_Texto_Reporte == $datos->id_Proyecto) { ?>
-                                <option value="<?php echo $datos->id_Proyecto; ?>" selected>
-                                    <?php echo $datos->nombre_Proyecto ?>
+                        <? foreach ($allRegistrosTablas as $datos) {
+                            if ($allreportellenado[$x]->valor_Texto_Reporte == $datos->id) { ?>
+                                <option value="<?= $datos->id; ?>" selected>
+                                    <?= $datos->nombre; ?>
                                 </option>
-                            <?php } else { ?>
-                                <option value="<?php echo $datos->id_Proyecto; ?>">
-                                    <?php echo $datos->nombre_Proyecto ?>
+                            <? } else { ?>
+                                <option value="<?= $datos->id; ?>">
+                                    <?= $datos->nombre; ?>
                                 </option>
-                            <?php }
+                            <? }
                         } ?>
-
                     </select>
                 </div>
-                <?php
-            }
+            <? }
+
 
             /* :::::::::::::::::::::::::::::::::::::::::::TEXT CADENAMIENTO:::::::::::::::::::::::::::::::::::::::::::::::::::*/
             if ($reporte->tipo_Reactivo_Campo == "text-cadenamiento") {
@@ -485,7 +483,6 @@ if ($total_cantidad_solicitadas == 0) {
                 </div>
             <?php }
 
-
             /* ::::::::::::::::::::::::::::::::::::::::::: CHECK LIST ASISTENCIA :::::::::::::::::::::::::::::::::::::*/
             if ($reporte->tipo_Reactivo_Campo == "check_list_asistencia") {
                 $opciones = explode("/", $allreportellenado[$x]->valor_Texto_Reporte); ?>
@@ -494,19 +491,19 @@ if ($total_cantidad_solicitadas == 0) {
                     <select name="<?php echo $reporte->descripcion_Campo ?>[]"
                             id="<?php echo $reporte->descripcion_Campo ?>"
                             class="select-asistencia" multiple="multiple" <?php echo $isRequired ?>>
-                        <?php foreach ($allEmpleados as $empleado) {
+                        <?php foreach ($datosIdAndName as $dato) {
                             $igual = false;
                             for ($i = 0; $i <= count($opciones); $i++) {
-                                if ($empleado->id_empleado == $opciones[$i])
+                                if ($dato->id == $opciones[$i])
                                     $igual = true;
                             }
                             if ($igual) { ?>
-                                <option value="<?php echo $empleado->id_empleado; ?>" selected>
-                                    <?php echo $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno; ?>
+                                <option value="<?= $dato->id; ?>" selected>
+                                    <?= $dato->nombre; ?>
                                 </option>
                             <?php } else { ?>
-                                <option value="<?php echo $empleado->id_empleado; ?>">
-                                    <?php echo $empleado->nombre . ' ' . $empleado->apellido_paterno . ' ' . $empleado->apellido_materno; ?>
+                                <option value="<?php echo $dato->id; ?>">
+                                    <?= $dato->nombre; ?>
                                 </option>
                             <?php }
                         } ?>

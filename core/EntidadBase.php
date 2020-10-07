@@ -521,6 +521,32 @@ class EntidadBase
     }
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::PROYECTOS::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+    /*--- PROYECTOS: CONSULTAR PROYECTOS ID Y NOMBRE ---*/
+    public function getAllProyectosIdAndName()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT id_Proyecto as id, nombre_Proyecto as nombre FROM Proyectos");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    /*--- PROYECTOS: CONSULTAR PROYECTOS ID Y NOMBRE BY ID ---*/
+    public function getAllProyectosIdAndNameById($id)
+    {
+        $resultSet = array();
+        $query1 = "SELECT id_Proyecto as id, nombre_Proyecto as nombre FROM Proyectos WHERE id_Proyecto = $id";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     /*--- PROYECTOS: CONSULTAR PROYECTOS ---*/
     public function getAllProyecto()
     {
@@ -3159,6 +3185,22 @@ WHERE Id_Reporte IN ($id)");
     {
         $resultado = [];
         $query = "SELECT * FROM empleados_usuarios WHERE id_empleado = $idEmpleado";
+        $query = $this->db->query($query);
+        while ($row = $query->fetch_object()) {
+            $resultado[] = $row;
+        }
+        $query->close();
+        return $resultado;
+    }
+
+    // OBTENER TODOS LOS EMPLEADOS CON ID Y NOMBRE UNICAMENTE
+    public function getAllEmpleadosWithIdAndName()
+    {
+        $resultado = [];
+        $query = "SELECT e.id_empleado as id, CONCAT(eu.nombre, ' ', eu.apellido_paterno, ' ', eu.apellido_materno) AS nombre 
+            FROM empleados e
+                LEFT JOIN empleados_usuarios eu ON eu.id_empleado = e.id_empleado
+            WHERE e.status = 1";
         $query = $this->db->query($query);
         while ($row = $query->fetch_object()) {
             $resultado[] = $row;

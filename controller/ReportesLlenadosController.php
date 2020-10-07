@@ -128,41 +128,17 @@ class ReportesLlenadosController extends ControladorBase
         $allcomentarios = $comentario->getAllComentariosReporte($id);
 
         // -----------------------------------------CAMPOS ESPECIALES------------------------------------------------
-        /*$id_usuario = 0;
-        foreach ($allreportellenado as $reporte) {
-            switch ($reporte->tipo_Reactivo_Campo) {
-                //SELECT MONITOREO
-                case "select-monitoreo":
-                    $monitoreo = $comentario->getAllCatMonitoreo();
-                    break;
-
-                case "select-catalogo":
-                    $menucatalogo = $comentario->getCatCategoriaByIdCategoria($reporte->Valor_Default);
-                    break;
-                case "check_list_asistencia":
-                    $idsEmpleados = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                    $allEmpleadosAsistencia = $comentario->getAllEmpleadosByInIdEmpleados($idsEmpleados);
-                    break;
-                case "select-tabla":
-                    $idProyecto = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                    $allInfoProyecto = $comentario->getProyectoById($idProyecto);
-                    break;
-            }
-            $id_usuario = $reporte->id_Usuario;
-        } */
-
-        // -----------------------------------------CAMPOS ESPECIALES------------------------------------------------
         $id_usuario = 0;
         $monitoreo = null;
         $menucatalogo = null;
-        $allEmpleadosAsistencia = null;
-        $allInfoProyecto = null;
+        $datosIdAndName = null;
+        $allRegistrosTablas = null;
         $subcampos = null;
         $createData = function ($allreportellenado) use (
             &$monitoreo,
             &$menucatalogo,
-            &$allEmpleadosAsistencia,
-            &$allInfoProyecto,
+            &$datosIdAndName,
+            &$allRegistrosTablas,
             &$subcampos,
             &$id_usuario,
             &$createData,
@@ -175,17 +151,44 @@ class ReportesLlenadosController extends ControladorBase
                     case "select-monitoreo":
                         $monitoreo = $comentario->getAllCatMonitoreo();
                         break;
+
                     case "select-catalogo":
                         $menucatalogo = $comentario->getCatCategoriaByIdCategoria($reporte->Valor_Default);
                         break;
+
                     case "check_list_asistencia":
-                        $idsEmpleados = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                        $allEmpleadosAsistencia = $comentario->getAllEmpleadosByInIdEmpleados($idsEmpleados);
+                        $ids = str_replace('/', ',', $reporte->valor_Texto_Reporte);
+                        switch ($reporte->Valor_Default) {
+                            case 'empleados':
+                                // OBTENER TODOS LOS EMPLEADOS
+                                $datosIdAndName = $comentario->getAllEmpleadosByInIdEmpleados($ids);
+                                break;
+                            case 'participantes':
+                                // OBTENER TODOS LOS PARTICIPANTES = id_Status_Usuario IN(1,2) AND participante = 1
+                                $datosIdAndName = $comentario->getAllParticipantesIdAndNameByIds($ids);
+                                break;
+                            default;
+                        }
                         break;
+
                     case "select-tabla":
-                        $idProyecto = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                        $allInfoProyecto = $comentario->getProyectoById($idProyecto);
+                        $id = str_replace('/', ',', $reporte->valor_Texto_Reporte);
+
+                        // OBTENER TODOS LOS REGISTROS DE LA TABLA X
+                        switch ($reporte->Valor_Default) {
+                            case 'proyecto':
+                                // CONSULTAR TABLA DE PROYECTOS
+                                $allRegistrosTablas = $comentario->getAllProyectosIdAndNameById($id);
+                                break;
+                            case 'participante':
+                                $allRegistrosTablas = $comentario->getAllParticipantesIdAndNameByIds($id);
+                                // PARA CAMPO EN JSON(CAMPO MULTIPLE)
+                                $reporte->Valor_Default = $comentario->getAllParticipantesIdAndName();
+                                break;
+                            default;
+                        }
                         break;
+
                     case "multiple":
                         $IDSubcampos = explode("/", $reporte->Valor_Default);
                         $subcampos = array_map(function ($id) use ($llenadoreporte) {
@@ -343,7 +346,7 @@ class ReportesLlenadosController extends ControladorBase
             "nipUser" => $nipUser, "reporteFirmado" => $reporteFirmado, "perfilesFirma" => $perfilesFirma,
             "allSeguimientosReportesIncidentes" => $allSeguimientosReportesIncidentes, "id_Padre" => $id_Padre,
             "logos" => $logos, "porcentajeReporte" => $porcentaje, "id_Reporte_Seguimiento" => $id_Reporte_Seguimiento,
-            "allEmpleadosAsistencia" => $allEmpleadosAsistencia, "allInfoProyecto" => $allInfoProyecto,
+            "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas,
             "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas, "subCamposMultiple" => $subcampos
         ));
         // */
