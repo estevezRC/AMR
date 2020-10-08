@@ -106,18 +106,14 @@ $funcion = new FuncionesCompartidas();
 
 function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario, $perfil)
 {
-    session_start();
     $funciones = new FuncionesCompartidas();
-    $nombreApp = NAMEAPP;
-    $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] = 7;
-    session_start();
+    $nombreApp = "Supervisor.uno";
 
-
-    $titulo = " <h4> <strong> ¡Hola $nombre_Usuario $apellido_Usuario! </strong> </h4> <br>";
+    $titulo = " <h3> <strong> ¡Hola $nombre_Usuario $apellido_Usuario! </strong> </h3> <br>";
 
     $cuerpo = "Es un gusto para nosotros formar parte de tus proyectos, nuestro compromiso 
             es poner el mayor esfuerzo e ingenio para ofrecerte productos confiables e innovadores que simplifiquen tus 
-            labores diarias. Por ello te enviamos el usuario y contraseña de ${$perfil} en ${$nombreApp} para tu ingreso 
+            labores diarias. Por ello te enviamos el usuario y contraseña de $perfil en $nombreApp para tu ingreso 
             via web a través de tu navegador favorito. <br> <br>";
 
     $datosUser = "
@@ -126,7 +122,7 @@ function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apel
         Contraseña: $pwd <br> <br>";
 
     $instruccionesInstalacion = "
-        <h5> <strong> Móvil </strong> </h5>
+        <h4 style='margin-bottom: 8px;'> <strong> Móvil </strong> </h4>
         Te invitamos a que descargues desde Google Play la app, a través de la siguiente liga: <br>
         https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.arm <br> <br>
         
@@ -138,39 +134,42 @@ function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apel
         <br> <br>";
 
     $botTelegram = "
-        <h5> <strong> Notificaciones mediante Telegram </strong> </h5>
+        <h4 style='margin-bottom: 8px;'> <strong> Notificaciones mediante Telegram </strong> </h4>
         Nuestra plataforma se interconecta a Telegram para facilitar y dar seguridad a las notificaciones en tiempo 
         real; para activar este medio necesitas contar con una cuenta en dicho sistema de mensajería y que des 
-        clic en el siguiente enlace:
-        
-        Valida tu cuenta en el siguiente enlace: 
-        https://t.me/SupervisorUnoBot?start=${$id_Usuario}-${$_SESSION[ID_EMPRE_GENERAL_SUPERVISOR]} <br> <br>";
+        clic en el siguiente enlace: <br>
+        https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "  <br> <br>";
 
     $dudas = "
-        <h5> <strong> ¿Tienes alguna duda? </strong> </h5>
+        <h4 style='margin-bottom: 8px;'> <strong> ¿Tienes alguna duda? </strong> </h4>
         No dudes en comunicarte con nosotros mediante los siguientes medios: <br>
         mail: contacto@getitcompany.com <br>
-        móvil: 442 1151321
+        móvil: 442 1151321 <br> <br>
         
-        O consulta nuestro manual de usuario localizado bajo el icono del usuario, localizado en la extrema derecha 
-        de la barra de herramientas de la plataforma web. <br> <br>";
+        O consulta nuestro manual de usuario localizado bajo el ícono del usuario ubicado en la extrema derecha de 
+        la barra de herramientas de la plataforma web. <br> <br>";
 
     $despedida = "
-        <h5> <strong> Lineamientos de Privacidad </strong> </h5>
+        <h4 style='margin-bottom: 8px;'> <strong> Lineamientos de Privacidad </strong> </h4>
         Nos tomamos muy enserio respetar tu privacidad, si deseas conocer el tratamiento que hacemos con tus datos, 
-        visita la siguiente liga:
-        https://${$_SERVER["SERVER_NAME"]}/supervisor/amr/descargables/material_ayuda/Manejo-Datos.pdf <br> <br>
+        visita la siguiente liga: <br>
+        https://www.getitcompany.com/descargables/Manejo-Datos.pdf <br> <br>
         
+        <strong>
         Saludos! <br> 
-        Equipo Get IT!
+        Equipo Get IT! 
+        </strong>
         ";
 
-    $mensaje = $titulo . $cuerpo . $datosUser . $instruccionesInstalacion . $botTelegram  . $dudas . $despedida;
+    $mensaje = $titulo . $cuerpo . $datosUser . $instruccionesInstalacion . $botTelegram . $dudas . $despedida;
+
 
     $funciones->sendMail($correo_Usuario, $nombre_Usuario, $apellido_Usuario, 'Nuevo registro ' . NAMEAPP, $mensaje);
+
+    echo $mensaje;
 }
-//nuevoUsuario(1, 'atorres@getitcompany.com', '$FatoAmr$', 'Alejandro', 'Torres', 'SA');
-//nuevoUsuario(1, 'franciscoalejandrotorresortiz@gmail.com', '$FatoAmr$', 'Alejandro', 'Torres', 'SA');
+nuevoUsuario(1, 'atorres@getitcompany.com', '$FatoAmr$', 'Alejandro', 'Torres', 'SA');
+nuevoUsuario(8, 'g.cuevas@americasresources.com', 'gr3@T_10', 'Gabriel', 'Cuevas Álvarez', 'Gerente');
 
 
 
