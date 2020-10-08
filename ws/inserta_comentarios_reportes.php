@@ -1,9 +1,11 @@
 <?php
 
 require 'Consultas.php';
+require_once '../config/global.php';
 require_once '../core/EntidadBase.php';
 require_once '../core/FuncionesCompartidas.php';
 require_once '../model/Notificaciones.php';
+require_once '../model/AvanceActividad.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 

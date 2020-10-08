@@ -91,7 +91,7 @@ class SeguimientosReporteController extends ControladorBase
                     $noreportes = 'AND rl.id_Reporte NOT IN(' . $id_SeguimientoStr . ')';
                 }*/
                 $noreportes = '';
-                $tipo_Reporte1 = '0,6,7';
+                $tipo_Reporte1 = '0,6,7,9';
                 $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
                 break;
             case '2':

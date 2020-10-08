@@ -487,24 +487,29 @@ if ($modificar == 2) { ?>
 
                                         <?php if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1 || $_SESSION[ID_PERFIL_USER_SUPERVISOR] == 2) { ?>
                                             <td>
-
                                                 <a href="index.php?controller=Usuarios&action=modificar&usuarioid=<?php echo $user->id_Usuario; ?>&insercion=<?php echo $insercion; ?>&newElemento=<?php echo $newElemento; ?>"
                                                    data-trigger="hover" data-content="Modificar" data-toggle="popover">
                                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> &nbsp;
 
-                                                <? if ($user->id_Usuario != $_SESSION[ID_USUARIO_SUPERVISOR]) {
-                                                    ?>
+                                                <? if ($user->id_Usuario != $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
                                                     <a href="#" data-trigger="hover" data-content="Borrar"
                                                        data-toggle="popover"
                                                        onclick="borrarRegistro(<?php echo $user->id_Usuario; ?>, 'usuarioid', '<?php echo $user->nombre_Usuario . " " . $user->apellido_Usuario; ?>', 'Usuarios', 'borrar')">
                                                         <i class="fa fa-trash" aria-hidden="true"></i></a> &nbsp;
-                                                    <?php
-                                                } ?>
+                                                <?php } ?>
 
-                                                <a href="index.php?controller=Usuarios&action=verpass&usuarioid=<?php echo $user->id_Usuario; ?>"
-                                                   data-trigger="hover" data-content="Ver contraseña"
-                                                   data-toggle="popover">
-                                                    <i class="fa fa-eye" aria-hidden="true"></i></a> &nbsp;
+                                                <? if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) { ?>
+                                                    <a href="index.php?controller=Usuarios&action=verpass&usuarioid=<?php echo $user->id_Usuario; ?>"
+                                                       data-trigger="hover" data-content="Ver contraseña"
+                                                       data-toggle="popover">
+                                                        <i class="fa fa-eye" aria-hidden="true"></i></a> &nbsp;
+
+                                                    <a href="#" data-trigger="hover"
+                                                       data-content="Enviar correo de bienvenida"
+                                                       data-toggle="popover"
+                                                       onclick="enviarCorreo(<?= $user->id_Usuario; ?>, 'usuarioid', '<?php echo $user->nombre_Usuario . " " . $user->apellido_Usuario; ?>', 'Usuarios', 'enviarCorreo')">
+                                                        <i class="fas fa-envelope-open-text"></i></a> &nbsp;
+                                                <? } ?>
 
                                                 <?php if ($user->llave != null) {
                                                     ?>

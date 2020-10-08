@@ -172,7 +172,7 @@ if ($total_cantidad_solicitadas == 0) {
                         <div class="form-group">
                             <label for=""> Tipo de Incidencia </label>
                             <label
-                                class="form-control labelPerfil"> <?php echo $datosReporte[0]->campo_Tipo_Incidente; ?>
+                                    class="form-control labelPerfil"> <?php echo $datosReporte[0]->campo_Tipo_Incidente; ?>
                                 / <?php echo $datosReporte[0]->campo_Fecha; ?> </label>
                         </div>
                         <input type="hidden" name="id_Gpo_Padre"
@@ -373,7 +373,7 @@ if ($total_cantidad_solicitadas == 0) {
             if ($reporte->tipo_Reactivo_Campo == "number") { ?>
                 <div class="form-group">
                     <label
-                        for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
+                            for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
                     <?php if ($allcamposreportes[0]->tipo_Reporte == 5) {
                         if (empty($titulo_ReportePlanos)) { ?>
                             <input type="<?php echo $reporte->tipo_Reactivo_Campo; ?>" min="1" max="1"
@@ -408,8 +408,8 @@ if ($total_cantidad_solicitadas == 0) {
             if ($reporte->tipo_Reactivo_Campo == "decimal") { ?>
                 <div class="form-group">
                     <label
-                        for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
-                    <input type="" min="0" step="0.01"
+                            for="<?php echo $reporte->descripcion_Campo; ?>"> <?php echo $reporte->nombre_Campo; ?> </label>
+                    <input type="number" min="0" step="0.01"
                            name="<?php echo $reporte->descripcion_Campo; ?>"
                            id="<?php echo $reporte->descripcion_Campo; ?>" class="form-control"
                         <?php echo $isRequired ?>>
@@ -664,14 +664,16 @@ if ($total_cantidad_solicitadas == 0) {
                                         <div class="form-group">
                                             <label><?= $subCampo->nombre_Campo ?></label>
                                             <div class="input-group">
-                                                <input type="number" placeholder="Km"
+                                                <input type="text" placeholder="Km" minlength="3" maxlength="3"
+                                                       onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                                        class="form-control text-center <?= $subCampo->descripcion_Campo ?>-inicio"
                                                     <?= $isRequired ?>>
                                                 <div class="input-group-append">
                                                      <span class="input-group-text"
                                                            id="cadenamiento"><i class="fa fa-plus"></i></span>
                                                 </div>
-                                                <input type="number" placeholder="m"
+                                                <input type="text" placeholder="m" minlength="3" maxlength="3"
+                                                       onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                                        class="form-control text-center <?= $subCampo->descripcion_Campo ?>-fin"
                                                     <?= $isRequired ?>>
                                             </div>
@@ -701,14 +703,36 @@ if ($total_cantidad_solicitadas == 0) {
                                         </div>
                                     <? } elseif ($subCampo->tipo_Reactivo_Campo === "textarea") { ?>
                                         <div class="form-group">
-                                            <label
-                                                for="<?= $subCampo->descripcion_Campo ?>"><?= $subCampo->nombre_Campo ?></label>
+                                            <label for="<?= $subCampo->descripcion_Campo ?>"><?= $subCampo->nombre_Campo ?></label>
                                             <textarea id="<?= $subCampo->descripcion_Campo ?>"
                                                       style="height: 150px; resize: none;"
                                                       class="form-control <?= $subCampo->descripcion_Campo ?>"
                                                 <?= $isRequired ?>></textarea>
                                         </div>
-                                    <? }
+                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "decimal") { ?>
+                                        <div class="form-group">
+                                            <label for="<?= $subCampo->descripcion_Campo; ?>">
+                                                <?= $subCampo->nombre_Campo; ?>
+                                            </label>
+                                            <input type="number" min="0" step="0.01"
+                                                   class="form-control <?= $subCampo->descripcion_Campo ?>"
+                                                   name="<?= $subCampo->descripcion_Campo; ?>"
+                                                   id="<?= $subCampo->descripcion_Campo; ?>"
+                                                <?= $isRequired ?>>
+                                        </div>
+                                    <? } elseif ($subCampo->tipo_Reactivo_Campo === "number") { ?>
+                                        <div class="form-group">
+                                            <label for="<?= $subCampo->descripcion_Campo; ?>">
+                                                <?= $subCampo->nombre_Campo; ?>
+                                            </label>
+                                            <input type="<?php echo $subCampo->tipo_Reactivo_Campo; ?>" min="0"
+                                                   name="<?php echo $subCampo->descripcion_Campo; ?>"
+                                                   id="<?php echo $subCampo->descripcion_Campo; ?>"
+                                                   class="form-control <?= $subCampo->descripcion_Campo ?>"
+                                                <?php echo $isRequired ?>>
+                                        </div>
+                                        <?
+                                    }
                                 } ?>
                             </div>
                         </div>

@@ -403,6 +403,42 @@ class UsuariosController extends ControladorBase
         $this->redirect("Usuarios", "index&insercion=$insercion&newElemento=$mensaje");
     }
 
+    public function enviarCorreo() {
+        $id = $_REQUEST['usuarioid'] ?? 0;
+        // VALIDAR QUE VENGA SETEADO EL ID
+        if ($id) {
+            // VERIFICAR SI EXISTE LE ID DE USUARIO
+            $usuario = new Usuario($this->adapter);
+            $registro = $usuario->getUserById($id);
+            if ($registro) {
+                // OBTENER PERFIL DE ALGUN PROYECTO
+                $proyectos = $usuario->getAllProyectosByUser($id);
+                if ($proyectos) {
+                    $perfil = $proyectos[0]->nombre_Perfil;
+                    $fullName = "$registro->nombre_Usuario $registro->apellido_Usuario";
+                    $this->nuevoUsuario($registro->id_Usuario, $registro->correo_Usuario, $registro->password_Usuario, $registro->nombre_Usuario, $registro->apellido_Usuario, $perfil);
+                    $mensaje = "Se ha enviado el correo correctamente al usuario $fullName";
+                    $status = true;
+                } else {
+                    $mensaje = "El id de usuario $id no existe en ningun proyecto";
+                    $status = false;
+                }
+            } else {
+                $mensaje = "El id de usuario $id no existe";
+                $status = false;
+            }
+        } else {
+            $mensaje = "El id de usuario $id no es validado";
+            $status = false;
+        }
+        $ruta = 'index.php?controller=Usuarios&action=index';
+
+        echo json_encode([
+            'ruta' => $ruta, 'mensaje' => $mensaje, 'estado' => $status
+        ]);
+
+    }
+
 
     public function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario, $perfil)
     {
