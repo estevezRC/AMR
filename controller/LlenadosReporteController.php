@@ -31,7 +31,7 @@ class LlenadosReporteController extends ControladorBase
 
         switch ($tipo_Reporte) {
             case '0,1':
-                $tipo_Reporte = '0,6,7';
+                $tipo_Reporte = '0,6,7,9';
                 // VERIFICAR SI EL PROYECTO TIENE GANNT
                 $registroGantt = $camporeporte->getIdGanttByid_proyecto($this->id_Proyecto_constant);
                 if (empty($registroGantt))

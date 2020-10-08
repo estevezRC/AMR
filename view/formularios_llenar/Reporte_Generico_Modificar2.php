@@ -629,6 +629,22 @@ if ($total_cantidad_solicitadas == 0) {
                                                                class="form-control <?= $subCampo->descripcion_Campo ?>">
                                                     </div>
                                                 <? }
+                                                elseif ($subCampo->tipo_Reactivo_Campo === "decimal") { ?>
+                                                    <div class="form-group">
+                                                        <label for="<?= $subCampo->descripcion_Campo ?>">
+                                                            <?= $subCampo->nombre_Campo ?>
+                                                        </label>
+
+                                                    </div>
+
+                                                    <div class="form-group" id="<?= $subCampo->descripcion_Campo ?>"
+                                                        <label> <?php echo $subCampo->nombre_Campo; ?> </label>
+                                                        <input type="number" step="0.01"
+                                                               name="<?php echo $subCampo->descripcion_Campo; ?>"
+                                                               value="<?= $valorSubcampo->valorCampo ?>"
+                                                               class="form-control <?= $subCampo->descripcion_Campo ?>">
+                                                    </div>
+                                                <? }
                                             }
                                         }
                                     } ?>

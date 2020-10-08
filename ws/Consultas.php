@@ -1235,7 +1235,7 @@ class Consultas
 
     public static function getUsuarios()
     {
-        $consulta = "SELECT * FROM VW_getAllUsuarios_Movil";
+        $consulta = "SELECT * FROM VW_getAllUsuarios";
         try {
             // Preparar sentencia
             $comando = Database::getInstance()->getDb()->prepare($consulta);
@@ -2248,14 +2248,12 @@ class Consultas
 
     public static function obtenerComentariosReportes($idGpo)
     {
-        $consulta_fotos = "SELECT cr.id_comentario AS idComentario, 
-                                cr.id_Usuario AS idUsuario, 
-                                CONCAT(em.nombre,' ',em.apellido_paterno,' ',ifnull(em.apellido_materno,'')) AS nombreUsuario, 
-                                cr.Comentario_reporte AS comentario, 
-                                cr.Fecha_Comentario AS fecha
+        $consulta_fotos = "SELECT cr.id_comentario AS idComentario, cr.id_Usuario AS idUsuario, 
+                            CONCAT(eu.nombre,' ',eu.apellido_paterno,' ',ifnull(eu.apellido_materno,'')) AS nombreUsuario, 
+                            cr.Comentario_reporte AS comentario, cr.Fecha_Comentario AS fecha 
                             FROM Comentarios_Reportes cr 
                             INNER JOIN Usuarios u ON cr.id_Usuario = u.id_Usuario 
-                            INNER JOIN empleados em ON u.id_emp = em.id_empleado
+                            INNER JOIN empleados_usuarios eu ON u.`id_Usuario` = eu.`id_usuario` 
                             WHERE cr.id_Gpo = $idGpo AND cr.id_Status = 1";
 
         //echo $consulta_fotos;

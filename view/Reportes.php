@@ -420,6 +420,14 @@ $accion = $_GET['accion'];
                             <?php if (empty($reporteTipoSeven)) { ?>
                                 <option value="7">Termino de jornada laboral</option>
                             <?php } ?>
+
+                            <?php if (empty($reporteTipoSeven)) { ?>
+                                <option value="8"> Documentos Entregables </option>
+                            <?php } ?>
+
+                            <?php if (empty($reporteTipoSeven)) { ?>
+                                <option value="9"> Minuta </option>
+                            <?php } ?>
                         </select>
                     </div>
 
