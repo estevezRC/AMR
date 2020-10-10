@@ -476,6 +476,11 @@ class ReportesLlenadosController extends ControladorBase
             $nombre_imagen = $idcomentario . "_" . $fecha_mes . $año_dia . "_" . $hora . "." . $extension[1];
             $nombre_imagen = str_replace(' ', '', $nombre_imagen);
             $target_path = "img/comentarios/";
+
+            if (!is_dir($target_path)) {
+                mkdir($target_path, 0777, true);
+            }
+
             $target_path = $target_path . basename($nombre_imagen);
             $img = "img/comentarios/" . $nombre_imagen;
             if (move_uploaded_file($_FILES["img_comentario2"]['tmp_name'], $target_path)) {

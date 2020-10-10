@@ -119,7 +119,7 @@ $accion = $_GET['accion'];
 
     }
 
-    function obtenerDatosReporte(idReporte) {
+    /*function obtenerDatosReporte(idReporte) {
         popover('myModalModReporte');
         //console.log(idReporte);
         $.ajax({
@@ -223,6 +223,89 @@ $accion = $_GET['accion'];
                         perfiles.append("<input type='checkbox' value='" + respuestaJSON.allPerfiles[i].id_Perfil_Usuario + "' name='perfil[]' id='perfilCheck_" + respuestaJSON.allPerfiles[i].id_Perfil_Usuario + "'> " + respuestaJSON.allPerfiles[i].nombre_Perfil + "<br>");
                 }
 
+
+                let selectSegIncidencia = $('#selectSegIncidenciaMod');
+                selectSegIncidencia.empty();
+
+                if (respuestaJSON.datosreporte.id_Seguimiento != 0) {
+                    let duracion = respuestaJSON.datosreporte.tiempo_Reporte / 60;
+                    let alarma = respuestaJSON.datosreporte.tiempo_Alarma / 60;
+                    let revision = respuestaJSON.datosreporte.tiempo_Revision / 60;
+
+                    $('#inputDuracionMod').val(duracion);
+                    $('#inputAlarmaMod').val(alarma);
+                    $('#inputRevisionMod').val(revision);
+
+                    selectSegIncidencia.append("<option value='" + respuestaJSON.datosreporte.id_Seguimiento + "' selected>" + respuestaJSON.datosreporte.nombre_ReporteSeguimiento + " </option>");
+                    let i = 0;
+                    $.each(respuestaJSON.allReportesSeguimiento, function () {
+                        if (respuestaJSON.datosreporte.id_Seguimiento != respuestaJSON.allReportesSeguimiento[i].id_Reporte)
+                            selectSegIncidencia.append("<option value='" + respuestaJSON.allReportesSeguimiento[i].id_Reporte + "'>" + respuestaJSON.allReportesSeguimiento[i].nombre_Reporte + " </option>");
+                        i++;
+                    });
+                    selectSegIncidencia.append("<option value='0'> Sin Seguimiento </option>");
+
+                } else {
+                    selectSegIncidencia.append("<option value='0'> Sin Seguimiento </option>");
+                    let i = 0;
+                    $.each(respuestaJSON.allReportesSeguimiento, function () {
+                        //if (respuestaJSON.datosreporte.id_Seguimiento != respuestaJSON.allReportesSeguimiento[i].id_Reporte)
+                        selectSegIncidencia.append("<option value='" + respuestaJSON.allReportesSeguimiento[i].id_Reporte + "'>" + respuestaJSON.allReportesSeguimiento[i].nombre_Reporte + " </option>");
+                        i++;
+                    });
+                }
+                mostrarInputSeguimientoMod();
+
+            }
+        });
+    }*/
+
+    function obtenerDatosReporte(idReporte) {
+        popover('myModalModReporte');
+        //console.log(idReporte);
+        $.ajax({
+            data: {idReporte: idReporte},
+            url: "index.php?controller=Reportes&action=modificar",
+            method: "POST",
+            success: function (response) {
+                let respuestaJSON = $.parseJSON(response);
+                console.log(respuestaJSON);
+
+                $('#myModalLabelTitulo').text('Modificar ' + respuestaJSON.datosreporte.nombre_Reporte);
+                $('#id_reporteMod').val(idReporte);
+                $('#nombre_ReporteMod').val(respuestaJSON.datosreporte.nombre_Reporte);
+                $('#descripcionMod').val(respuestaJSON.datosreporte.descripcion_Reporte);
+
+                let tipoDatos = respuestaJSON.tipoDatos;
+
+                var $secondChoice = $("#tipo_ReporteMod");
+                $secondChoice.empty();
+                let x = 0;
+                $.each(tipoDatos, function () {
+                    if (respuestaJSON.datosreporte.tipo_Reporte == x)
+                        $secondChoice.append("<option value='" + x + "' selected>" + tipoDatos[x] + "</option>");
+                    else if (tipoDatos[x])
+                        $secondChoice.append("<option value='" + x + "'>" + tipoDatos[x] + "</option>");
+                    x++;
+                });
+
+                const areas = $("#containerAreas");
+                areas.empty();
+                for (i = 0; i < respuestaJSON.allAreas.length; i++) {
+                    if (respuestaJSON.areas.indexOf(respuestaJSON.allAreas[i].id_Area) >= 0)
+                        areas.append("<input type='checkbox' value='" + respuestaJSON.allAreas[i].id_Area + "' name='area[]' id='areaCheck_" + respuestaJSON.allAreas[i].id_Area + "' checked> " + respuestaJSON.allAreas[i].nombre_Area + "<br>");
+                    else
+                        areas.append("<input type='checkbox' value='" + respuestaJSON.allAreas[i].id_Area + "' name='area[]' id='areaCheck_" + respuestaJSON.allAreas[i].id_Area + "'> " + respuestaJSON.allAreas[i].nombre_Area + "<br>");
+                }
+
+                const perfiles = $("#containerPerfiles");
+                perfiles.empty();
+                for (i = 0; i < respuestaJSON.allPerfiles.length; i++) {
+                    if (respuestaJSON.perfiles.indexOf(respuestaJSON.allPerfiles[i].id_Perfil_Usuario) >= 0)
+                        perfiles.append("<input type='checkbox' value='" + respuestaJSON.allPerfiles[i].id_Perfil_Usuario + "' name='perfil[]' id='perfilCheck_" + respuestaJSON.allPerfiles[i].id_Perfil_Usuario + "' checked> " + respuestaJSON.allPerfiles[i].nombre_Perfil + "<br>");
+                    else
+                        perfiles.append("<input type='checkbox' value='" + respuestaJSON.allPerfiles[i].id_Perfil_Usuario + "' name='perfil[]' id='perfilCheck_" + respuestaJSON.allPerfiles[i].id_Perfil_Usuario + "'> " + respuestaJSON.allPerfiles[i].nombre_Perfil + "<br>");
+                }
 
                 let selectSegIncidencia = $('#selectSegIncidenciaMod');
                 selectSegIncidencia.empty();
@@ -421,11 +504,11 @@ $accion = $_GET['accion'];
                                 <option value="7">Termino de jornada laboral</option>
                             <?php } ?>
 
-                            <?php if (empty($reporteTipoSeven)) { ?>
+                            <?php if (empty($reporteTipoOcho)) { ?>
                                 <option value="8"> Documentos Entregables </option>
                             <?php } ?>
 
-                            <?php if (empty($reporteTipoSeven)) { ?>
+                            <?php if (empty($reporteTipoNueve)) { ?>
                                 <option value="9"> Minuta </option>
                             <?php } ?>
                         </select>

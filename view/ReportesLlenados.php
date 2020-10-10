@@ -343,12 +343,17 @@
                                     </a>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="descargables">
-                                    <?php if (getAccess(256, $decimal)) { ?>
-                                        <li>
-                                            <a class="p-2 dropdown-item text-secondary"
-                                               href="descargables/reporte_generico_word.php?gpo=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>">
-                                                <i class="fa fa-file-word-o" aria-hidden="true"></i> Word</a>
-                                        </li>
+
+                                    <?php if (getAccess(256, $decimal)) {
+                                    $urlWord = "descargables/reporte_generico_word.php?gpo={$allreportellenado[0]->id_Gpo_Valores_Reporte}";
+                                    if ($allreportellenado[0]->tipo_Reporte == 9)
+                                        $urlWord = '#';//"descargables/reporte_minuta.php?gpo={$allreportellenado[0]->id_Gpo_Valores_Reporte}";
+                                    ?>
+                                    <li>
+                                        <a class="p-2 dropdown-item text-secondary"
+                                           href="<?= $urlWord ?>">
+                                            <i class="fa fa-file-word-o" aria-hidden="true"></i> Word</a>
+                                    </li>
                                     <?php }
 
                                     if (getAccess(512, $decimal)) { ?>
