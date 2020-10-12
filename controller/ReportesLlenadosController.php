@@ -181,7 +181,8 @@ class ReportesLlenadosController extends ControladorBase
                                 $allRegistrosTablas = $comentario->getAllProyectosIdAndNameById($id);
                                 break;
                             case 'participante':
-                                $allRegistrosTablas = $comentario->getAllParticipantesIdAndNameByIds($id);
+                                if ($id)
+                                    $allRegistrosTablas = $comentario->getAllParticipantesIdAndNameByIds($id);
                                 // PARA CAMPO EN JSON(CAMPO MULTIPLE)
                                 $reporte->Valor_Default = $comentario->getAllParticipantesIdAndName();
                                 break;
