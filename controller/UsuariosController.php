@@ -102,54 +102,13 @@ class UsuariosController extends ControladorBase
     /*--- VISTA MODIFICAR USUARIO ---*/
     public function modificar()
     {
-        if (isset($_GET["usuarioid"])) {
-
-            $mensaje = "<i class='fa fa-users' aria-hidden='true'></i> Usuarios";
-
-            // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            $insercion = $_GET['insercion'];
-            $newElemento = $_GET['newElemento'];
-            if ($insercion != 0 && !empty($newElemento)) {
-                $insercion = 0;
-                $newElemento = '';
-            }
-
-            $id = (int)$_GET["usuarioid"];
-            $area = new Area($this->adapter);
-            $allarea = $area->getAllArea();
-
-            $puestos = new Perfil($this->adapter);
-            // PERFILES DE LA EMPRESA
-            $perfil = new Perfil($this->adapter);
-            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
-                $noId_Perfil_User = '';
-                $allpuestos = $perfil->getAllPerfiles($noId_Perfil_User);
-            } else {
-                $noId_Perfil_User = ' where id_Perfil_Usuario NOT IN (1)';
-                $allpuestos = $perfil->getAllPerfiles($noId_Perfil_User);
-            }
-
-
-            $usuario = new Usuario($this->adapter);
-            $datosusuario = $usuario->getUserById2($id);
-            $allusers = $usuario->getAllUser();
-            $empresa = new Empresa($this->adapter);
-            $allempresas = $empresa->getAllEmpresas();
-            $modificar = 1;
-            $savekey = 0;
-            $notify = 0;
-            $registrarNip = 0;
-
-            //******************************************* SECCION RESTAURAR USUARIOS ***************************************
-            $mensajeRes = "<i class='fa fa-retweet' aria-hidden='true'></i> Restaurar Usuarios";
-            $allUserRes = $usuario->getAllUserRestaurar();
-        }
-        $this->view("index", array(
-            "allusers" => $allusers, "datosusuario" => $datosusuario, "allareas" => $allarea, "allpuestos" => $allpuestos,
-            "allempresas" => $allempresas, "modificar" => $modificar, "savekey" => $savekey, "notify" => $notify,
-            "registrarNip" => $registrarNip, "insercion" => $insercion, "newElemento" => $newElemento, "mensaje" => $mensaje,
-            "mensajeRes" => $mensajeRes, "allUserRes" => $allUserRes
+        $idUser = $_POST['idUsuario'];
+        $usuario = new Usuario($this->adapter);
+        $datosusuario = $usuario->getUserById2($idUser);
+        echo json_encode(array(
+            'data' => $datosusuario
         ));
+
     }
 
     /*--- METODO CREAR NUEVO USUARIO ---*/
@@ -505,31 +464,13 @@ class UsuariosController extends ControladorBase
 
     public function verpass()
     {
-        if (isset($_GET["usuarioid"])) {
-            $id = (int)$_GET["usuarioid"];
+        if (isset($_POST['idUsuario'])) {
+            $id = (int)$_POST['idUsuario'];
             $usuario = new Usuario($this->adapter);
             $datosusuario = $usuario->getUserById($id);
-            $allusers = $usuario->getAllUser();
-            $modificar = 2;
-
-            // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY d
-            $insercion = $_GET['insercion'];
-            $newElemento = $_GET['newElemento'];
-            if (empty($insercion) && empty($newElemento)) {
-                $insercion = 0;
-                $newElemento = '';
-            }
-
-            $mensaje = "<i class='fa fa-users' aria-hidden='true'></i> Usuarios";
-
-            //******************************************* SECCION RESTAURAR USUARIOS ***************************************
-            $mensajeRes = "<i class='fa fa-retweet' aria-hidden='true'></i> Restaurar Usuarios";
-            $allUserRes = $usuario->getAllUserRestaurar();
-
         }
-        $this->view("index", array(
-            "datosusuario" => $datosusuario, "allusers" => $allusers, "modificar" => $modificar, "insercion" => $insercion,
-            "newElemento" => $newElemento, "mensajeRes" => $mensajeRes, "allUserRes" => $allUserRes, "mensaje" => $mensaje
+        echo json_encode(array(
+            'data' => $datosusuario
         ));
     }
 
