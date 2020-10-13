@@ -17,6 +17,7 @@ class LlenadosReporteController extends ControladorBase
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
         $this->id_Area_constant = $_SESSION[ID_AREA_SUPERVISOR];
         require_once 'core/FuncionesCompartidas.php';
+        require_once 'core/FormatosCorreo.php';
         require_once 'vendor/autoload.php';
     }
 
@@ -763,6 +764,9 @@ class LlenadosReporteController extends ControladorBase
         $arrayformulario = $reporte->getAllCampoReporteByIdReporte($Id_Reporte);
         $id_Ubicacion = $_POST['IdUbicacion'];
         $id_Area_Reporte = $arrayformulario[0]->Areas;
+
+        $nombreReporte = $arrayformulario[0]->nombre_Reporte;
+
         $tipo_Reporte = $arrayformulario[0]->tipo_Reporte;
 
         //OBTENER EL ID GRUPO DE LOS CAMPOS
@@ -873,6 +877,8 @@ class LlenadosReporteController extends ControladorBase
                     $idsEmpleados = implode('/', $_POST[$valor]);
                     if ($tipo_Reporte == 6 || ($tipo_Reporte == 0 && $idReporteControlAsistencia == $Id_Reporte) || $tipo_Reporte == 7)
                         $arrayIdsEmpleados = $_POST[$valor];
+                    elseif ($tipo_Reporte == 9)
+                        $idsParticipantes = implode(',', $_POST[$valor]);
                 }
                 $llenadoreporte = new LlenadoReporte($this->adapter);
                 $llenadoreporte->set_id_Proyecto($idproyecto);
@@ -1096,7 +1102,11 @@ class LlenadosReporteController extends ControladorBase
         $registrarreportellenado->set_clas_Reporte($tipo_Reporte);
         $saveReporteLlenado = $registrarreportellenado->saveNewReporteLlenado($allreportesllenados);
 
+        $id_EmpresaGral = $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
+        $nombreCarpeta = $_SESSION[CARPETA_SUPERVISOR];
+
         $funciones = new FuncionesCompartidas();
+        $datosFormato = new FormatosCorreo();
 
         // **************************** INVOCAR MODELO DE ASISTENCIA PARA GUARDAR DATOS ********************************
         if ($saveReporteLlenado && $tipo_Reporte == 6)
@@ -1108,12 +1118,16 @@ class LlenadosReporteController extends ControladorBase
         }
         // *************************************************************************************************************
 
+        // ********************* OBTENER INFORMACION PARA ENVIAR POR CORREO (REPORTE MINUTA) ***************************
+        if ($saveReporteLlenado && $tipo_Reporte == 9) {
+            $datosReporte = $datosFormato->obtenerValoresReporteLlenado($grupovalores);
+            $destinatarios = $datosFormato->obtenerCorreosParticipantesMinuta($idsParticipantes);
+            $datosFormato->enviarMinuta($nombreReporte, $datosReporte, $destinatarios, $nombreCarpeta);
+        }
+
         unset($_SESSION['arrayformulario']);
 
         /* ::::::::::: NOTIFICACIONES (TELEGRAM, CORREO, PUSH, ETC) DEPENDIENDO DE LA MATRIZ DE COMUNICACION :::::::::*/
-        $id_EmpresaGral = $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
-        $nombreCarpeta = $_SESSION[CARPETA_SUPERVISOR];
-
         $matriz = new MatrizComunicacion($this->adapter);
 
         /* :::::::::::::: CAMBIAR ESTADO DE REPORTE PADRE SI EL REPORTE TIENE EL CAMPO SELECT-STATUS  ::::::::::::::::*/

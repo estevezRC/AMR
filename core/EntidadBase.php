@@ -1836,7 +1836,7 @@ class EntidadBase
     {
         $resultSet = array();
         $query = $this->db->query("SELECT * FROM  VW_getAllValoresReportes WHERE id_Gpo_Valores_Reporte = $id 
-AND id_Status_Reporte = 1");
+            AND id_Status_Reporte = 1");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }

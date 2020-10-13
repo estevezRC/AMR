@@ -23,6 +23,8 @@ require_once '../model/Gantt.php';
 require_once '../model/Empleados.php';
 require_once '../model/Asistencia.php';
 
+require_once '../core/FormatosCorreo.php';
+
 require_once '../model/LlenadoReporte.php';
 require_once '../vendor/autoload.php';
 
@@ -103,89 +105,8 @@ $funcion = new FuncionesCompartidas();
 
 //$funcion->sendPushNotification($allNotificaciones[0]->token, $data);
 
-
-function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario, $perfil)
-{
-    $funciones = new FuncionesCompartidas();
-    $nombreApp = "Supervisor.uno";
-
-    $titulo = " <h3> <strong> ¡Hola $nombre_Usuario $apellido_Usuario! </strong> </h3> <br>";
-
-    $cuerpo = "Es un gusto para nosotros formar parte de tus proyectos, nuestro compromiso 
-            es poner el mayor esfuerzo e ingenio para ofrecerte productos confiables e innovadores que simplifiquen tus 
-            labores diarias. Por ello te enviamos el usuario y contraseña de $perfil en $nombreApp para tu ingreso 
-            via web a través de tu navegador favorito. <br> <br>";
-
-    $datosUser = "
-        Página: https://supervisor.uno <br>
-        Usuario: $correo_Usuario <br> 
-        Contraseña: $pwd <br> <br>";
-
-    $instruccionesInstalacion = "
-        <h4 style='margin-bottom: 8px;'> <strong> Móvil </strong> </h4>
-        Te invitamos a que descargues desde Google Play la app, a través de la siguiente liga: <br>
-        https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.arm <br> <br>
-        
-        Una vez instalada, te solicitará acceso a tu galería fotográfica, a tu cámara, GPS y al identificador de llamadas 
-        entrantes, por favor acepta estas solicitudes para tener la mejor experiencia con nuestra solución.  
-        Luego, introduce los datos de usuario y contraseña que te estamos enviando.  Al ingresar por primera ocasión, 
-        en segundo plano se inicia la descarga de los distintos proyectos a los cuales tienes acceso, proceso que 
-        puede llevar hasta un minuto.
-        <br> <br>";
-
-    $botTelegram = "
-        <h4 style='margin-bottom: 8px;'> <strong> Notificaciones mediante Telegram </strong> </h4>
-        Nuestra plataforma se interconecta a Telegram para facilitar y dar seguridad a las notificaciones en tiempo 
-        real; para activar este medio necesitas contar con una cuenta en dicho sistema de mensajería y que des 
-        clic en el siguiente enlace: <br>
-        https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "  <br> <br>";
-
-    $dudas = "
-        <h4 style='margin-bottom: 8px;'> <strong> ¿Tienes alguna duda? </strong> </h4>
-        No dudes en comunicarte con nosotros mediante los siguientes medios: <br>
-        mail: contacto@getitcompany.com <br>
-        móvil: 442 1151321 <br> <br>
-        
-        O consulta nuestro manual de usuario localizado bajo el ícono del usuario ubicado en la extrema derecha de 
-        la barra de herramientas de la plataforma web. <br> <br>";
-
-    $despedida = "
-        <h4 style='margin-bottom: 8px;'> <strong> Lineamientos de Privacidad </strong> </h4>
-        Nos tomamos muy enserio respetar tu privacidad, si deseas conocer el tratamiento que hacemos con tus datos, 
-        visita la siguiente liga: <br>
-        https://www.getitcompany.com/descargables/Manejo-Datos.pdf <br> <br>
-        
-        <strong>
-        Saludos! <br> 
-        Equipo Get IT! 
-        </strong>
-        ";
-
-    $mensaje = $titulo . $cuerpo . $datosUser . $instruccionesInstalacion . $botTelegram . $dudas . $despedida;
-
-
-    $funciones->sendMail($correo_Usuario, $nombre_Usuario, $apellido_Usuario, 'Nuevo registro ' . NAMEAPP, $mensaje);
-
-    echo $mensaje;
-}
-nuevoUsuario(1, 'atorres@getitcompany.com', '$FatoAmr$', 'Alejandro', 'Torres', 'SA');
-nuevoUsuario(8, 'g.cuevas@americasresources.com', 'gr3@T_10', 'Gabriel', 'Cuevas Álvarez', 'Gerente');
-
-
-
-
-
 //$funcion->guardarAvanceActividad(2312,16785,602, 11);
-//
-//$idEmpleados  = "5/2/11/12";
-//$arrayEmpleados = explode("/", $idEmpleados);
-//$idGpoValores = 9222;
-//
-//$funcion->ModificarAsistencia($idGpoValores,$arrayEmpleados);
-//var_dump($funcion->validarFechaDomingo('2020-06-07'));
-
-
-$idEmpleados  = "1";
+$idEmpleados = "1";
 $arrayEmpleados = explode("/", $idEmpleados);
 $grupovalores = 9275;
 $motivo = "Descanso";//"Permiso con Goce";//"Vacaciones";
@@ -198,9 +119,7 @@ $horaAsistencia = "14:18:35";
 //$funcion->procesarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $horaAsistencia, $motivo, $id_Proyecto, $grupovalores);
 
 
-
-
-$idEmpleados  = "2/5/11";
+$idEmpleados = "2/5/11";
 $arrayEmpleados = explode("/", $idEmpleados);
 $grupovalores = 9251;
 $motivo = "Vacaciones";//"Permiso con Goce";//"Descanso";
@@ -215,9 +134,25 @@ $horaAsistencia = "14:18:35";
 
 //$funcion->modificarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $motivo, $id_Proyecto, $grupovalores);
 
-
 //$a = $funcion->crearRegistrarReportes('Instalación de elemento', '', 7);
 //echo $a; fee
 
 
+/*
+// ********************* OBTENER INFORMACION PARA ENVIAR POR CORREO (REPORTE MINUTA) ***************************
+if ($saveReporteLlenado && $tipo_Reporte == 9) {
+    $datos = $funciones->obtenerValoresReporteLlenado($grupovalores);
+    $destinatarios = $funciones->obtenerCorreosParticipantesMinuta($idsParticipantes);
+    $funciones->enviarMinuta($nombreReporte, $datos, $destinatarios, $nombreCarpeta);
+}
+*/
+
+$datos = new FormatosCorreo();
+
+$nombreReporte = 'Minuta de reunión';
+$nombreCarpeta = 'amr';
+$resultado = $datos->obtenerValoresReporteLlenado(29);
+$destinatarios = $datos->obtenerCorreosParticipantesMinuta(1);
+$datos->enviarMinuta($nombreReporte, $resultado, $destinatarios, $nombreCarpeta);
+//print_r($resultado);
 
