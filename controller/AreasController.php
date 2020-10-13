@@ -40,27 +40,14 @@ class AreasController extends ControladorBase
     /*--- VISTA MODIFICAR AREA ---*/
     public function modificar()
     {
-        if (isset($_GET["areaid"])) {
-            // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            $insercion = $_GET['insercion'];
-            $newElemento = $_GET['newElemento'];
-            if ($insercion != 0 && !empty($newElemento)) {
-                $insercion = 0;
-                $newElemento = '';
-            }
+        if (isset($_POST["areaid"])) {
 
             $area = new Area($this->adapter);
-            $allareas = $area->getAllArea();
-            $id = (int)$_GET["areaid"];
+            $id = (int)$_POST["areaid"];
             $datosarea = $area->getAreaById($id);
-            $allempresas = $area->getAllEmpresas();
-            $modificar = 1;
         }
-        $mensaje = '<i class="fa fa-sitemap" aria-hidden="true"></i> Áreas';
-        $this->view("index", array(
-            "datosarea" => $datosarea, "allareas" => $allareas, "allempresas" => $allempresas, "modificar" => $modificar,
-            "mensaje" => $mensaje, "insercion" => $insercion, "newElemento" => $newElemento
-        ));
+
+        echo json_encode($datosarea);
     }
 
     /*--- METODO CREAR NUEVO AREA---*/

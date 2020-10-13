@@ -170,11 +170,9 @@ class Usuario extends EntidadBase
             if ($this->db()->query($query))
                 return 3;
             else
-                return $query;
-
-        } else {
+                return 2;
+        } else
             return 2;
-        }
     }
 
     /*--- USUARIOS: ACTUALIZAR DATOS PERSONALES DE USUARIO POR ID ---*/

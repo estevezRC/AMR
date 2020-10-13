@@ -7,6 +7,22 @@
         var insercion = <?php echo $insercion; ?>;
         var elemento = '<?php echo $newElemento; ?>';
         mensajes(insercion, elemento);
+
+        $('.btn_modificar_area').on('click', function() {
+           let id_area = $(this).attr('id');
+
+           $.ajax({
+              url: 'index.php?controller=Areas&action=modificar',
+              method: 'POST',
+               dataType: 'JSON',
+              data:  {areaid : id_area},
+               success: function (data) {
+                   $('#areaidM').val(data.id_Area);
+                   $('#areanombreM').val(data.nombre_Area)
+               }
+           });
+            $('#myModal2').modal();
+        });
     });
 </script>
 
@@ -54,54 +70,25 @@
     </div>
 </div>
 
-<?php
-/*--- ACCION MODIFICAR: EDITA UN AREA---*/
-if ($modificar == 1) {
-    ?>
-    <div class="modal modal-viejo" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+    <div class="modal fadeIn" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body">
 
-                    <!--<button type="button" class="close"
-                            onclick="location.href='index.php?controller=Areas&action=index';" data-dismiss="modal2"
-                            aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
 
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
 
                     <h4 class="modal-title" id="myModalLabel" style="text-align: center"> Modificar Área </h4>
 
-                    <form action="<?php echo $helper->url("Areas", "guardarmodificacion"); ?>" method="post"
-                          class="form-horizontal">
-                        <input type="hidden" name="areaid" value="<?php echo $datosarea->id_Area; ?>"/>
+                    <form action="<?php echo $helper->url("Areas", "guardarmodificacion"); ?>" method="post" class="form-horizontal">
+                        <input type="hidden" name="areaid" id="areaidM" />
 
                         <label class="control-label">Nombre:</label>
-                        <input type="text" name="areanombre" value="<?php echo $datosarea->nombre_Area; ?>"
-                               class="form-control" required>
+                        <input type="text" name="areanombre" id="areanombreM" class="form-control" required>
 
-                        <!--<label class="control-label">Empresa:</label><br>
-                    <select name="id_Empresa" class="form-control"/>
-                    <option name ="<?php /*echo $datosarea->nombre_Empresa; */
-                        ?>" id ="<?php /*echo $datosarea->id_Empresa; */
-                        ?>"
-                            value ="<?php /*echo $datosarea->id_Empresa; */
-                        ?>"><?php /*echo $datosarea->nombre_Empresa; */
-                        ?></option>
-                    <?php
-                        /*                    foreach($allempresas as $empresa) {
-                                                if($empresa->id_Empresa != $datosarea->id_Empresa){
-                                                */
-                        ?>
-                        <option name ="<?php /*echo $empresa->nombre_Empresa; */
-                        ?>" id ="<?php /*echo $empresa->id_Empresa; */
-                        ?>"
-                                value ="<?php /*echo $empresa->id_Empresa; */
-                        ?>"><?php /*echo $empresa->nombre_Empresa; */
-                        ?></option>
-                    <?php /*}}*/
-                        ?>
-                    </select>-->
+
                         <br/>
                         <div class="row">
                             <div class="col-sm-12 text-right">
@@ -115,7 +102,7 @@ if ($modificar == 1) {
             </div>
         </div>
     </div>
-<? } ?>
+
 
 <div class="container-fluid flex-column justify-content-center p-3 animated fadeIn slow">
     <div class="row pt-4 d-flex justify-content-center">
@@ -154,8 +141,7 @@ if ($modificar == 1) {
                                 <td><?= $this->formatearFecha($area->fecha_Registro_Area); ?></td>
                                 <td><?= $area->nombre_Empresa; ?></td>
                                 <td>
-                                    <a href="index.php?controller=Areas&action=modificar&areaid=<?= $area->id_Area; ?>&insercion=<?= $insercion; ?>&newElemento=<?= $newElemento; ?>"
-                                       data-trigger="hover" data-content="Modificar" data-toggle="popover">
+                                    <a href="#" id="<?= $area->id_Area; ?>" class="btn_modificar_area" data-trigger="hover" data-content="Modificar" data-toggle="popover">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;
 
                                     <a href="#" data-trigger="hover" data-content="Borrar" data-toggle="popover"

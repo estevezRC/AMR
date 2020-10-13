@@ -8,6 +8,47 @@
         var insercion = <?php echo $insercion; ?>;
         var elemento = '<?php echo $newElemento; ?>';
         mensajes(insercion, elemento);
+
+
+        $('.btn_modificar_perfil').on('click', function () {
+            var id_perfil = $(this).attr('id');
+            $.ajax({
+                url: 'index.php?controller=Perfiles&action=modificar',
+                method: 'POST',
+                data: {perfilid: id_perfil},
+                dataType: 'JSON',
+                success: function (data) {
+                    $('#idPerfilUsuarioM').val(data['data'].id_Perfil_Usuario);
+                    $('#nombrePerfilM').val(data['data'].nombre_Perfil);
+                }
+            });
+            $('#myModalModificarPerfiles').modal();
+        });
+
+        $('#formModificarPerfil').on('submit', function (event) {
+            event.preventDefault();
+            console.log('Entra al submit');
+            $.ajax({
+                url: 'index.php?controller=Perfiles&action=guardarmodificacion',
+                method: 'POST',
+                dataType: 'JSON',
+                data: $(this).serialize(),
+                beforeSend: function () {
+                    console.log('Entra el Before');
+                },
+                success: function (data) {
+                    if (data.status)
+                        alertify.success(data.mensaje);
+                    else
+                        alertify.error(data.mensaje);
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2100);
+                }
+            });
+        })
+
     });
 </script>
 
@@ -18,7 +59,7 @@
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                            aria-hidden="true">&times;</span></button>
 
                 <h4 class="modal-title" id="myModalLabel" style="text-align: center"> Nuevo Perfil </h4>
 
@@ -42,49 +83,41 @@
     </div>
 </div>
 
+<div class="modal fade" id="myModalModificarPerfiles" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!--<button type="button" class="close"
+                        onclick="location.href='index.php?controller=Perfiles&action=index';" data-dismiss="modal2"
+                        aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
 
-<?php
-/*--- ACCION MODIFICAR: EDITA UN perfil ---*/
-if ($modificar == 1) { ?>
-    <div class="modal modal-viejo" id="myModalModificarPerfiles" tabindex="-1" role="dialog"
-         aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <!--<button type="button" class="close"
-                            onclick="location.href='index.php?controller=Perfiles&action=index';" data-dismiss="modal2"
-                            aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
 
-                    <h4 class="modal-title" id="myModalLabel" style="text-align: center"> Modificar Perfil </h4>
+                <h4 class="modal-title" id="myModalLabel" style="text-align: center"> Modificar Perfil </h4>
 
-                    <form action="<?php echo $helper->url("Perfiles", "guardarmodificacion"); ?>" method="post"
-                          class="form-horizontal">
-                        <input type="hidden" name="id_Perfil_Usuario"
-                               value="<?php echo $datosperfil->id_Perfil_Usuario; ?>"/>
+                <form id="formModificarPerfil" class="form-horizontal">
+                    <input type="hidden" name="id_Perfil_Usuario" id="idPerfilUsuarioM"/>
 
-                        <label class="control-label">Nombre:</label>
-                        <input type="text" name="nombre_Perfil" value="<?php echo $datosperfil->nombre_Perfil; ?>"
-                               class="form-control" required>
+                    <label class="control-label">Nombre:</label>
+                    <input type="text" name="nombre_Perfil" id="nombrePerfilM" class="form-control" required>
 
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-12 text-right">
-                                <button type="submit" class="btn btn-danger"> Guardar</button>
-                            </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-12 text-right">
+                            <button type="submit" class="btn btn-danger"> Guardar</button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-<?php } ?>
+</div>
+
 
 <?php
 /*--- ACCION INDEX: MUESTRA TODOS LOS perfiles ---*/
-if (($action == "index") || ($action == "modificar")) { ?>
+if (($action == "index")) { ?>
     <div class="container-fluid flex-column justify-content-center p-3 animated fadeIn slow">
         <div class="row pt-4 d-flex justify-content-center">
             <div class="col-11 p-0 shadow">
@@ -123,7 +156,7 @@ if (($action == "index") || ($action == "modificar")) { ?>
                                     <td><?= $perfil->nombre_Empresa; ?></td>
                                     <td><?= $perfil->fecha_Registro_Perfil; ?></td>
                                     <td class="text-center">
-                                        <a href="index.php?controller=Perfiles&action=modificar&perfilid=<?= $perfil->id_Perfil_Usuario; ?>"
+                                        <a href="#" id="<?= $perfil->id_Perfil_Usuario; ?>" class="btn_modificar_perfil"
                                            data-trigger="hover" data-content="Modificar" data-toggle="popover">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> &nbsp;
 
