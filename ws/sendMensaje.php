@@ -139,14 +139,6 @@ $horaAsistencia = "14:18:35";
 
 
 /*
-// ********************* OBTENER INFORMACION PARA ENVIAR POR CORREO (REPORTE MINUTA) ***************************
-if ($saveReporteLlenado && $tipo_Reporte == 9) {
-    $datos = $funciones->obtenerValoresReporteLlenado($grupovalores);
-    $destinatarios = $funciones->obtenerCorreosParticipantesMinuta($idsParticipantes);
-    $funciones->enviarMinuta($nombreReporte, $datos, $destinatarios, $nombreCarpeta);
-}
-*/
-
 $datos = new FormatosCorreo();
 
 $nombreReporte = 'Minuta de reunión';
@@ -155,4 +147,4 @@ $resultado = $datos->obtenerValoresReporteLlenado(29);
 $destinatarios = $datos->obtenerCorreosParticipantesMinuta(1);
 $datos->enviarMinuta($nombreReporte, $resultado, $destinatarios, $nombreCarpeta);
 //print_r($resultado);
-
+*/
