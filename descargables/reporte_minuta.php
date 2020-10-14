@@ -12,7 +12,8 @@ require '../vendor/autoload.php';
 
 require_once '../core/Conectar.php';
 require_once '../core/EntidadBase.php';
-require_once '../core/FuncionesCompartidas.php';
+//require_once '../core/FuncionesCompartidas.php';
+require_once '../core/FormatosCorreo.php';
 require_once '../core/CalculosCompartidos.php';
 require_once '../model/ReporteLlenado.php';
 require_once '../model/EstructuraProcesos.php';
@@ -29,21 +30,25 @@ $Conectar = new Conectar();
 $adapter = $Conectar->conexion();
 
 $EntidadBase = new EntidadBase('tabla', $adapter);
-$funciones = new FuncionesCompartidas();
+$funciones = new FormatosCorreo();
+
+
 
 $phpWord = new PhpWord();
 $phpWord->getSettings()->setThemeFontLang(new Language(Language::ES_ES));
 
-$id_gpo_Valores = $_GET['gpo'];
+$id_gpo_Valores = $_GET['gpo'] ?? 32;
+
 $allreportellenado = $EntidadBase->getReporteLlenadoById($id_gpo_Valores);
 $campos = $funciones->obtenerValoresReporteLlenado($id_gpo_Valores);
 
 //print_r($campos);
 
 /*echo '<pre>';
-//print_r($allreportellenado);
-//print_r($campos);
-echo '</pre>';*/
+print_r($allreportellenado);
+print_r($campos);
+echo '</pre>';
+die();*/
 
 $nombreReporte = $allreportellenado[0]->nombre_Reporte;
 $tituloReporte = $allreportellenado[0]->titulo_Reporte;
@@ -56,11 +61,11 @@ $fecha_registro = $EntidadBase->formatearFecha($allreportellenado[0]->fecha_regi
 
 $fecha = $campos[0]['valor'];
 $horaInicio = $campos[1]['valor'];
-$horaFin = $campos[3]['valor'];
+
 $lugar = $campos[2]['valor'];
 $participantes = $campos[4]['valor'];
 $asusntos = $campos[5]['valor'];
-$acuerdosArray = $campos[7]['valor'];
+$acuerdosArray = $campos[6]['valor'];
 
 /*echo '<pre>';
 print_r($acuerdosArray);
@@ -97,14 +102,12 @@ $fontStyleb11 = array(
     'color' => '034667'
 );
 
-
 $fontStyleb11bold = array(
     'name' => 'Arial',
     'size' => 11,
     'bold' => true,
     'color' => '034667'
 );
-
 
 $fontStyleb10 = array(
     'name' => 'Arial',
@@ -157,8 +160,8 @@ $tableHeaderStyle = array('borderSize' => 1);
 $table = $header->addTable('header');
 
 $row = $table->addRow(600);
-if (is_file('../img/logo_CEM.jpg')) {
-    $table->addCell(3000,array('vMerge' => 'restart', 'valign' => 'center','borderSize' => 3))->addImage('../img/logo_CEM.jpg',
+if (is_file('../img/SUP_Digital_Web_Desktop-02.png')) {
+    $table->addCell(3000,array('vMerge' => 'restart', 'valign' => 'center','borderSize' => 3))->addImage('../img/SUP_Digital_Web_Desktop-02.png',
         array('height' => 33, 'align' => 'left'));
 }
 $row->addCell(6000, array('valign' => 'center','gridSpan' => 2, 'vMerge' => 'restart','borderSize' => 3))->addText('MINUTA DE REUNIÓN',['bold' => true, 'color' => '000000', 'size' => 12, 'alignment' => 'center'],$cellHCentered);
@@ -202,11 +205,12 @@ $row = $tableMotivo->addRow(500);
 $row->addCell(9000, $styleTablesCenter)->addText($tituloReporte, $verdana9,$cellHCentered);
 $row->addCell(3000, $styleTablesCenter)->addText($fecha_registro, $verdana9,$cellHCentered);
 
+
 /*********************************** TABLA MOTIVO ************************************/
 
 $section->addTextBreak();
 
-/*********************************** TABLA LUGAR ************************************/
+/*********************************** TABLA LUGAR ***********************************/
 
 $styleTable = array('borderSize' => 'none', 'borderColor' => '999999');
 $phpWord->addTableStyle('Colspan Rowspan', $styleTable);
@@ -215,12 +219,13 @@ $tableLugar = $section->addTable('lugar');
 $row = $tableLugar->addRow();
 $row->addCell(8000, array('valign' => 'center','vMerge' => 'restart'))->addText("Lugar:", $verdana9,$cellHCentered);
 $row->addCell(2000, array('valign' => 'center','vMerge' => 'restart'))->addText("Inicio:", $verdana9,$cellHCentered);
-$row->addCell(2000, array('valign' => 'center','vMerge' => 'restart'))->addText("Fin:", $verdana9,$cellHCentered);
+
 
 $row = $tableLugar->addRow(500);
 $row->addCell(8000, $styleTablesCenter)->addText($lugar, $verdana9,$cellHCentered);
-$row->addCell(2000, $styleTablesCenter)->addText($horaInicio, $verdana9,$cellHCentered);
-$row->addCell(2000, $styleTablesCenter)->addText($horaFin, $verdana9,$cellHCentered);
+$row->addCell(2000, $styleTablesCenter)->addText($lugar, $verdana9,$cellHCentered);
+
+
 
 /*********************************** TABLA LUGAR ************************************/
 
@@ -234,8 +239,8 @@ $tableParticipantes = $section->addTable('PARTICIPANTES');
 
 $rowCabecera = $tableParticipantes->addRow();
 $rowCabecera->addCell(500, array('vMerge' => 'restart'))->addText("No.", $verdana9,$cellHCentered);
-$rowCabecera->addCell(7100, array('vMerge' => 'restart'))->addText("Asistentes:", $verdana9,$cellHCentered);
-$rowCabecera->addCell(800, array('vMerge' => 'restart'))->addText("Iniciales:", $verdana9,$cellHCentered);
+$rowCabecera->addCell(7900, array('vMerge' => 'restart'))->addText("Asistentes:", $verdana9,$cellHCentered);
+//$rowCabecera->addCell(800, array('vMerge' => 'restart'))->addText("Iniciales:", $verdana9,$cellHCentered);
 $rowCabecera->addCell(1800, array('vMerge' => 'restart'))->addText("Firma:", $verdana9,$cellHCentered);
 $rowCabecera->addCell(1800, array('vMerge' => 'restart'))->addText("Firma:", $verdana9,$cellHCentered);
 
@@ -245,6 +250,7 @@ $rowCabecera->addCell(1800, array('vMerge' => 'restart'))->addText("Firma:", $ve
 //$participantes = null;//$datosParticipantes['datos'];
 $contP = 1;
 if($participantes) {
+    $contParticipantes = count($participantes);
     foreach ($participantes AS $participante) {
         $nombreAsistente = $participante['nombre'];
         $iniciales = $participante['iniciales'];
@@ -257,16 +263,48 @@ if($participantes) {
             $rowParticpantes = $tableParticipantes->addRow(500);
             $rowParticpantes->addCell(500, $styleTablesCenter)->addText($contP, $verdana9, $cellHCentered);
             $rowParticpantes->addCell(7100, $styleTablesCenter)->addText($nombreAsistente, $verdana9, $cellHCentered);
-            $rowParticpantes->addCell(800, $styleTablesCenter)->addText($iniciales, $verdana9, $cellHCentered);
-            $rowParticpantes->addCell(1800, $styleTablesCenter)->addText($contP, $verdana9);
-            $rowParticpantes->addCell(1800, $styleTablesCenter)->addText($contP + 1, $verdana9);
+            //$rowParticpantes->addCell(800, $styleTablesCenter)->addText($iniciales, $verdana9, $cellHCentered);
+            if($contParticipantes != $contP) {
+
+                $rowParticpantes->addCell(1800, array(
+                    'valign' => 'top',
+                    'vMerge' => 'restart',
+                    'borderSize' => '1',
+                    'color' => '6F605A'))->addText($contP, $verdana9);
+
+                $rowParticpantes->addCell(1800, array(
+                    'valign' => 'top',
+                    'vMerge' => 'restart',
+                    'borderSize' => '1',
+                    'color' => '6F605A'))->addText($contP + 1, $verdana9);
+
+            }else{
+                $rowParticpantes->addCell(1800, array(
+                    'valign' => 'top',
+                    'vMerge' => 'restart',
+                    'gridSpan' => 2,
+                    'borderSize' => '1',
+                    'color' => '6F605A'))->addText($contP, $verdana9);
+            }
+
+
         } else {
             $rowParticpantes = $tableParticipantes->addRow(500);
             $rowParticpantes->addCell(500, $styleTablesCenter)->addText($contP, $verdana9, $cellHCentered);
             $rowParticpantes->addCell(7100, $styleTablesCenter)->addText($nombreAsistente, $verdana9, $cellHCentered);
-            $rowParticpantes->addCell(800, $styleTablesCenter)->addText($iniciales, $verdana9, $cellHCentered);
-            $rowParticpantes->addCell(1800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
-            $rowParticpantes->addCell(1800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
+            //$rowParticpantes->addCell(800, $styleTablesCenter)->addText($iniciales, $verdana9, $cellHCentered);
+            $rowParticpantes->addCell(1800, array(
+                'valign' => 'top',
+                'vMerge' => 'continue',
+                'borderSize' => '1',
+                'align' => 'right',
+                'color' => '6F605A'))->addText("", $verdana9);
+            $rowParticpantes->addCell(1800, array(
+                'valign' => 'center',
+                'vMerge' => 'continue',
+                'borderSize' => '1',
+                'align' => 'right',
+                'color' => '6F605A'))->addText("", $verdana9,array('align' => 'right'));
         }
 
         $contP++;
@@ -275,16 +313,35 @@ if($participantes) {
     $rowParticpantes = $tableParticipantes->addRow(500);
     $rowParticpantes->addCell(500, $styleTablesCenter)->addText($contP, $verdana9, $cellHCentered);
     $rowParticpantes->addCell(7100, $styleTablesCenter)->addText("1", $verdana9, $cellHCentered);
-    $rowParticpantes->addCell(800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
-    $rowParticpantes->addCell(1800, $styleTablesCenter)->addText("1", $verdana9);
-    $rowParticpantes->addCell(1800, $styleTablesCenter)->addText(2, $verdana9);
+    //$rowParticpantes->addCell(800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
+    $rowParticpantes->addCell(1800, array(
+        'valign' => 'top',
+        'vMerge' => 'restart',
+        'borderSize' => '1',
+        'color' => '6F605A'))->addText("1", $verdana9);
+
+    $rowParticpantes->addCell(1800, array(
+        'valign' => 'top',
+        'vMerge' => 'restart',
+        'borderSize' => '1',
+        'color' => '6F605A'))->addText("2", $verdana9);
 
     $rowParticpantes = $tableParticipantes->addRow(500);
     $rowParticpantes->addCell(500, $styleTablesCenter)->addText($contP, $verdana9, $cellHCentered);
     $rowParticpantes->addCell(7100, $styleTablesCenter)->addText("2", $verdana9, $cellHCentered);
-    $rowParticpantes->addCell(800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
-    $rowParticpantes->addCell(1800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
-    $rowParticpantes->addCell(1800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
+    //$rowParticpantes->addCell(800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
+    $rowParticpantes->addCell(1800, array(
+        'valign' => 'top',
+        'vMerge' => 'continue',
+        'borderSize' => '1',
+        'align' => 'right',
+        'color' => '6F605A'))->addText("", $verdana9);
+    $rowParticpantes->addCell(1800, array(
+        'valign' => 'center',
+        'vMerge' => 'continue',
+        'borderSize' => '1',
+        'align' => 'right',
+        'color' => '6F605A'))->addText("", $verdana9,array('align' => 'right'));
 }
 
 /*********************************** TABLA PARTICIPANTES ************************************/
@@ -300,8 +357,7 @@ $tableAsuntos = $section->addTable('asustos');
 $rowCabecera = $tableAsuntos->addRow();
 $rowCabecera->addCell(500, array('vMerge' => 'restart'))->addText("No.", $verdana9,$cellHCentered);
 $rowCabecera->addCell(11500, array('vMerge' => 'restart'))->addText("Asusntos:", $verdana9,$cellHCentered);
-/*$rowCabecera->addCell(2000, array('vMerge' => 'restart'))->addText("Inicio:", $verdana9,$cellHCentered);
-$rowCabecera->addCell(2000, array('vMerge' => 'restart'))->addText("Fin:", $verdana9,$cellHCentered);*/
+
 
 if($asusntos != null || $asusntos != ""){
     $arrayAsusntos = explode("\n",$asusntos);
@@ -344,8 +400,7 @@ echo '</pre>';*/
 
 $rowCabecera = $tableAcuerdos->addRow();
 $rowCabecera->addCell(500, array('vMerge' => 'restart'))->addText("No.", $verdana9,$cellHCentered);
-$rowCabecera->addCell(7900, array('vMerge' => 'restart'))->addText("Acuerdos:", $verdana9,$cellHCentered);
-$rowCabecera->addCell(1800, array('vMerge' => 'restart'))->addText("F. Compromiso:", $verdana9,$cellHCentered);
+$rowCabecera->addCell(9700, array('vMerge' => 'restart'))->addText("Acuerdos:", $verdana9,$cellHCentered);
 $rowCabecera->addCell(1800, array('vMerge' => 'restart'))->addText("Responsable:", $verdana9,$cellHCentered);
 
 if($acuerdosArray){
@@ -358,15 +413,13 @@ if($acuerdosArray){
             $idCampo = $acuerdos->idCampo;
             $valorCampo = $acuerdos->valorCampo;
 
-            if($idCampo == "77"){
+            if($idCampo == "43"){
                 $acuerdo = $valorCampo;
             }
-            if($idCampo == "78"){
+            if($idCampo == "50"){
                 $responsable = $valorCampo;
             }
-            if($idCampo == "79"){
-                $fechaCompromiso = $valorCampo;
-            }
+
         }
 
 
@@ -375,8 +428,7 @@ if($acuerdosArray){
 
         $rowAcuerdos = $tableAcuerdos->addRow(500);
         $rowAcuerdos->addCell(500, $styleTablesCenter)->addText($contAcuerdos, $verdana9, $cellHCentered);
-        $rowAcuerdos->addCell(7900, array('vMerge' => 'restart', 'borderSize' => '1'))->addText($acuerdo, $verdana9);
-        $rowAcuerdos->addCell(1800, $styleTablesCenter)->addText($fechaCompromiso, $verdana9,$cellHCentered);
+        $rowAcuerdos->addCell(9700, array('vMerge' => 'restart', 'borderSize' => '1'))->addText($acuerdo, $verdana9);
         $rowAcuerdos->addCell(1800, $styleTablesCenter)->addText($responsable, $verdana9,$cellHCentered);
 
         $contAcuerdos++;
@@ -385,7 +437,6 @@ if($acuerdosArray){
     $rowAcuerdos = $tableAcuerdos->addRow(500);
     $rowAcuerdos->addCell(500, $styleTablesCenter)->addText("1", $verdana9, $cellHCentered);
     $rowAcuerdos->addCell(7900, $styleTablesCenter)->addText("", $verdana9);
-    $rowAcuerdos->addCell(1800, $styleTablesCenter)->addText("", $verdana9, $cellHCentered);
     $rowAcuerdos->addCell(1800, $styleTablesCenter)->addText("", $verdana9,$cellHCentered);
 }
 
@@ -393,7 +444,7 @@ if($acuerdosArray){
 
 /*************************************** Se define el nombre del Archivo **********************************/
 header("Content-Description: File Transfer");
-header('Content-Disposition: attachment; filename="' . $nombreReporte . $fechaArchivo . '.docx"');
+header('Content-Disposition: attachment; filename="' . 'Archivo'  .'12/12/12' .$fechaArchivo . '.docx"');
 header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 header('Content-Transfer-Encoding: binary');
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
