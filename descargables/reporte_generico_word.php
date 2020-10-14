@@ -299,6 +299,10 @@ $campoMultiple = function ($reporteval) {
                         $valores[] = new stdClass();
                         $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
                         $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
+                    } elseif ($subCampo->tipo_Reactivo_Campo === "text") {
+                        $valores[] = new stdClass();
+                        $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
+                        $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
                     }
                 }
             }
@@ -333,7 +337,7 @@ foreach ($campos as $reporteVal) {
         $celdaPrincipal->addText($reporteVal['nombre'], $fontStyleb11bold);
 
         foreach ($actividades as $key => $actividad) {
-            $contador = $key +1;
+            $contador = $key + 1;
             $row = $tableCampos1->addRow(400, array("exactHeight" => false));
             $celda = $row->addCell(12000, array('vMerge' => 'restart', 'align' => 'center'));
             $textrun = $celda->addTextRun();

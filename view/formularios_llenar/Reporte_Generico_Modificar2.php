@@ -628,8 +628,7 @@ if ($total_cantidad_solicitadas == 0) {
                                                                value="<?= $date->format('Y-m-d') ?>"
                                                                class="form-control <?= $subCampo->descripcion_Campo ?>">
                                                     </div>
-                                                <? }
-                                                elseif ($subCampo->tipo_Reactivo_Campo === "decimal") { ?>
+                                                <? } elseif ($subCampo->tipo_Reactivo_Campo === "decimal") { ?>
                                                     <div class="form-group">
                                                         <label for="<?= $subCampo->descripcion_Campo ?>">
                                                             <?= $subCampo->nombre_Campo ?>
@@ -641,6 +640,20 @@ if ($total_cantidad_solicitadas == 0) {
                                                         <label> <?php echo $subCampo->nombre_Campo; ?> </label>
                                                         <input type="number" step="0.01"
                                                                name="<?php echo $subCampo->descripcion_Campo; ?>"
+                                                               value="<?= $valorSubcampo->valorCampo ?>"
+                                                               class="form-control <?= $subCampo->descripcion_Campo ?>">
+                                                    </div>
+                                                <? } elseif ($subCampo->tipo_Reactivo_Campo === "text") { ?>
+                                                     <div class="form-group">
+                                                        <label for="<?= $subCampo->descripcion_Campo ?>">
+                                                            <?= $subCampo->nombre_Campo ?>
+                                                        </label>
+
+                                                    </div>
+
+                                                    <div class="form-group" id="<?= $subCampo->descripcion_Campo ?>"
+                                                        <label> <?= $subCampo->nombre_Campo; ?> </label>
+                                                        <input type="text" name="<?php echo $subCampo->descripcion_Campo; ?>"
                                                                value="<?= $valorSubcampo->valorCampo ?>"
                                                                class="form-control <?= $subCampo->descripcion_Campo ?>">
                                                     </div>
