@@ -732,6 +732,18 @@ if ($total_cantidad_solicitadas == 0) {
                                                 <?php echo $isRequired ?>>
                                         </div>
                                         <?
+                                    } elseif ($subCampo->tipo_Reactivo_Campo === "text") { ?>
+                                        <div class="form-group">
+                                            <label for="<?= $subCampo->descripcion_Campo; ?>">
+                                                <?= $subCampo->nombre_Campo; ?>
+                                            </label>
+                                            <input type="<?php echo $subCampo->tipo_Reactivo_Campo; ?>"
+                                                   name="<?php echo $subCampo->descripcion_Campo; ?>"
+                                                   id="<?php echo $subCampo->descripcion_Campo; ?>"
+                                                   class="form-control <?= $subCampo->descripcion_Campo ?>"
+                                                <?php echo $isRequired ?>>
+                                        </div>
+                                        <?
                                     }
                                 } ?>
                             </div>

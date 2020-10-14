@@ -156,6 +156,13 @@ class UI {
                     <input type="number" min="0" step="0.01" id="${descripcionCampo}" class="form-control ${descripcionCampo}">
                 </div>
                 `
+            } else if (tipoReactivoCampo === "text") {
+                markup += `
+                <div class="form-group">
+                    <label for="${descripcionCampo}">${nombreCampo}</label>
+                    <input type="text" id="${descripcionCampo}" class="form-control ${descripcionCampo}">
+                </div>
+                `
             }
         }
 
@@ -233,6 +240,14 @@ class UI {
                     posicion: index,
                     idCampo: idCampoReporte,
                     valorCampo: valorInputDecimal
+                })
+            } else if (tipoReactivoCampo === 'text') {
+                const valorInputText = $(card).find(`.${descripcionCampo}`).val()
+
+                valoresElemento.push({
+                    posicion: index,
+                    idCampo: idCampoReporte,
+                    valorCampo: valorInputText
                 })
             }
         }

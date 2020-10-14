@@ -606,6 +606,7 @@ class LlenadosReporteController extends ControladorBase
             switch ($tipo_Reporte) {
                 case 0:
                 case 6:
+                case 9:
                     $tipo_Reporte1 = '0,1';
                     break;
                 case 1:
@@ -619,7 +620,7 @@ class LlenadosReporteController extends ControladorBase
                     break;
             }
 
-            if ($retornar == 0 || $retornar == 1 || $retornar == 6)
+            if ($retornar == 1)
                 $urlAnterior = 'index.php?controller=SeguimientosReporte&action=index&tipo=' . $tipo_Reporte1;
             if ($retornar == 2)
                 $urlAnterior = 'index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=' . $id_reportellenado . '&Id_Reporte=' . $id;
@@ -633,7 +634,7 @@ class LlenadosReporteController extends ControladorBase
             "allcamposreportes" => $allcamposreportes, "allreportellenado" => $allreportellenado, "mensaje" => $mensaje,
             "info_fotografia" => $info_fotografia, "allsistemas" => $allsistemas, "clasificacion" => $clasificacion,
             "gruposubicaciones" => $gruposubicaciones, "datosReporte" => $allDatosReporte, "urlAnterior" => $urlAnterior,
-            "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas,"camposMultiple" => $multipleSubcampos,
+            "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas, "camposMultiple" => $multipleSubcampos,
             "existeGantt" => $existeGantt
         ));
         // */
@@ -970,7 +971,7 @@ class LlenadosReporteController extends ControladorBase
                 $llenadoreporte->set_id_Gpo_Valores_Reporte($grupovalores);
                 $save = $llenadoreporte->saveNewLlenado();
             }
-            
+
             /* :::::::::::::::::::::::::::::::::::::::: GENERAL(TABLA) :::::::::::::::::::::::::::::::::::::::::::::::*/
             if ($campoimagen == "select-tabla") {
                 $valorguardar = $_POST[$valor];
@@ -1679,6 +1680,7 @@ class LlenadosReporteController extends ControladorBase
         switch ($tipo_Reporte) {
             case 0:
             case 6:
+            case 9:
                 $tipo_Reporte = '0,1';
                 break;
             case 1:
