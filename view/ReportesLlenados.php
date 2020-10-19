@@ -195,7 +195,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body text-center" style="background: #EFFBFB;">
+                <div class="modal-body text-center bg-light" >
                     <img class="img-fluid" id="imgmo">
                 </div>
             </div>
