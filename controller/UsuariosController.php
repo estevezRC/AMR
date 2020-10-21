@@ -102,54 +102,13 @@ class UsuariosController extends ControladorBase
     /*--- VISTA MODIFICAR USUARIO ---*/
     public function modificar()
     {
-        if (isset($_GET["usuarioid"])) {
-
-            $mensaje = "<i class='fa fa-users' aria-hidden='true'></i> Usuarios";
-
-            // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            $insercion = $_GET['insercion'];
-            $newElemento = $_GET['newElemento'];
-            if ($insercion != 0 && !empty($newElemento)) {
-                $insercion = 0;
-                $newElemento = '';
-            }
-
-            $id = (int)$_GET["usuarioid"];
-            $area = new Area($this->adapter);
-            $allarea = $area->getAllArea();
-
-            $puestos = new Perfil($this->adapter);
-            // PERFILES DE LA EMPRESA
-            $perfil = new Perfil($this->adapter);
-            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
-                $noId_Perfil_User = '';
-                $allpuestos = $perfil->getAllPerfiles($noId_Perfil_User);
-            } else {
-                $noId_Perfil_User = ' where id_Perfil_Usuario NOT IN (1)';
-                $allpuestos = $perfil->getAllPerfiles($noId_Perfil_User);
-            }
-
-
-            $usuario = new Usuario($this->adapter);
-            $datosusuario = $usuario->getUserById2($id);
-            $allusers = $usuario->getAllUser();
-            $empresa = new Empresa($this->adapter);
-            $allempresas = $empresa->getAllEmpresas();
-            $modificar = 1;
-            $savekey = 0;
-            $notify = 0;
-            $registrarNip = 0;
-
-            //******************************************* SECCION RESTAURAR USUARIOS ***************************************
-            $mensajeRes = "<i class='fa fa-retweet' aria-hidden='true'></i> Restaurar Usuarios";
-            $allUserRes = $usuario->getAllUserRestaurar();
-        }
-        $this->view("index", array(
-            "allusers" => $allusers, "datosusuario" => $datosusuario, "allareas" => $allarea, "allpuestos" => $allpuestos,
-            "allempresas" => $allempresas, "modificar" => $modificar, "savekey" => $savekey, "notify" => $notify,
-            "registrarNip" => $registrarNip, "insercion" => $insercion, "newElemento" => $newElemento, "mensaje" => $mensaje,
-            "mensajeRes" => $mensajeRes, "allUserRes" => $allUserRes
+        $idUser = $_POST['idUsuario'];
+        $usuario = new Usuario($this->adapter);
+        $datosusuario = $usuario->getUserById2($idUser);
+        echo json_encode(array(
+            'data' => $datosusuario
         ));
+
     }
 
     /*--- METODO CREAR NUEVO USUARIO ---*/
@@ -184,7 +143,18 @@ class UsuariosController extends ControladorBase
 
             $correoUser = $_POST["usuarioemail"];
             $pwdUser = $_POST["usuariopassword"];
+            $participante = $_REQUEST["participante"] ?? 0;
+            $puesto = $_REQUEST['puesto'] ?? '';
+            $empresa = $_REQUEST['empresa'] ?? '';
 
+            // ********************** VALIDAR SECCION DE PARTICIPANTE **********************
+            if ($participante == 1) {
+                if (empty($puesto) && empty($empresa)) {
+                    $insercion = 4;
+                    $mensaje = "Los campos puesto y empresa son obligatorios";
+                    $this->redirect("Usuarios", "index&insercion=$insercion&newElemento=$mensaje");
+                }
+            }
 
             $usuariotodos = new Usuario($this->adapter);
             $allusers = $usuariotodos->getAllUserActivosAndInactivos();
@@ -202,7 +172,9 @@ class UsuariosController extends ControladorBase
                 $usuario->setFecha($fecha_hora);
                 $usuario->setArea($_POST["usuarioarea"]);
                 $usuario->set_Empresa($_SESSION[ID_EMPRESA_SUPERVISOR]);
-                $usuario->set_participante($_POST["participante"]);
+                $usuario->set_participante($participante);
+                $usuario->setPuesto($puesto);
+                $usuario->setEmpresa($empresa);
                 $save = $usuario->save($allusers);
 
                 // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
@@ -211,10 +183,7 @@ class UsuariosController extends ControladorBase
                     $mensaje = 'Se ha creado el usuario: "' . $nombreUser . ' ' . $apellidoUSer . '"';
 
                     // ESTA SECCION OBTIENE EL ULTIMO ID DE USUARIO INSERTADO
-                    $alluser = $usuariotodos->getAllUserOrderById();
-                    $total_usuarios = count($alluser);
-                    $id_ultimo = $total_usuarios + 1;
-
+                    $id_ultimo = (int)$usuario->getUltimoIdUsuario()[0]->id;
 
                     // ********************* INSERTAR EN LA TABLA DE EMPLEADOS_USUARIOS ************************
                     $empleado_usuario = new EmpleadoUsuario($this->adapter);
@@ -231,18 +200,19 @@ class UsuariosController extends ControladorBase
                         $empleado_usuario->saveNewEmpleadoUsuario();
                     }
 
-
                     // ********************* INSERTAR EN LA TABLA DE USUARIOS-PROYECTOS ************************
                     $usuariosProyecto = new UsuarioProyecto($this->adapter);
                     $allUsuariosProyectos = $usuariosProyecto->getAllUsuarioProyecto();
 
                     $usuariosProyecto->set_id_Usuario($id_ultimo);
                     $usuariosProyecto->set_id_Proyecto($_POST["usuarioproyecto"]);
-                    $usuariosProyecto->set_id_Perfil_Usuario($_POST["usuarioperfil"]);
+                    $perfil = $_POST["usuarioperfil"];
+                    $usuariosProyecto->set_id_Perfil_Usuario($perfil);
                     $usuariosProyecto->saveNewUsuarioProyecto($allUsuariosProyectos);
 
                     // ENVIAR CORREO DE BIENVENIDA Y PARA QUE SE REGISTRE EN EL BOT DE TELEGRAM
-                    $this->nuevoUsuario($id_ultimo, $correoUser, $pwdUser, $nombreUser, $apellidoUSer);
+                    $nombrePerfil = $usuario->getPerfilById($perfil)->nombre_Perfil;
+                    $this->nuevoUsuario($id_ultimo, $correoUser, $pwdUser, $nombreUser, $apellidoUSer, $nombrePerfil);
 
                     // ******************************** GUARDAR EN LA BASE GENERAL *****************************************
                     $userGral = new ConsultasGeneral();
@@ -272,7 +242,7 @@ class UsuariosController extends ControladorBase
             $mensaje = "Llenar todos los campos";
         } else {
             $usuario = new Usuario($this->adapter);
-            $allusers = $usuario->getAllUser2($this->id_Proyecto_constant);
+            $allusers = $usuario->getAllUser2();
 
             $id = $_POST["usuarioid"];
             $nombreUser = $_POST["name"];
@@ -296,13 +266,30 @@ class UsuariosController extends ControladorBase
                 $empleado_usuario->setApellidoMaterno($apellidoM);
                 $empleado_usuario->modificarEmpleadoUsuario();
 
+                $participante = $_REQUEST["participante"] ?? 0;
+                $puesto = $_REQUEST['puesto'];
+                $empresa = $_REQUEST['empresa'];
+
+                // ********************** VALIDAR SECCION DE PARTICIPANTE **********************
+                if ($participante == 1) {
+                    if (empty($puesto) && empty($empresa)) {
+                        $insercion = 4;
+                        $mensaje = "Los campos puesto y empresa son obligatorios";
+                        $this->redirect("Usuarios", "index&insercion=$insercion&newElemento=$mensaje");
+                    }
+                } else {
+                    $puesto = NULL;
+                    $empresa = NULL;
+                }
 
                 //ACTUALIZAR TABLA DE USUARIOS
                 $correoUser = $_POST["usuarioemail"];
                 $usuario->setCorreo($correoUser);
                 $usuario->setArea($_POST["usuarioarea"]);
                 $usuario->set_Empresa($_SESSION[ID_EMPRESA_SUPERVISOR]);
-                $usuario->set_participante($_POST["participante"]);
+                $usuario->set_participante($participante);
+                $usuario->setPuesto($puesto);
+                $usuario->setEmpresa($empresa);
                 $save = $usuario->modificarUsuario($id, $allusers);
 
                 // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
@@ -375,79 +362,115 @@ class UsuariosController extends ControladorBase
         $this->redirect("Usuarios", "index&insercion=$insercion&newElemento=$mensaje");
     }
 
+    public function enviarCorreo() {
+        $id = $_REQUEST['usuarioid'] ?? 0;
+        // VALIDAR QUE VENGA SETEADO EL ID
+        if ($id) {
+            // VERIFICAR SI EXISTE LE ID DE USUARIO
+            $usuario = new Usuario($this->adapter);
+            $registro = $usuario->getUserById($id);
+            if ($registro) {
+                // OBTENER PERFIL DE ALGUN PROYECTO
+                $proyectos = $usuario->getAllProyectosByUser($id);
+                if ($proyectos) {
+                    $perfil = $proyectos[0]->nombre_Perfil;
+                    $fullName = "$registro->nombre_Usuario $registro->apellido_Usuario";
+                    $this->nuevoUsuario($registro->id_Usuario, $registro->correo_Usuario, $registro->password_Usuario, $registro->nombre_Usuario, $registro->apellido_Usuario, $perfil);
+                    $mensaje = "Se ha enviado el correo correctamente al usuario $fullName";
+                    $status = true;
+                } else {
+                    $mensaje = "El id de usuario $id no existe en ningun proyecto";
+                    $status = false;
+                }
+            } else {
+                $mensaje = "El id de usuario $id no existe";
+                $status = false;
+            }
+        } else {
+            $mensaje = "El id de usuario $id no es validado";
+            $status = false;
+        }
+        $ruta = 'index.php?controller=Usuarios&action=index';
 
-    public function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario)
+        echo json_encode([
+            'ruta' => $ruta, 'mensaje' => $mensaje, 'estado' => $status
+        ]);
+
+    }
+
+
+    public function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario, $perfil)
     {
         $funciones = new FuncionesCompartidas();
+        $nombreApp = NAMEAPP;
 
-        $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
-        $_SESSION[NOMBRE_EMPRESA_SUPERVISOR];
+        $titulo = " <h3> <strong> ¡Hola $nombre_Usuario $apellido_Usuario! </strong> </h3> <br>";
 
-        $titulo = " <h4> ¡Hola $nombre_Usuario $apellido_Usuario! </h4> <br>";
+        $cuerpo = "Es un gusto para nosotros formar parte de tus proyectos, nuestro compromiso 
+            es poner el mayor esfuerzo e ingenio para ofrecerte productos confiables e innovadores que simplifiquen tus 
+            labores diarias. Por ello te enviamos el usuario y contraseña de $perfil en $nombreApp para tu ingreso 
+            via web a través de tu navegador favorito. <br> <br>";
 
-        $cuerpo = "Es un gusto para nosotros el ser parte de tus emprendimientos, nuestro compromiso contigo es poner 
-        nuestro mayor esfuerzo e ingenio en ofrecerte siempre productos confiables e innovadores que te simplifiquen 
-        las actividades laborales diarias.
-        Te enviamos el usuario y contraseña de administrador de " . NAMEAPP . " para que ingreses desde web a través de 
-        tu navegador favorito (recomendamos Chrome y Firefox).  Para la versión móvil, descárgala desde Google Play 
-        buscandonos como " . NAMEAPP . " <br> <br>";
-
-        $datosUser = "Usuario: " . $correo_Usuario . "<br> Contraseña: " . $pwd . "<br> <br>";
-
-        $botTelegram = "Valida tu cuenta en el siguiente enlace: 
-        https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "<br> <br>";
-
+        $datosUser = "
+        Página: https://supervisor.uno <br>
+        Usuario: $correo_Usuario <br> 
+        Contraseña: $pwd <br> <br>";
 
         $instruccionesInstalacion = "
-        <h4>INSTALACIÓN DE LA PLATAFORMA MÓVIL.</h4>
-        1. Descargar Aplicación <br>
-        2. En la primer ocasión que ingresan al sistema, les solicitará su usuario y contraseña para registrar el 
-            número de serie de su dispositivo en la base de datos del sistema. <br>
-        3. Una vez sale el mensaje de “Dispositivo registrado”, cerrar la ventana e ingresar datos en el login del 
-            sistema. <br>
-        4. Al cargar por primera vez la interfaz, les mostrará un menú vacío respecto a los proyectos que tiene el 
-            sistema cargados, se requiere que den clic en continuar o cancelar y el sistema iniciará con la carga 
-            de los proyectos definidos en el ambiente web. <br> <br>";
+        <h4 style='margin-bottom: 8px;'> <strong> Móvil </strong> </h4>
+        Te invitamos a que descargues desde Google Play la app, a través de la siguiente liga: <br>
+        https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.arm <br> <br>
+        
+        Una vez instalada, te solicitará acceso a tu galería fotográfica, a tu cámara, GPS y al identificador de llamadas 
+        entrantes, por favor acepta estas solicitudes para tener la mejor experiencia con nuestra solución.  
+        Luego, introduce los datos de usuario y contraseña que te estamos enviando.  Al ingresar por primera ocasión, 
+        en segundo plano se inicia la descarga de los distintos proyectos a los cuales tienes acceso, proceso que 
+        puede llevar hasta un minuto.
+        <br> <br>";
 
-        $despedida = "Estamos atentos a cualquier duda: <br> 
-        mail:  contacto@getitcompany.com <br>
-        móvil: 55 3412 5304 <br> <br>
-        Saludos! <br>
-        Equipo Get IT!";
+        $botTelegram = "
+        <h4 style='margin-bottom: 8px;'> <strong> Notificaciones mediante Telegram </strong> </h4>
+        Nuestra plataforma se interconecta a Telegram para facilitar y dar seguridad a las notificaciones en tiempo 
+        real; para activar este medio necesitas contar con una cuenta en dicho sistema de mensajería y que des 
+        clic en el siguiente enlace: <br>
+        https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "  <br> <br>";
 
-        $mensaje = $titulo . $cuerpo . $datosUser . $botTelegram . $instruccionesInstalacion . $despedida;
+        $dudas = "
+        <h4 style='margin-bottom: 8px;'> <strong> ¿Tienes alguna duda? </strong> </h4>
+        No dudes en comunicarte con nosotros mediante los siguientes medios: <br>
+        mail: contacto@getitcompany.com <br>
+        móvil: 442 1151321 <br> <br>
+        
+        O consulta nuestro manual de usuario localizado bajo el ícono del usuario ubicado en la extrema derecha de 
+        la barra de herramientas de la plataforma web. <br> <br>";
+
+        $despedida = "
+        <h4 style='margin-bottom: 8px;'> <strong> Lineamientos de Privacidad </strong> </h4>
+        Nos tomamos muy enserio respetar tu privacidad, si deseas conocer el tratamiento que hacemos con tus datos, 
+        visita la siguiente liga: <br>
+        https://www.getitcompany.com/descargables/Manejo-Datos.pdf <br> <br>
+        
+        <strong>
+        Saludos! <br> 
+        Equipo Get IT! 
+        </strong>
+        ";
+
+        $mensaje = $titulo . $cuerpo . $datosUser . $instruccionesInstalacion . $botTelegram . $dudas . $despedida;
+
 
         $funciones->sendMail($correo_Usuario, $nombre_Usuario, $apellido_Usuario, 'Nuevo registro ' . NAMEAPP, $mensaje);
     }
 
-
     public function verpass()
     {
-        if (isset($_GET["usuarioid"])) {
-            $id = (int)$_GET["usuarioid"];
+        if (isset($_POST['idUsuario'])) {
+            $id = (int)$_POST['idUsuario'];
             $usuario = new Usuario($this->adapter);
             $datosusuario = $usuario->getUserById($id);
-            $allusers = $usuario->getAllUser($this->id_Proyecto_constant);
-            $modificar = 2;
-
-            // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY d
-            $insercion = $_GET['insercion'];
-            $newElemento = $_GET['newElemento'];
-            if (empty($insercion) && empty($newElemento)) {
-                $insercion = 0;
-                $newElemento = '';
-            }
-
-            $mensaje = "<i class='fa fa-users' aria-hidden='true'></i> Usuarios";
-
-            //******************************************* SECCION RESTAURAR USUARIOS ***************************************
-            $mensajeRes = "<i class='fa fa-retweet' aria-hidden='true'></i> Restaurar Usuarios";
-            $allUserRes = $usuario->getAllUserRestaurar();
-
         }
-        $this->view("index", array(
-            "datosusuario" => $datosusuario, "allusers" => $allusers, "modificar" => $modificar, "insercion" => $insercion,
-            "newElemento" => $newElemento, "mensajeRes" => $mensajeRes, "allUserRes" => $allUserRes, "mensaje" => $mensaje
+        echo json_encode(array(
+            'data' => $datosusuario
         ));
     }
 
@@ -546,7 +569,7 @@ class UsuariosController extends ControladorBase
             $usuario = new Usuario($this->adapter);
             $empleado = new Empleados($this->adapter);
 
-            $allusers = $usuario->getAllUser($this->id_Proyecto_constant);
+            $allusers = $usuario->getAllUser();
             $allEmpleados = $empleado->getAllEmpleados();
 
             $id = $_SESSION[ID_USUARIO_SUPERVISOR];

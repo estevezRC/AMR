@@ -66,13 +66,15 @@ class UI {
                     <div class="form-group">
                         <label>${nombreCampo}</label>
                         <div class="input-group">
-                            <input type="number" placeholder="Km"
+                            <input type="text" placeholder="Km" minlength="3" maxlength="3"
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                    class="form-control text-center ${descripcionCampo}-inicio">
                             <div class="input-group-append">
                                  <span class="input-group-text"
                                        id="cadenamiento"><i class="fa fa-plus"></i></span>
                             </div>
-                            <input type="number" placeholder="m"
+                            <input type="text" placeholder="m" minlength="3" maxlength="3"
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                    class="form-control text-center ${descripcionCampo}-fin">
                         </div>
                     </div>
@@ -140,6 +142,27 @@ class UI {
                           class="form-control ${descripcionCampo}"></textarea>
                 </div>
                 `
+            } else if (tipoReactivoCampo === "number") {
+                markup += `
+                <div class="form-group">
+                    <label for="${descripcionCampo}">${nombreCampo}</label>
+                    <input type="number" min="0" id="${descripcionCampo}" class="form-control ${descripcionCampo}">
+                </div>
+                `
+            } else if (tipoReactivoCampo === "decimal") {
+                markup += `
+                <div class="form-group">
+                    <label for="${descripcionCampo}">${nombreCampo}</label>
+                    <input type="number" min="0" step="0.01" id="${descripcionCampo}" class="form-control ${descripcionCampo}">
+                </div>
+                `
+            } else if (tipoReactivoCampo === "text") {
+                markup += `
+                <div class="form-group">
+                    <label for="${descripcionCampo}">${nombreCampo}</label>
+                    <input type="text" id="${descripcionCampo}" class="form-control ${descripcionCampo}">
+                </div>
+                `
             }
         }
 
@@ -201,6 +224,30 @@ class UI {
                     posicion: index,
                     idCampo: idCampoReporte,
                     valorCampo: valorInputDate
+                })
+            } else if (tipoReactivoCampo === 'number') {
+                const valorInputNumber = $(card).find(`.${descripcionCampo}`).val()
+
+                valoresElemento.push({
+                    posicion: index,
+                    idCampo: idCampoReporte,
+                    valorCampo: valorInputNumber
+                })
+            } else if (tipoReactivoCampo === 'decimal') {
+                const valorInputDecimal = $(card).find(`.${descripcionCampo}`).val()
+
+                valoresElemento.push({
+                    posicion: index,
+                    idCampo: idCampoReporte,
+                    valorCampo: valorInputDecimal
+                })
+            } else if (tipoReactivoCampo === 'text') {
+                const valorInputText = $(card).find(`.${descripcionCampo}`).val()
+
+                valoresElemento.push({
+                    posicion: index,
+                    idCampo: idCampoReporte,
+                    valorCampo: valorInputText
                 })
             }
         }

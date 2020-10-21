@@ -59,50 +59,26 @@ class UsuariosProyectosController extends ControladorBase
     /*----------------------------------------- VISTA MODIFICAR USUARIO-PROYECTO -------------------------------------------------*/
     public function modificar()
     {
-        // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-        $insercion = $_GET['insercion'];
-        $newElemento = $_GET['newElemento'];
-        if ($insercion != 0 && !empty($newElemento)) {
-            $insercion = 0;
-            $newElemento = '';
-        }
-
-        $id = (int)$_GET["usuarioproyectoid"];
+        $id = (int)$_POST["usuarioproyectoid"];
 
         // OBTENER TODOS LOS USUARIOS Y OBTENER DATOS POR ID_USUARIO
         $usuarioproyecto = new UsuarioProyecto($this->adapter);
-        $datosusuarioproyecto = $usuarioproyecto->getUsuarioProyectoById($id);
-
-        // OBTENER TODOS LOS PROYECTOS
-        $proyecto = new Proyecto($this->adapter);
-        $allproyectos = $proyecto->getAllProyecto();
-
-        // OBTENER TODOS LOS USUARIOS
-        $usuario = new Usuario($this->adapter);
-        $allusers = $usuario->getAllUser();
+        $datosusuarioproyecto = $usuarioproyecto->getUsuarioProyectoById($id)[0];
 
         // PERFILES DE LA EMPRESA
         $perfil = new Perfil($this->adapter);
         if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
-            $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyectoSuperAdmin();
             $noId_Perfil_User = '';
             $allPerfiles = $perfil->getAllPerfiles($noId_Perfil_User);
         } else {
-            $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyecto();
-
             $noId_Perfil_User = ' where id_Perfil_Usuario NOT IN (1)';
             $allPerfiles = $perfil->getAllPerfiles($noId_Perfil_User);
         }
 
-        $mensaje = "<i class='fa fa-random' aria-hidden='true'></i> Asignación de Usuarios a Proyectos";
-
-        $modificar = 1;
-
-        $this->view("index", array(
-            "allusuariosproyectos" => $allusuariosproyectos, "allusuarios" => $allusers, "modificar" => $modificar,
-            "datosusuarioproyecto" => $datosusuarioproyecto, "allproyectos" => $allproyectos, "allPerfiles" => $allPerfiles,
-            "insercion" => $insercion, "newElemento" => $newElemento, "mensaje" => $mensaje
-        ));
+        echo json_encode([
+            'data' => $datosusuarioproyecto,
+            'perfiles' => $allPerfiles
+        ]);
     }
 
     public function getProyectosAndPerfiles()
@@ -134,16 +110,17 @@ class UsuariosProyectosController extends ControladorBase
     {
         //COMPROBAR CAMPOS VACIOS
         if ((empty($_POST["id_Usuario"])) || (empty($_POST["id_Proyecto"]))) {
-            $save = "Llenar todos los campos";
+            $mensaje = "Llenar todos los campos";
+            $insercion = 2;
         } //SE CREA NUEVO PROYECTO
         else {
             // Obtener registros dependiendo del perfil admon
             $usuarioproyecto = new UsuarioProyecto($this->adapter);
-            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
+
+            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1)
                 $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyectoSuperAdmin();
-            } else {
+            else
                 $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyecto();
-            }
 
             $idUsuario = $_POST["id_Usuario"];
             $idProyecto = $_POST["id_Proyecto"];
@@ -157,7 +134,7 @@ class UsuariosProyectosController extends ControladorBase
             $nombreUser = $datosRegistro[0]->nombre_Usuario . ' ' . $datosRegistro[0]->apellido_Usuario;
             $nombreProyecto = $datosRegistro[0]->nombre_Proyecto;
             // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            if ($save == 1) {
+            if ($save) {
                 $insercion = 1;
                 $mensaje = 'Se ha agregado el usuario: "' . $nombreUser . '" en el proyecto "' . $nombreProyecto . '"';
             } else {
@@ -172,24 +149,27 @@ class UsuariosProyectosController extends ControladorBase
     public function guardarmodificacion()
     {
         //COMPROBAR CAMPOS VACIOS
-        if ((empty($_POST["id_Usuario"])) || (empty($_POST["id_Proyecto"]))) {
-            $save = "Llenar todos los campos";
+        if ((empty($_REQUEST["id_Usuario"])) || (empty($_REQUEST["id_Proyecto"]))) {
+            $mensaje = "Llenar todos los campos";
+            $status = false;
         } //SE GUARDA MODIFICACION
         else {
             // Obtener registros dependiendo del perfil admon
             $usuarioproyecto = new UsuarioProyecto($this->adapter);
-            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
-                $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyectoSuperAdmin();
-            } else {
-                $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyecto();
-            }
 
-            $idUsuario = $_POST["id_Usuario"];
-            $idProyecto = $_POST["id_Proyecto"];
+            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1)
+                $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyectoSuperAdmin();
+            else
+                $allusuariosproyectos = $usuarioproyecto->getAllUsuarioProyecto();
+
+            $idUsuario = $_REQUEST["id_Usuario"];
+            $idProyecto = $_REQUEST["id_Proyecto"];
+            $idPerfil = $_REQUEST["id_Perfil"];
+            $id_usuario_proyecto = $_REQUEST["id_usuario_proyecto"];
+
             $usuarioproyecto->set_id_Usuario($idUsuario);
             $usuarioproyecto->set_id_Proyecto($idProyecto);
-            $usuarioproyecto->set_id_Perfil_Usuario($_POST["id_Perfil"]);
-            $id_usuario_proyecto = $_POST["id_usuario_proyecto"];
+            $usuarioproyecto->set_id_Perfil_Usuario($idPerfil);
 
 
             //Obtener Datos del Registro
@@ -200,15 +180,19 @@ class UsuariosProyectosController extends ControladorBase
             $save = $usuarioproyecto->modificarUsuarioProyecto($allusuariosproyectos, $id_usuario_proyecto);
 
             // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            if ($save == 3) {
-                $insercion = 3;
+            if ($save) {
                 $mensaje = 'Se ha modificado el usuario: "' . $nombreUser . '" en el proyecto "' . $nombreProyecto . '"';
+                $status = true;
             } else {
-                $insercion = 2;
                 $mensaje = 'El usuario "' . $nombreUser . '" ya esta en el proyecto "' . $nombreProyecto . '"';
+                $status = false;
             }
         }
-        $this->redirect("UsuariosProyectos", "index&insercion=$insercion&newElemento=$mensaje");
+
+        echo json_encode([
+            'mensaje' => $mensaje,
+            'status' => $status
+        ]);
     }
 
     /*------------------------------------------ METODO BORRAR USUARIO-PROYECTO ------------------------------------------*/

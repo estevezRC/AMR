@@ -116,7 +116,7 @@ if ($action == "index" || $action == "busqueda") { ?>
                                                 <i class="fa fa-search" aria-hidden="true"></i></a> &nbsp; &nbsp;
                                             <? if ($seguimientoreporte->id_Etapa != 23) {
                                                 if (getAccess(8, $decimal) || $seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
-                                                    <a href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>&tipo_Reporte=<?php echo $seguimientoreporte->tipo_Reporte; ?>&return=<?php echo $seguimientoreporte->tipo_Reporte; ?>"
+                                                    <a href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>&tipo_Reporte=<?php echo $seguimientoreporte->tipo_Reporte; ?>&return=1"
                                                        data-trigger="hover" data-content="Modificar"
                                                        data-toggle="popover">
                                                         <i class="fa fa-pencil-square-o"

@@ -93,12 +93,12 @@ class Perfil extends EntidadBase
 
         if ($validate) {
             $query = "INSERT INTO Perfiles_Usuarios VALUES(NULL, '$this->nombre_Perfil', NOW(), 1,$this->id_Proyecto, $this->id_Empresa)";
-            if ($this->db()->query($query)) {
+            if ($this->db()->query($query))
                 return 1;
-            }
-        } else {
+            else
+                return 2;
+        } else
             return 2;
-        }
     }
 
     /*--- USUARIOS: ACTUALIZAR USUARIO POR ID ---*/
@@ -113,11 +113,8 @@ class Perfil extends EntidadBase
 
         if ($validate) {
             $query = "CALL sp_Add_Up_Perfiles_Usuarios ($id,'$this->nombre_Perfil',NULL,$this->id_Empresa,'Modificar')";
-            if ($this->db()->query($query)) {
-                return 3;
-            }
-        } else {
-            return 2;
-        }
+            return $this->db()->query($query);
+        } else
+            return $validate;
     }
 }

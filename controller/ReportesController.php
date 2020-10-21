@@ -61,15 +61,21 @@ class ReportesController extends ControladorBase
         // ************* VALIDAR SI YA EXISTE UN REPORTE DE TIPO 7 (ASISTENCIA) EN EL PROYEYCTO ******************
         $reporteTipoSeven = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 7);
 
+        // *********** VALIDAR SI YA EXISTE UN REPORTE DE TIPO 8 (DOCUMENTOS ENTREGABLES) EN EL PROYEYCTO **************
+        $reporteTipoOcho = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 8);
+
+        // ***************** VALIDAR SI YA EXISTE UN REPORTE DE TIPO 9 (MINUTA ) EN EL PROYEYCTO ***********************
+        $reporteTipoNueve = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 9);
+
 
         // *******************SECCION DE DUPLICAR CONFIGRACION DE REPORTES DE OTROS PROYECTOS ********************
         $allProyectos = $reporte->getAllProyectosDuplicar();
 
         $this->view("index", array(
-            "allreportes" => $allreportes, "allareas" => $allareas, "mensaje" => $mensaje,
+            "allreportes" => $allreportes, "allareas" => $allareas, "mensaje" => $mensaje, "allProyectos" => $allProyectos,
             "allperfiles" => $allperfiles, "allReportesSeguimiento" => $allReportesSeguimiento, "insercion" => $insercion,
-            "newElemento" => $newElemento, "reporteTipoFive" => $reporteTipoFive, "allProyectos" => $allProyectos,
-            "reporteTipoSix" => $reporteTipoSix, "reporteTipoSeven" => $reporteTipoSeven
+            "newElemento" => $newElemento, "reporteTipoFive" => $reporteTipoFive, "reporteTipoSix" => $reporteTipoSix,
+            "reporteTipoSeven" => $reporteTipoSeven, "reporteTipoOcho" => $reporteTipoOcho, "reporteTipoNueve" => $reporteTipoNueve
         ));
 
     }
@@ -95,7 +101,7 @@ class ReportesController extends ControladorBase
     }
 
     /*-------------------------------------------- VISTA MODIFICAR REPORTE -------------------------------------------*/
-    public function modificar()
+    /*public function modificar()
     {
         $idReporte = $_POST["idReporte"];
 
@@ -141,7 +147,106 @@ class ReportesController extends ControladorBase
             "reporteTipoSeven" => $reporteTipoSeven
         ]);
 
+    }*/
+
+    /*-------------------------------------------- VISTA MODIFICAR REPORTE -------------------------------------------*/
+    public function modificar()
+    {
+        $idReporte = $_POST["idReporte"];
+
+        if (isset($idReporte)) {
+            $reporte = new Reporte($this->adapter);
+            //$allreportes = $reporte->getAllReporte($id_Proyecto);
+            $area = new Area($this->adapter);
+            $allareas = $area->getAllArea();
+
+            $perfil = new Perfil($this->adapter);
+            // PERFILES DE LA EMPRESA
+            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
+                $noId_Perfil_User = '';
+                $allPerfiles = $perfil->getAllPerfiles($noId_Perfil_User);
+            } else {
+                $noId_Perfil_User = ' where id_Perfil_Usuario NOT IN (1)';
+                $allPerfiles = $perfil->getAllPerfiles($noId_Perfil_User);
+            }
+
+            $datosreporte = $reporte->getReporteById($idReporte);
+            $areas = explode(",", $datosreporte->Areas);
+
+            $perfiles = explode(",", $datosreporte->perfiles_firma);
+
+            $tipoDatos = [
+                "Reporte",
+                "Incidencia",
+                "Ubicación",
+                "Inventario",
+                "Seguimiento a Incidencia",
+                "Documento BIM",
+                "Asistencia",
+                "Termino de jornada laboral",
+                "Documento Entregable",
+                "Minuta"
+            ];
+
+            // VALIDAR SI YA EXISTE UN REPORTE DE TIPO 5 EN EL PROYECTO X
+            $reporteTipoFive = $reporte->getReporteByProyectoAndTipoReporteDocBim($this->id_Proyecto_constant);
+            if ($reporteTipoFive) {
+                if ($datosreporte->tipo_Reporte == 5)
+                    $tipoDatos[5] = "Documento BIM";
+                else
+                    $tipoDatos[5] = "";
+            }
+
+            // ************* VALIDAR SI YA EXISTE UN REPORTE DE TIPO 6 (ASISTENCIA) EN EL PROYEYCTO ******************
+            $reporteTipoSix = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 6);
+            if ($reporteTipoSix) {
+                if ($datosreporte->tipo_Reporte == 6)
+                    $tipoDatos[6] = "Asistencia";
+                else
+                    $tipoDatos[6] = "";
+            }
+
+            // ************* VALIDAR SI YA EXISTE UN REPORTE DE TIPO 7 (ASISTENCIA) EN EL PROYEYCTO ******************
+            $reporteTipoSeven = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 7);
+            if ($reporteTipoSeven) {
+                if ($datosreporte->tipo_Reporte == 7)
+                    $tipoDatos[7] = "Termino de jornada laboral";
+                else
+                    $tipoDatos[7] = "";
+            }
+
+            // ************* VALIDAR SI YA EXISTE UN REPORTE DE TIPO 7 (ASISTENCIA) EN EL PROYEYCTO ******************
+            $reporteTipoOcho = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 8);
+            if ($reporteTipoOcho) {
+                if ($datosreporte->tipo_Reporte == 8)
+                    $tipoDatos[8] = "Documento Entregable";
+                else
+                    $tipoDatos[8] = "";
+            }
+
+            // ************* VALIDAR SI YA EXISTE UN REPORTE DE TIPO 9 (MINUTA) EN EL PROYEYCTO ******************
+            $reporteTipoNueve = $reporte->getPlantillaByIdProyectoAndTipoReporte($this->id_Proyecto_constant, 9);
+            if ($reporteTipoNueve) {
+                if ($datosreporte->tipo_Reporte == 9)
+                    $tipoDatos[9] = "Minuta";
+                else
+                    $tipoDatos[9] = "";
+            }
+
+
+            //OBTENER LOS REPORTES DE SIGUIMIENTOS
+            $allReportesSeguimiento = $reporte->getAllReportesSeguimientoByTipoReporte($this->id_Proyecto_constant);
+        }
+
+        echo json_encode([
+            "datosreporte" => $datosreporte, "allAreas" => $allareas, "allPerfiles" => $allPerfiles,
+            "areas" => $areas, "perfiles" => $perfiles, "allReportesSeguimiento" => $allReportesSeguimiento,
+            'tipoDatos' => $tipoDatos, 'reporteTipoNueve' => $reporteTipoNueve
+        ]);
+
     }
+
+
 
     /*------------------------------------------ METODO CREAR NUEVO REPORTE ------------------------------------------*/
     public function guardarnuevo()

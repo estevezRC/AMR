@@ -345,6 +345,17 @@ class EntidadBase
         return $resultSet;
     }
 
+    public function getUltimoIdUsuario()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT MAX(id_Usuario) as id FROM Usuarios");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     /*--- USUARIOS: CONSULTAR TODOS LOS USUARIOS ---*/
     public function getAllUserCorreo($id_Proyecto)
     {
@@ -374,7 +385,7 @@ class EntidadBase
     {
         $query = $this->db->query("SELECT u.id_Usuario, u.id_Empresa, u.id_Area, eu.nombre, eu.apellido_paterno,
             IFNULL(eu.apellido_materno, '') AS apellido_materno, u.correo_Usuario, 
-            u.nip_Usuario, u.id_Status_Usuario, u.participante, ae.nombre_Area
+            u.nip_Usuario, u.id_Status_Usuario, u.participante, u.puesto, u.empresa, ae.nombre_Area
             FROM Usuarios u
 	            LEFT JOIN Areas_Empresas ae ON ae.id_Area = u.id_Area
                 JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
@@ -510,6 +521,32 @@ class EntidadBase
     }
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::PROYECTOS::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+    /*--- PROYECTOS: CONSULTAR PROYECTOS ID Y NOMBRE ---*/
+    public function getAllProyectosIdAndName()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT id_Proyecto as id, nombre_Proyecto as nombre FROM Proyectos");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    /*--- PROYECTOS: CONSULTAR PROYECTOS ID Y NOMBRE BY ID ---*/
+    public function getAllProyectosIdAndNameById($id)
+    {
+        $resultSet = array();
+        $query1 = "SELECT id_Proyecto as id, nombre_Proyecto as nombre FROM Proyectos WHERE id_Proyecto = $id";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     /*--- PROYECTOS: CONSULTAR PROYECTOS ---*/
     public function getAllProyecto()
     {
@@ -1799,7 +1836,7 @@ class EntidadBase
     {
         $resultSet = array();
         $query = $this->db->query("SELECT * FROM  VW_getAllValoresReportes WHERE id_Gpo_Valores_Reporte = $id 
-AND id_Status_Reporte = 1");
+            AND id_Status_Reporte = 1");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }
@@ -2537,6 +2574,18 @@ WHERE Id_Reporte IN ($id)");
         return $resultSet;
     }
 
+    // OBTENER ULTMO COMENTARIO REGISTRADO
+    public function getAllValorMaxComentarios()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT count(id_comentario) as cantidadComentario FROM Comentarios_Reportes");
+        if ($row = $query->fetch_row()) {
+            $resultSet = trim($row[0]);
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     /*--- reportes: CONSULTAR COMENTARIOS DE REPORTES---*/
     public function consultarFotoComentario($id)
     {
@@ -3148,6 +3197,22 @@ WHERE Id_Reporte IN ($id)");
     {
         $resultado = [];
         $query = "SELECT * FROM empleados_usuarios WHERE id_empleado = $idEmpleado";
+        $query = $this->db->query($query);
+        while ($row = $query->fetch_object()) {
+            $resultado[] = $row;
+        }
+        $query->close();
+        return $resultado;
+    }
+
+    // OBTENER TODOS LOS EMPLEADOS CON ID Y NOMBRE UNICAMENTE
+    public function getAllEmpleadosWithIdAndName()
+    {
+        $resultado = [];
+        $query = "SELECT e.id_empleado as id, CONCAT(eu.nombre, ' ', eu.apellido_paterno, ' ', eu.apellido_materno) AS nombre 
+            FROM empleados e
+                LEFT JOIN empleados_usuarios eu ON eu.id_empleado = e.id_empleado
+            WHERE e.status = 1";
         $query = $this->db->query($query);
         while ($row = $query->fetch_object()) {
             $resultado[] = $row;

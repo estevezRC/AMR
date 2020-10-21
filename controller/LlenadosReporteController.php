@@ -17,6 +17,7 @@ class LlenadosReporteController extends ControladorBase
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
         $this->id_Area_constant = $_SESSION[ID_AREA_SUPERVISOR];
         require_once 'core/FuncionesCompartidas.php';
+        require_once 'core/FormatosCorreo.php';
         require_once 'vendor/autoload.php';
     }
 
@@ -31,7 +32,7 @@ class LlenadosReporteController extends ControladorBase
 
         switch ($tipo_Reporte) {
             case '0,1':
-                $tipo_Reporte = '0,6,7';
+                $tipo_Reporte = '0,6,7,9';
                 // VERIFICAR SI EL PROYECTO TIENE GANNT
                 $registroGantt = $camporeporte->getIdGanttByid_proyecto($this->id_Proyecto_constant);
                 if (empty($registroGantt))
@@ -322,68 +323,11 @@ class LlenadosReporteController extends ControladorBase
         }
 
         //CAMPOS ESPECIALES
-        /*$i = 0;
-        foreach ($allcamposreportes as $reporte) {
-            switch ($reporte->tipo_Reactivo_Campo) {
-                case "text-nota":
-                    $no_nota = $camporeporte->getNumeroNota($reporte->id_Reporte, $reporte->id_Configuracion_Reporte);
-                    $no_nota = $no_nota + 1;
-                    $no_contrato = $allcamposreportes[1]->nombre_campo;
-                    break;
-                case "select-status":
-                    // ************************** Mostrar estados del reportes *****************************************
-                    $id_Gpo_Valores_Reporte = $_GET['id_Gpo_Valores_Reporte'];
-                    $reportesLlenados = new ReporteLlenado($this->adapter);
-                    $datosReporte = $reportesLlenados->getAllReportesLlenadosByIdGpo($id_Gpo_Valores_Reporte);
-
-                    if ($datosReporte == '' || empty($datosReporte))
-                        $valores = 'En proceso/Atendido';
-                    else {
-                        switch ($datosReporte[0]->id_Etapa) {
-                            case 2: // Abierto
-                                $allcamposreportes[$i]->Valor_Default = 'En proceso/Atendido';
-                                break;
-                            case 7: // En proceso
-                                $allcamposreportes[$i]->Valor_Default = 'En proceso/Atendido';
-                                break;
-                            case 3: // Atendido
-                                $allcamposreportes[$i]->Valor_Default = 'Abierto/Validado';
-                                break;
-                        }
-                    }
-                    break;
-                case "check_list_asistencia":
-                    // OBTENER TODOS LOS EMPLEADOS
-                    $empleado = new Empleados($this->adapter);
-                    $allEmpleados = $empleado->getAllEmpleados();
-                    break;
-                case "select-tabla":
-                    // OBTENER TODOS LOS REGISTROS DE LA TABLA X
-                    switch ($reporte->nombre_Campo) {
-                        case 'Proyecto':
-                            // CONSULTAR TABLA DE PROYECTOS
-                            $usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
-                            if ($usuario == 1)
-                                $allRegistrosTablas = $camporeporte->getAllProyecto();
-                            else
-                                $allRegistrosTablas = $camporeporte->getAllProyectosLibres(7);
-                            break;
-                        default;
-
-                    }
-                    break;
-            }
-            $i++;
-        }*/
-
-        //CAMPOS ESPECIALES
         $datosIdAndName = null;
         $allRegistrosTablas = null;
-        $allEmpleados = null;
         $createData = function ($allcamposreportes) use (
             $camporeporte,
             &$allRegistrosTablas,
-            &$allEmpleados,
             &$datosIdAndName,
             &$no_nota,
             &$no_contrato,
@@ -419,23 +363,32 @@ class LlenadosReporteController extends ControladorBase
                         }
                         break;
                     case "check_list_asistencia":
-                        // OBTENER TODOS LOS EMPLEADOS
-                        $empleado = new Empleados($this->adapter);
-                        $allEmpleados = $empleado->getAllEmpleados();
+                        switch ($reporte->Valor_Default) {
+                            case 'empleados':
+                                // OBTENER TODOS LOS EMPLEADOS
+                                $datosIdAndName = $camporeporte->getAllEmpleadosWithIdAndName();
+                                break;
+                            case 'participantes':
+                                // OBTENER TODOS LOS PARTICIPANTES = id_Status_Usuario IN(1,2) AND participante = 1
+                                $datosIdAndName = $camporeporte->getAllParticipantesIdAndName();
+                                break;
+                            default;
+                        }
                         break;
                     case "select-tabla":
                         // OBTENER TODOS LOS REGISTROS DE LA TABLA X
-                        switch ($reporte->nombre_Campo) {
-                            case 'Proyecto':
+                        switch ($reporte->Valor_Default) {
+                            case 'proyecto':
                                 // CONSULTAR TABLA DE PROYECTOS
-                                $usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
-                                if ($usuario == 1)
-                                    $allRegistrosTablas = $camporeporte->getAllProyecto();
-                                else
-                                    $allRegistrosTablas = $camporeporte->getAllProyectosLibres(7);
+                                $allRegistrosTablas = $camporeporte->getAllProyectosIdAndName();
+                                break;
+                            case 'participante':
+                                // CONSULTAR TODOS LOS PARTICIPANTES CAMPO MULTIPLE
+                                $reporte->Valor_Default = $camporeporte->getAllParticipantesIdAndName();
+                                // CONSULTAR TODOS LOS PARTICIPANTES GRAL
+                                $allRegistrosTablas = $camporeporte->getAllParticipantesIdAndName();
                                 break;
                             default;
-
                         }
                         break;
                     case "multiple":
@@ -498,7 +451,7 @@ class LlenadosReporteController extends ControladorBase
             "datosReporte" => $allDatosReporte, "idReportePadreVincular" => $idReportePadreVincular, "nota" => $no_nota,
             "idGpoValoresPadreVincular" => $idGpoValoresPadreVincular, "nombre_ReportePadreVincular" => $nombre_ReportePadreVincular,
             "titulo_ReportePadreVincular" => $titulo_ReportePadreVincular, "titulo_ReportePlanos" => $titulo_ReportePlanos,
-            "allEmpleados" => $allEmpleados, "allRegistrosTablas" => $allRegistrosTablas
+            "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas
         ));
         // */
 
@@ -534,55 +487,6 @@ class LlenadosReporteController extends ControladorBase
         $allsistemas = $camporeporte->getAllSeguimientoUbicacionInventario($this->id_Proyecto_constant, $this->id_Area_constant, $tipo_Reporte);
         //CLASIFICACION FOTOGRAFIAS
         $clasificacion = $camporeporte->getAllClasificacionFotografias($this->id_Area_constant);
-
-        //CAMPOS ESPECIALES
-        /*foreach ($allcamposreportes as $reporte) {
-            switch ($reporte->tipo_Reactivo_Campo) {
-                case "select-status":
-                    // ************************** Mostrar estados del reportes *****************************************
-                    $reportesLlenados = new ReporteLlenado($this->adapter);
-                    //$id_Gpo_Valores_Reporte = $_GET['id_Padre'];
-                    //$datosReporte = $reportesLlenados->getAllReportesLlenadosByIdGpo($id_Gpo_Valores_Reporte);
-                    // ************************** Mostrar estados del reportes *********************************************
-                    $allDatosReporteSeguimiento = $reportesLlenados->getAllDatosReporteLlenado($id_reportellenado);
-                    $estadoReporte = $allDatosReporteSeguimiento[0]->campo_EstadoReporte;
-                    switch ($estadoReporte) {
-                        case 'Abierto':
-                            $reporte->Valor_Default = 'Abierto';
-                            break;
-                        case 'En proceso':
-                            $reporte->Valor_Default = 'En proceso';
-                            break;
-                        case 'Atendido':
-                            $reporte->Valor_Default = 'Atendido';
-                            break;
-                        case 'Validado':
-                            $reporte->Valor_Default = 'Validado';
-                            break;
-                    }
-                    break;
-                case "check_list_asistencia":
-                    // OBTENER TODOS LOS EMPLEADOS
-                    $empleado = new Empleados($this->adapter);
-                    $allEmpleados = $empleado->getAllEmpleados();
-                    break;
-                case "select-tabla":
-                    // OBTENER TODOS LOS REGISTROS DE LA TABLA X
-                    switch ($reporte->nombre_Campo) {
-                        case 'Proyecto':
-                            // CONSULTAR TABLA DE PROYECTOS
-                            $usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
-                            if ($usuario == 1)
-                                $allRegistrosTablas = $camporeporte->getAllProyecto();
-                            else
-                                $allRegistrosTablas = $camporeporte->getAllProyectosLibres(7);
-                            break;
-                        default;
-
-                    }
-                    break;
-            }
-        }*/
 
         //CAMPOS ESPECIALES
         $allRegistrosTablas = null;
@@ -627,22 +531,32 @@ class LlenadosReporteController extends ControladorBase
                         }
                         break;
                     case "check_list_asistencia":
-                        $empleado = new Empleados($this->adapter);
-                        $allEmpleados = $empleado->getAllEmpleados();
+                        switch ($reporte->Valor_Default) {
+                            case 'empleados':
+                                // OBTENER TODOS LOS EMPLEADOS
+                                $datosIdAndName = $camporeporte->getAllEmpleadosWithIdAndName();
+                                break;
+                            case 'participantes':
+                                // OBTENER TODOS LOS PARTICIPANTES = id_Status_Usuario IN(1,2) AND participante = 1
+                                $datosIdAndName = $camporeporte->getAllParticipantesIdAndName();
+                                break;
+                            default;
+                        }
                         break;
                     case "select-tabla":
                         // OBTENER TODOS LOS REGISTROS DE LA TABLA X
-                        switch ($reporte->nombre_Campo) {
-                            case 'Proyecto':
+                        switch ($reporte->Valor_Default) {
+                            case 'proyecto':
                                 // CONSULTAR TABLA DE PROYECTOS
-                                $usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
-                                if ($usuario == 1)
-                                    $allRegistrosTablas = $camporeporte->getAllProyecto();
-                                else
-                                    $allRegistrosTablas = $camporeporte->getAllProyectosLibres(7);
+                                $allRegistrosTablas = $camporeporte->getAllProyectosIdAndName();
+                                break;
+                            case 'participante':
+                                // CONSULTAR TODOS LOS PARTICIPANTES CAMPO MULTIPLE
+                                $reporte->Valor_Default = $camporeporte->getAllParticipantesIdAndName();
+                                // CONSULTAR TODOS LOS PARTICIPANTES GRAL
+                                $allRegistrosTablas = $camporeporte->getAllParticipantesIdAndName();
                                 break;
                             default;
-
                         }
                         break;
                     case "multiple":
@@ -692,6 +606,7 @@ class LlenadosReporteController extends ControladorBase
             switch ($tipo_Reporte) {
                 case 0:
                 case 6:
+                case 9:
                     $tipo_Reporte1 = '0,1';
                     break;
                 case 1:
@@ -705,7 +620,7 @@ class LlenadosReporteController extends ControladorBase
                     break;
             }
 
-            if ($retornar == 0 || $retornar == 1 || $retornar == 6)
+            if ($retornar == 1)
                 $urlAnterior = 'index.php?controller=SeguimientosReporte&action=index&tipo=' . $tipo_Reporte1;
             if ($retornar == 2)
                 $urlAnterior = 'index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=' . $id_reportellenado . '&Id_Reporte=' . $id;
@@ -719,7 +634,7 @@ class LlenadosReporteController extends ControladorBase
             "allcamposreportes" => $allcamposreportes, "allreportellenado" => $allreportellenado, "mensaje" => $mensaje,
             "info_fotografia" => $info_fotografia, "allsistemas" => $allsistemas, "clasificacion" => $clasificacion,
             "gruposubicaciones" => $gruposubicaciones, "datosReporte" => $allDatosReporte, "urlAnterior" => $urlAnterior,
-            "allEmpleados" => $allEmpleados, "allRegistrosTablas" => $allRegistrosTablas, "camposMultiple" => $multipleSubcampos,
+            "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas, "camposMultiple" => $multipleSubcampos,
             "existeGantt" => $existeGantt
         ));
         // */
@@ -850,6 +765,9 @@ class LlenadosReporteController extends ControladorBase
         $arrayformulario = $reporte->getAllCampoReporteByIdReporte($Id_Reporte);
         $id_Ubicacion = $_POST['IdUbicacion'];
         $id_Area_Reporte = $arrayformulario[0]->Areas;
+
+        $nombreReporte = $arrayformulario[0]->nombre_Reporte;
+
         $tipo_Reporte = $arrayformulario[0]->tipo_Reporte;
 
         //OBTENER EL ID GRUPO DE LOS CAMPOS
@@ -960,6 +878,8 @@ class LlenadosReporteController extends ControladorBase
                     $idsEmpleados = implode('/', $_POST[$valor]);
                     if ($tipo_Reporte == 6 || ($tipo_Reporte == 0 && $idReporteControlAsistencia == $Id_Reporte) || $tipo_Reporte == 7)
                         $arrayIdsEmpleados = $_POST[$valor];
+                    elseif ($tipo_Reporte == 9)
+                        $idsParticipantes = implode(',', $_POST[$valor]);
                 }
                 $llenadoreporte = new LlenadoReporte($this->adapter);
                 $llenadoreporte->set_id_Proyecto($idproyecto);
@@ -1051,7 +971,7 @@ class LlenadosReporteController extends ControladorBase
                 $llenadoreporte->set_id_Gpo_Valores_Reporte($grupovalores);
                 $save = $llenadoreporte->saveNewLlenado();
             }
-            
+
             /* :::::::::::::::::::::::::::::::::::::::: GENERAL(TABLA) :::::::::::::::::::::::::::::::::::::::::::::::*/
             if ($campoimagen == "select-tabla") {
                 $valorguardar = $_POST[$valor];
@@ -1183,7 +1103,11 @@ class LlenadosReporteController extends ControladorBase
         $registrarreportellenado->set_clas_Reporte($tipo_Reporte);
         $saveReporteLlenado = $registrarreportellenado->saveNewReporteLlenado($allreportesllenados);
 
+        $id_EmpresaGral = $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
+        $nombreCarpeta = $_SESSION[CARPETA_SUPERVISOR];
+
         $funciones = new FuncionesCompartidas();
+        $datosFormato = new FormatosCorreo();
 
         // **************************** INVOCAR MODELO DE ASISTENCIA PARA GUARDAR DATOS ********************************
         if ($saveReporteLlenado && $tipo_Reporte == 6)
@@ -1195,12 +1119,16 @@ class LlenadosReporteController extends ControladorBase
         }
         // *************************************************************************************************************
 
+        // ********************* OBTENER INFORMACION PARA ENVIAR POR CORREO (REPORTE MINUTA) ***************************
+        if ($saveReporteLlenado && $tipo_Reporte == 9) {
+            $datosReporte = $datosFormato->obtenerValoresReporteLlenado($grupovalores);
+            $destinatarios = $datosFormato->obtenerCorreosParticipantesMinuta($idsParticipantes);
+            $datosFormato->enviarMinuta($nombreReporte, $datosReporte, $destinatarios, $nombreCarpeta);
+        }
+
         unset($_SESSION['arrayformulario']);
 
         /* ::::::::::: NOTIFICACIONES (TELEGRAM, CORREO, PUSH, ETC) DEPENDIENDO DE LA MATRIZ DE COMUNICACION :::::::::*/
-        $id_EmpresaGral = $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
-        $nombreCarpeta = $_SESSION[CARPETA_SUPERVISOR];
-
         $matriz = new MatrizComunicacion($this->adapter);
 
         /* :::::::::::::: CAMBIAR ESTADO DE REPORTE PADRE SI EL REPORTE TIENE EL CAMPO SELECT-STATUS  ::::::::::::::::*/
@@ -1752,6 +1680,7 @@ class LlenadosReporteController extends ControladorBase
         switch ($tipo_Reporte) {
             case 0:
             case 6:
+            case 9:
                 $tipo_Reporte = '0,1';
                 break;
             case 1:

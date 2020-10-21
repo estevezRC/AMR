@@ -148,6 +148,18 @@
     });
 
 
+    function showModal(imgurl) {
+        $('#imgmo').attr("src", imgurl);
+        $('#modalimg').modal();
+    }
+
+    function updateInputFile(input) {
+        console.log(input)
+        if (input.files && input.files[0]) {
+            input.parentElement.querySelector('label').textContent = input.files[0].name;
+        }
+    }
+
 </script>
 
 
@@ -170,6 +182,25 @@
         $var_word = "phpword/generico.php?gpo=$id_Gpo";
     } ?>
 
+    <!-- ********************************************* Modal Imagen ***********************************************+ -->
+    <div class="modal fade" id="modalimg" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-top">
+                <div class="modal-header bg-gradient-secondary text-white rounded-top">
+                    <span class="mt-1"><i class="far fa-image mr-2"></i></span>
+                    <h5 class="modal-title" id="exampleModalLabel">Imagen adjunta</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center bg-light" >
+                    <img class="img-fluid" id="imgmo">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ********************* Modal para vincular reporte nuevo a reporte padre *********************************** -->
     <div class="modal fade" id="myModalTiposReportes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -235,7 +266,15 @@
                         <textarea rows="4" cols="50" class="form-control" id="comentarios2" name="comentarios2"
                                   required></textarea>
                         <br/>
-                        <input name="img_comentario2" class="form-control" type="file">
+
+                        <div class="custom-file mb-2">
+                            <input type="file" class="custom-file-input"
+                                   id="file1" name="img_comentario2"
+                                   lang="es" onchange="updateInputFile(this)">
+                            <label class="custom-file-label" for="file1">Seleccionar
+                                Archivo</label>
+                        </div>
+
                         <input type="hidden" name="idcomentario" id="idcomentario">
                         <input type="hidden" name="id_usuario" value="<?php echo $id_usuario ?>" id="id_usuario_modal">
                         <input type="hidden" name="id_Reporte" value="<?php echo $id_Reporte ?>" id="id_Reporte_modal">
@@ -325,465 +364,516 @@
 
     <div class="container-fluid flex-column justify-content-center p-3 animated fadeIn slow">
         <div class="row pt-3 d-flex justify-content-center">
-            <div class="col-11 p-0 shadow">
-                <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
-                    <div class="col-sm-10 pr-0 pr-md-2 d-flex align-items-center">
-                        <h4 class="text-white m-0 py-2">
-                            <?php echo $mensaje; ?>
-                        </h4>
-                    </div>
-                    <div class="col-sm-2 pl-0 pl-md-2 d-flex justify-content-center align-items-center">
-                        <?php if (getAccess(256, $decimal) || getAccess(512, $decimal)) { ?>
-                            <div class="dropdown">
-                                <button type="button" class="btn" id="descargables"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <a class="px-2 p-md-2 m-1 h5 text-white" href="#" data-trigger="hover"
-                                       data-content="Descargar" data-toggle="popover">
-                                        <i class="fa fa-download" aria-hidden="true"></i>
-                                    </a>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="descargables">
-                                    <?php if (getAccess(256, $decimal)) { ?>
-                                        <li>
-                                            <a class="p-2 dropdown-item text-secondary"
-                                               href="descargables/reporte_generico_word.php?gpo=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>">
-                                                <i class="fa fa-file-word-o" aria-hidden="true"></i> Word</a>
-                                        </li>
-                                    <?php }
-
-                                    if (getAccess(512, $decimal)) { ?>
-                                        <li>
-                                            <a class="p-2 dropdown-item text-secondary" href="#" onclick="generarPDF()">
-                                                <i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF</a>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
+            <div class="col-11">
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
+                            <div class="col-sm-10 pr-0 pr-md-2 d-flex align-items-center">
+                                <h4 class="text-white m-0 py-2">
+                                    <?php echo $mensaje; ?>
+                                </h4>
                             </div>
-                        <?php } ?>
+                            <div class="col-2 pl-0 pl-md-2 d-flex justify-content-center align-items-center">
+                                <?php if (getAccess(256, $decimal) || getAccess(512, $decimal)) { ?>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn" id="descargables"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <a class="px-2 p-md-2 m-1 h5 text-white" href="#" data-trigger="hover"
+                                               data-content="Descargar" data-toggle="popover">
+                                                <i class="fa fa-download" aria-hidden="true"></i>
+                                            </a>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="descargables">
 
-                        <?php if ($allreportellenado[0]->id_Etapa != 23) {
-                            if (getAccess(8, $decimal) || $allreportellenado[0]->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
-                                //if ($allreportellenado[0]->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
-                                if ($id_Padre != '' || $id_Padre != null) { ?>
-                                    <a class="px-2 p-md-2 m-1 h5 text-white" data-trigger="hover"
-                                       data-content="Modificar" data-toggle="popover"
-                                       href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>&Id_Reporte=<?php echo $id_Reporte ?>&id_Gpo_Valores_Reporte=<?php echo $id_Padre ?>">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                                <?php } else { ?>
-                                    <a class="px-2 p-md-2 m-1 h5 text-white" data-trigger="hover"
-                                       data-content="Modificar" data-toggle="popover"
-                                       href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>&Id_Reporte=<?php echo $id_Reporte ?>&return=2">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                                    <?php
-                                }
-                                //}
-                            }
-                        }
+                                            <?php if (getAccess(256, $decimal)) {
+                                            $urlWord = "descargables/reporte_generico_word.php?gpo={$allreportellenado[0]->id_Gpo_Valores_Reporte}";
+                                            if ($allreportellenado[0]->tipo_Reporte == 9)
+                                                $urlWord = '#';//"descargables/reporte_minuta.php?gpo={$allreportellenado[0]->id_Gpo_Valores_Reporte}";
+                                            ?>
+                                            <li>
+                                                <a class="p-2 dropdown-item text-secondary"
+                                                   href="<?= $urlWord ?>">
+                                                    <i class="fa fa-file-word-o" aria-hidden="true"></i> Word</a>
+                                            </li>
+                                            <?php }
 
-                        //SÍ TENGO ACTIVADA MI FIRMA (*)
-                        if ($llaveE[0]->llave == null && $reporteFirmado == 1) {
-                            $perfilUser = explode(',', $perfilesFirma);
-                            $tengoPerfil = false;
-                            foreach ($perfilUser as $perfil) {
-                                // SÍ MI PERFIL ESTA AUTORIZADO (*)
-                                if ($perfil == $_SESSION[ID_PERFIL_USER_SUPERVISOR]) {
-                                    $tengoPerfil = true;
-                                }
-                            }
-                            //SÍ SOY EL DUEÑO O TENGO EL PERFIL AUTORIZADO(*)
-                            if (($allreportellenado[0]->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR] || $tengoPerfil == true) && $reporteFirmado == 1) { ?>
+                                            if (getAccess(512, $decimal)) { ?>
+                                                <li>
+                                                    <a class="p-2 dropdown-item text-secondary" href="#" onclick="generarPDF()">
+                                                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF</a>
+                                                </li>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                <?php } ?>
 
-                                <a class="p-2 m-1 h5 text-white" href="#" data-trigger="hover"
-                                   data-content="Firmar"
-                                   data-toggle="popover" onclick="popover('myModalNip')">
-                                    <i class="fa fa-lock" aria-hidden="true"></i>
-                                </a>
-
-                            <?php }
-                        } ?>
-                    </div>
-                </div>
-
-                <div class="row d-flex justify-content-center">
-                    <div class="col p-0 pt-3">
-                        <div class="row justify-content-center">
-                            <div class="col-9 col-md-11 p-2 bg-light" id="paneles">
-                                <?php if ($allreportellenado[0]->tipo_Reporte != 1) {
-                                    if ($allSeguimientosReportesIncidentes != null) { ?>
-                                        <div class="row" id="porcentajeAvance">
-                                            <div class="col-sm-12 text-right">
-                                                <h5> Porcentaje de
-                                                    Avance: <?php echo $porcentajeReporte; ?>% </h5>
-                                            </div>
-                                        </div>
-                                    <?php }
-                                } else if ($allreportellenado[0]->tipo_Reporte == 1) {
-                                    if ($allreportellenado[0]->id_Etapa != 5) { ?>
-                                        <div class="row">
-                                            <div class="col-sm-12 text-right">
-                                                <h4 id="valorIncidencia"></h4>
-                                            </div>
-                                        </div>
-                                        <?php
-                                    } else { ?>
-                                        <div class="row">
-                                            <div class="col-sm-12 text-right">
-                                                <h4 id="valorIncidenciaValidada"></h4>
-                                            </div>
-                                        </div>
-                                        <?php
+                                <?php if ($allreportellenado[0]->id_Etapa != 23) {
+                                    if (getAccess(8, $decimal) || $allreportellenado[0]->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
+                                        //if ($allreportellenado[0]->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
+                                        if ($id_Padre != '' || $id_Padre != null) { ?>
+                                            <a class="px-2 p-md-2 m-1 h5 text-white" data-trigger="hover"
+                                               data-content="Modificar" data-toggle="popover"
+                                               href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>&Id_Reporte=<?php echo $id_Reporte ?>&id_Gpo_Valores_Reporte=<?php echo $id_Padre ?>">
+                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                        <?php } else { ?>
+                                            <a class="px-2 p-md-2 m-1 h5 text-white" data-trigger="hover"
+                                               data-content="Modificar" data-toggle="popover"
+                                               href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>&Id_Reporte=<?php echo $id_Reporte ?>&return=2">
+                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                            <?php
+                                        }
+                                        //}
                                     }
-                                } ?>
+                                }
 
-                                <? include 'view/formularios_llenados/Reporte_Generico_2.php'; ?>
+                                //SÍ TENGO ACTIVADA MI FIRMA (*)
+                                if ($llaveE[0]->llave == null && $reporteFirmado == 1) {
+                                    $perfilUser = explode(',', $perfilesFirma);
+                                    $tengoPerfil = false;
+                                    foreach ($perfilUser as $perfil) {
+                                        // SÍ MI PERFIL ESTA AUTORIZADO (*)
+                                        if ($perfil == $_SESSION[ID_PERFIL_USER_SUPERVISOR]) {
+                                            $tengoPerfil = true;
+                                        }
+                                    }
+                                    //SÍ SOY EL DUEÑO O TENGO EL PERFIL AUTORIZADO(*)
+                                    if (($allreportellenado[0]->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR] || $tengoPerfil == true) && $reporteFirmado == 1) { ?>
+
+                                        <a class="p-2 m-1 h5 text-white" href="#" data-trigger="hover"
+                                           data-content="Firmar"
+                                           data-toggle="popover" onclick="popover('myModalNip')">
+                                            <i class="fa fa-lock" aria-hidden="true"></i>
+                                        </a>
+
+                                    <?php }
+                                } ?>
                             </div>
                         </div>
-
-                        <div class="row justify-content-center">
-                            <div class="col-11 p-0 mt-3">
-
-                                <!-- ************************ SEGUIMIENTO DE REPORTES DE INCIDENCIAS ************************************ -->
-                                <? if ($allreportellenado[0]->tipo_Reporte == 1) { ?>
-
-                                    <hr class="linea-separadora mb-3">
-                                    <div class="row">
-                                        <h3 class="d-block w-100 p-2 text-primary text-center font-weight-bold">
-                                            <span> REPORTES DE SEGUIMIENTO </span>
-                                        </h3>
-
-                                        <div class="col-sm-12 text-right pr-5 pb-3">
-                                            <? if ($id_Reporte_Seguimiento != 0) {
-                                                if ($allreportellenado[0]->id_Etapa != 5) { ?>
-
-                                                    <a href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?= $id_Reporte_Seguimiento ?>&id_Gpo_Valores_Reporte=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
-                                                       data-trigger="hover" data-content="Seguimiento a incidencia"
-                                                       data-toggle="popover">
-                                                        <img src="img/icons_Status/add.png" width="20px" alt="añadir">
-                                                    </a>
-
-                                                <? }
-                                            } ?>
-                                        </div>
-                                        <div class="col-12 table-responsive-md">
-                                            <table id="seguimientos" class="table table-striped">
-                                                <thead>
-                                                <tr>
-                                                    <th>ID TICKET</th>
-                                                    <th>Título</th>
-                                                    <th>Fecha</th>
-                                                    <th>Hora</th>
-                                                    <th>Estado del Reporte</th>
-                                                    <th>Generado por</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                <? if (is_array($allSeguimientosReportesIncidentes) || is_object($allSeguimientosReportesIncidentes)) {
-                                                    foreach ($allSeguimientosReportesIncidentes as $seguimientoreporte) { ?>
-                                                        <tr>
-                                                        <td><?= $seguimientoreporte->Id_Reporte; ?></td>
-                                                        <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
-
-                                                        <? if ($seguimientoreporte->campo_EstadoReporte == 'Validado') { ?>
-                                                            <td id="fechaValidado"><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
-                                                            <td id="horaValidado"><?= $seguimientoreporte->campo_Hora; ?></td>
-                                                        <? } else { ?>
-                                                            <td><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
-                                                            <td><?= $seguimientoreporte->campo_Hora; ?></td>
-                                                            <?
-                                                        } ?>
-
-                                                        <td>
-                                                            <?
-                                                            //require_once 'core/FuncionesCompartidas.php';
-                                                            $funciones = new FuncionesCompartidas();
-                                                            $texto = $seguimientoreporte->campo_EstadoReporte;
-                                                            switch ($texto) {
-                                                                case 'Abierto':
-                                                                    $etapa = 2;
-                                                                    break;
-                                                                case 'En proceso':
-                                                                    $etapa = 7;
-                                                                    break;
-                                                                case 'Atendido':
-                                                                    $etapa = 3;
-                                                                    break;
-                                                                case 'Validado':
-                                                                    $etapa = 5;
-                                                                    break;
-
-                                                            }
-
-                                                            $icon = $funciones->iconosEstadoReporte($etapa);
-                                                            echo $icon; ?>
-
-                                                        </td>
-
-                                                        <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_Usuario; ?></td>
-                                                        <td>
-
-                                                            <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>&id_Padre=<?= $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
-                                                               data-trigger="hover" data-content="Ver detalle"
-                                                               data-toggle="popover">
-                                                                <i class="fa fa-search" aria-hidden="true"></i></a>
-                                                            &nbsp;
-
-                                                            <? if ($seguimientoreporte->id_Etapa != 23) {
-                                                                if (getAccess(8, $decimal) || $seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
-                                                                    //if ($seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
-                                                                    <a href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>&id_Gpo_Valores_Reporte=<?= $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>&return=3&id_ReporteP=<?= $id_Reporte ?>"
-                                                                       data-trigger="hover" data-content="Modificar"
-                                                                       data-toggle="popover">
-                                                                        <i class="fa fa-pencil-square-o"
-                                                                           aria-hidden="true"></i></a> &nbsp;&nbsp;
-
-                                                                    <a href="#" data-trigger="hover"
-                                                                       data-content="Borrar" data-toggle="popover"
-                                                                       onclick="borrarRegistroAjax(<?= $seguimientoreporte->Id_Reporte; ?>, 'id_gpo_valores', '<?= $seguimientoreporte->titulo_Reporte; ?>', 'LlenadosReporte', 'borrar')">
-                                                                        <i class="fa fa-trash"
-                                                                           aria-hidden="true"></i></a>
-                                                                <? }
-                                                            } ?>
-                                                            <br/>
-                                                        </td>
-                                                    <? } ?>
-                                                    </tr>
-                                                <? } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                <? } ?>
-                                <!-- ************************ END SEGUIMIENTO DE REPORTES DE INCIDENCIAS ************************************ -->
-
-
-                                <!-- ************************ REPORTES VINCULADOS A REPORTE PADRE ****************************************** -->
-                                <?php if ($allreportellenado[0]->tipo_Reporte != 1) {
-                                    //if ($allSeguimientosReportesIncidentes != null) { ?>
-                                    <hr class="linea-separadora mb-3">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row">
-                                                <h3 class="d-block w-100 p-2 text-primary text-center font-weight-bold">
-                                                    <span>REPORTES VINCULADOS</span>
-                                                </h3>
-                                                <div class="col-sm-12 text-right pr-5 pb-3">
-                                                    <!--CUANDO SE INVOQUE LA FUNCION PASAR COMO PARAMETRO EL ID DEL REPORTE
-                                                    PADRE PARA QUE NO SE PUEDA VINCULAR A EL MISMO.-->
-                                                    <a href="#" data-trigger="hover"
-                                                       data-content="Vincular reporte" data-toggle="popover"
-                                                       onclick="getAllTiposReportes(<?php echo $allreportellenado[0]->id_Reporte ?>,  <?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>)">
-                                                        <img src="img/icons_Status/add.png" width="20px">
-                                                    </a>
+                    </div>
+                    <div class="col-12 bg-white shadow">
+                      <div class="row d-flex justify-content-center">
+                            <div class="col-12">
+                                 <div class="row justify-content-center">
+                                <div class="col-12">
+                                    <div class="row ">
+                                        <div class="col-12 bg-light" id="paneles">
+                                        <?php if ($allreportellenado[0]->tipo_Reporte != 1) {
+                                            if ($allSeguimientosReportesIncidentes != null) { ?>
+                                                <div class="row" id="porcentajeAvance">
+                                                    <div class="col-sm-12 text-right">
+                                                        <h5> Porcentaje de
+                                                            Avance: <?php echo $porcentajeReporte; ?>% </h5>
+                                                    </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="row justify-content-center mb-3">
-                                                <div class="col-sm-6 col-md-11 col-lg-12 table-responsive-md">
-                                                    <table id="vinculados" class="table table-striped">
-                                                        <thead class="bg-primary text-light">
-                                                        <tr>
-                                                            <th>ID TICKET</th>
-                                                            <th>Nombre de Reporte</th>
-                                                            <th>Título</th>
-                                                            <th>Fecha</th>
-                                                            <th>Hora</th>
-                                                            <th>Generado por</th>
-                                                            <th>Acciones</th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                        <?php if (is_array($allSeguimientosReportesIncidentes) || is_object($allSeguimientosReportesIncidentes)) {
-                                                            foreach ($allSeguimientosReportesIncidentes as $seguimientoreporte) { ?>
-                                                                <tr>
-                                                                <td><?php echo $seguimientoreporte->Id_Reporte; ?></td>
-                                                                <td><?php echo $seguimientoreporte->nombre_Reporte; ?></td>
-                                                                <td><?php echo $seguimientoreporte->titulo_Reporte; ?></td>
-                                                                <td><?php echo $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
-                                                                <td><?php echo $seguimientoreporte->campo_Hora; ?></td>
-                                                                <td><?php echo $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_Usuario; ?></td>
-                                                                <td>
-                                                                    <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?php echo $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>&id_Padre=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
-                                                                       data-trigger="hover" data-content="Ver detalle"
-                                                                       data-toggle="popover"
-                                                                       data-placement="left">
-                                                                        <i class="fa fa-search" aria-hidden="true"></i></a>
-                                                                    &nbsp;
-                                                                    <?php if ($seguimientoreporte->id_Etapa != 23) {
-                                                                        if (getAccess(8, $decimal) || $seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
-                                                                            //if ($seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
-                                                                            <a href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?php echo $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>&tipo_Reporte=<?php echo $allreportellenado[0]->tipo_Reporte; ?>&id_Gpo_Valores_Reporte=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
-                                                                               data-trigger="hover"
-                                                                               data-content="Modificar"
-                                                                               data-toggle="popover">
-                                                                                <i class="fa fa-pencil-square-o"
-                                                                                   aria-hidden="true"></i></a> &nbsp;
-                                                                        <?php }
-                                                                    } ?>
-                                                                    <br/>
-                                                                </td>
-                                                            <?php } ?>
-                                                            </tr>
-                                                        <?php } ?>
-                                                        </tbody>
-                                                    </table>
+                                            <?php }
+                                        } else if ($allreportellenado[0]->tipo_Reporte == 1) {
+                                            if ($allreportellenado[0]->id_Etapa != 5) { ?>
+                                                <div class="row">
+                                                    <div class="col-sm-12 text-right">
+                                                        <h4 id="valorIncidencia"></h4>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <?php
+                                            } else { ?>
+                                                <div class="row">
+                                                    <div class="col-sm-12 text-right">
+                                                        <h4 id="valorIncidenciaValidada"></h4>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                            }
+                                        } ?>
 
-                                        </div>
-
-
+                                        <? include 'view/formularios_llenados/Reporte_Generico_2.php'; ?>
                                     </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
 
+                                    <!-- ************************ SEGUIMIENTO DE REPORTES DE INCIDENCIAS ************************************ -->
+                                    <? if ($allreportellenado[0]->tipo_Reporte == 1) { ?>
 
-                                    <?php //}
-                                } ?>
-                                <!-- ************************ REPORTES VINCULADOS A REPORTE PADRE ****************************************** -->
-                                <hr class="linea-separadora mb-3">
-                                <div class="row">
-                                    <div class="col-sm-12">
+                                        <hr class="linea-separadora mb-3">
                                         <div class="row">
+                                            <div class="col-sm-12 text-right pr-5 pb-3">
+                                                <h3 class="d-block w-100 p-2 text-primary text-center font-weight-bold">
+                                                    <span> REPORTES DE SEGUIMIENTO </span>
+                                                </h3>
+
+                                                    <? if ($id_Reporte_Seguimiento != 0) {
+                                                        if ($allreportellenado[0]->id_Etapa != 5) { ?>
+
+                                                            <a href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?= $id_Reporte_Seguimiento ?>&id_Gpo_Valores_Reporte=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
+                                                               data-trigger="hover" data-content="Seguimiento a incidencia"
+                                                               data-toggle="popover">
+                                                                <img src="img/icons_Status/add.png" width="20px" alt="añadir">
+                                                            </a>
+
+                                                        <? }
+                                                    } ?>
+                                            </div>
+                                            <div class="col-12 table-responsive-md">
+                                                <table id="seguimientos" class="table table-striped">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>ID TICKET</th>
+                                                        <th>Título</th>
+                                                        <th>Fecha</th>
+                                                        <th>Hora</th>
+                                                        <th>Estado del Reporte</th>
+                                                        <th>Generado por</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    <? if (is_array($allSeguimientosReportesIncidentes) || is_object($allSeguimientosReportesIncidentes)) {
+                                                        foreach ($allSeguimientosReportesIncidentes as $seguimientoreporte) { ?>
+                                                            <tr>
+                                                            <td><?= $seguimientoreporte->Id_Reporte; ?></td>
+                                                            <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
+
+                                                            <? if ($seguimientoreporte->campo_EstadoReporte == 'Validado') { ?>
+                                                                <td id="fechaValidado"><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
+                                                                <td id="horaValidado"><?= $seguimientoreporte->campo_Hora; ?></td>
+                                                            <? } else { ?>
+                                                                <td><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
+                                                                <td><?= $seguimientoreporte->campo_Hora; ?></td>
+                                                                <?
+                                                            } ?>
+
+                                                            <td>
+                                                                <?
+                                                                //require_once 'core/FuncionesCompartidas.php';
+                                                                $funciones = new FuncionesCompartidas();
+                                                                $texto = $seguimientoreporte->campo_EstadoReporte;
+                                                                switch ($texto) {
+                                                                    case 'Abierto':
+                                                                        $etapa = 2;
+                                                                        break;
+                                                                    case 'En proceso':
+                                                                        $etapa = 7;
+                                                                        break;
+                                                                    case 'Atendido':
+                                                                        $etapa = 3;
+                                                                        break;
+                                                                    case 'Validado':
+                                                                        $etapa = 5;
+                                                                        break;
+
+                                                                }
+
+                                                                $icon = $funciones->iconosEstadoReporte($etapa);
+                                                                echo $icon; ?>
+
+                                                            </td>
+
+                                                            <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_Usuario; ?></td>
+                                                            <td>
+
+                                                                <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>&id_Padre=<?= $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
+                                                                   data-trigger="hover" data-content="Ver detalle"
+                                                                   data-toggle="popover">
+                                                                    <i class="fa fa-search" aria-hidden="true"></i></a>
+                                                                &nbsp;
+
+                                                                <? if ($seguimientoreporte->id_Etapa != 23) {
+                                                                    if (getAccess(8, $decimal) || $seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
+                                                                        //if ($seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
+                                                                        <a href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>&id_Gpo_Valores_Reporte=<?= $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>&return=3&id_ReporteP=<?= $id_Reporte ?>"
+                                                                           data-trigger="hover" data-content="Modificar"
+                                                                           data-toggle="popover">
+                                                                            <i class="fa fa-pencil-square-o"
+                                                                               aria-hidden="true"></i></a> &nbsp;&nbsp;
+
+                                                                        <a href="#" data-trigger="hover"
+                                                                           data-content="Borrar" data-toggle="popover"
+                                                                           onclick="borrarRegistroAjax(<?= $seguimientoreporte->Id_Reporte; ?>, 'id_gpo_valores', '<?= $seguimientoreporte->titulo_Reporte; ?>', 'LlenadosReporte', 'borrar')">
+                                                                            <i class="fa fa-trash"
+                                                                               aria-hidden="true"></i></a>
+                                                                    <? }
+                                                                } ?>
+                                                                <br/>
+                                                            </td>
+                                                        <? } ?>
+                                                        </tr>
+                                                    <? } ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    <? } ?>
+                                    <!-- ************************ END SEGUIMIENTO DE REPORTES DE INCIDENCIAS ************************************ -->
+
+
+                                    <!-- ************************ REPORTES VINCULADOS A REPORTE PADRE ****************************************** -->
+                                    <?php if ($allreportellenado[0]->tipo_Reporte != 1) {
+                                        //if ($allSeguimientosReportesIncidentes != null) { ?>
+
+
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <hr class="linea-separadora mb-3">
+                                                        <div class="d-flex justify-content-between">
+                                                        <h3 class="d-block w-100 p-2 text-primary text-center font-weight-bold">
+                                                            <span>REPORTES VINCULADOS</span>
+                                                        </h3>
+                                                        <div class="d-flex align-items-center text-right">
+                                                            <!--CUANDO SE INVOQUE LA FUNCION PASAR COMO PARAMETRO EL ID DEL REPORTE
+                                                            PADRE PARA QUE NO SE PUEDA VINCULAR A EL MISMO.-->
+                                                            <a href="#" data-trigger="hover"
+                                                               data-content="Vincular reporte"
+                                                               data-toggle="popover"
+                                                               onclick="getAllTiposReportes(<?php echo $allreportellenado[0]->id_Reporte ?>,  <?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>)">
+                                                                <img src="img/icons_Status/add.png" width="20px">
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                <div class="row justify-content-center mb-3">
+                                                    <div class="col-12">
+                                                        <div class="table-responsive">
+                                                            <table id="vinculados" class="table table-striped">
+                                                                <thead class="bg-primary text-light">
+                                                                <tr>
+                                                                    <th>ID TICKET</th>
+                                                                    <th>Nombre de Reporte</th>
+                                                                    <th>Título</th>
+                                                                    <th>Fecha</th>
+                                                                    <th>Hora</th>
+                                                                    <th>Generado por</th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                <?php if (is_array($allSeguimientosReportesIncidentes) || is_object($allSeguimientosReportesIncidentes)) {
+                                                                    foreach ($allSeguimientosReportesIncidentes as $seguimientoreporte) { ?>
+                                                                        <tr>
+                                                                        <td><?php echo $seguimientoreporte->Id_Reporte; ?></td>
+                                                                        <td><?php echo $seguimientoreporte->nombre_Reporte; ?></td>
+                                                                        <td><?php echo $seguimientoreporte->titulo_Reporte; ?></td>
+                                                                        <td><?php echo $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
+                                                                        <td><?php echo $seguimientoreporte->campo_Hora; ?></td>
+                                                                        <td><?php echo $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_Usuario; ?></td>
+                                                                        <td>
+                                                                            <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?php echo $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>&id_Padre=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
+                                                                               data-trigger="hover" data-content="Ver detalle"
+                                                                               data-toggle="popover"
+                                                                               data-placement="left">
+                                                                                <i class="fa fa-search" aria-hidden="true"></i></a>
+                                                                            &nbsp;
+                                                                            <?php if ($seguimientoreporte->id_Etapa != 23) {
+                                                                                if (getAccess(8, $decimal) || $seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) {
+                                                                                    //if ($seguimientoreporte->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
+                                                                                    <a href="index.php?controller=LlenadosReporte&action=modificarreporte&id_Gpo_Valores_ReportePadre=<?php echo $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>&tipo_Reporte=<?php echo $allreportellenado[0]->tipo_Reporte; ?>&id_Gpo_Valores_Reporte=<?php echo $allreportellenado[0]->id_Gpo_Valores_Reporte; ?>"
+                                                                                       data-trigger="hover"
+                                                                                       data-content="Modificar"
+                                                                                       data-toggle="popover">
+                                                                                        <i class="fa fa-pencil-square-o"
+                                                                                           aria-hidden="true"></i></a> &nbsp;
+                                                                                <?php }
+                                                                            } ?>
+                                                                            <br/>
+                                                                        </td>
+                                                                    <?php } ?>
+                                                                    </tr>
+                                                                <?php } ?>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <?php //}
+                                    } ?>
+                                    <!-- ************************ REPORTES VINCULADOS A REPORTE PADRE ****************************************** -->
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <hr class="linea-separadora mb-3">
+                                        </div>
+                                        <div class="col-12 mb-3">
                                             <h3 class="d-block w-100 p-2 text-primary text-center font-weight-bold">
                                                 &nbsp;&nbsp;&nbsp;COMENTARIOS&nbsp;&nbsp;&nbsp;
                                             </h3>
                                         </div>
 
-                                        <?php if (is_array($allcomentarios) || is_object($allcomentarios)) {
-                                            foreach ($allcomentarios as $comentario) {
-                                                $id1 = "Text1" . $comentario->id_comentario;
-                                                $id2 = "Text2" . $comentario->id_comentario;
-                                                $id3 = "editar" . $comentario->id_comentario;
-                                                echo "<input type='hidden' id='" . $id1 . "' type='text' value='" . $comentario->Comentario_reporte . "' />";
-                                                echo "<input type='hidden' id='" . $id2 . "' type='text' value='" . $comentario->id_comentario . "' />";
-                                                $date = new DateTime($comentario->Fecha_Comentario); ?>
 
-                                                <div class="col-sm-12">
-                                                    <div class="row">
-                                                        <div class="col-sm-8">
-                                                            <div class="form-group">
-                                                                <label>
-                                                                    <?= $comentario->nombre_Usuario . ' ' . $comentario->apellido_Usuario . " | " . $date->format('d-m-Y H:i:s'); ?>
-                                                                </label> &nbsp;
+                                        <?php
+                                            $class = '';
+                                            $allcomentarios ? $class = "scroll-600" : $class
+                                        ?>
+                                        <div class="col-sm-12 <?= $class;?> mb-3">
+                                            <div class="row">
+                                                <?php if (is_array($allcomentarios) || is_object($allcomentarios)) {
+                                                    foreach ($allcomentarios as $comentario) {
+                                                        $id1 = "Text1" . $comentario->id_comentario;
+                                                        $id2 = "Text2" . $comentario->id_comentario;
+                                                        $id3 = "editar" . $comentario->id_comentario;
+                                                        echo "<input type='hidden' id='" . $id1 . "' type='text' value='" . $comentario->Comentario_reporte . "' />";
+                                                        echo "<input type='hidden' id='" . $id2 . "' type='text' value='" . $comentario->id_comentario . "' />";
+                                                        $date = new DateTime($comentario->Fecha_Comentario); ?>
 
-                                                                <?php if ($comentario->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
-                                                                    <button data-trigger="hover"
-                                                                            data-content="Modificar"
-                                                                            data-toggle="popover" style="border: none"
-                                                                            value="<?= $comentario->id_comentario; ?>"
-                                                                            onclick="fAgrega(this.value);"
-                                                                            class="btn-outline-secondary h5">
-                                                                        <i class="fa fa-pencil-square-o"
-                                                                           aria-hidden="true"></i>
-                                                                    </button>
+                                                    <div class="col-sm-12 ">
+                                                        <div class="alert alert-info rounded text-primary"
+                                                             style=" border-color: #005a94; background: #E6E6E6;">
+                                                            <div class="alert alert-dark rounded">
+        <!--                                                        <div class="col-12">-->
+        <!--                                                            <div class="form-group ">-->
+                                                                        <p class="d-inline-block m-0">
+                                                                            <span><i class="fas fa-user"></i></span>
+                                                                            <b><?= $comentario->nombre_Usuario . ' ' . $comentario->apellido_Usuario ?></b>
+                                                                            <span class=" rounded badge badge-pill badge-primary">Autor</span>
+                                                                        </p>
 
-                                                                <?php } ?>
+                                                                        <?php if ($comentario->id_Usuario == $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
+                                                                            <button data-trigger="hover"
+                                                                                    data-content="Modificar"
+                                                                                    data-toggle="popover" style="border: none"
+                                                                                    value="<?= $comentario->id_comentario; ?>"
+                                                                                    onclick="fAgrega(this.value);"
+                                                                                    class="btn btn-outline-secondary rounded px-2 py-1">
+                                                                                <i class="fas fa-pencil-alt"
+                                                                                   aria-hidden="true"></i>
+                                                                            </button>
+
+                                                                        <?php } ?>
+        <!--                                                            </div>-->
+        <!--                                                        </div>-->
                                                             </div>
+                                                            <hr class="mt-0">
+        <!--                                                    <div class="row">-->
+                                                                <div class="w-100">
+                                                                    <div class="border-left" style="border-left: 4px solid #860018 !important;">
+                                                                        <blockquote class="mb-0 ml-4"><?= nl2br($comentario->Comentario_reporte); ?> </blockquote>
+
+                                                                        <div class="pointer col-sm-4 text-left ml-2">
+
+                                                                            <?php if ($comentario->nombre_Fotografia != NULL) {
+                                                                                $archivo = new SplFileInfo($comentario->nombre_Fotografia);
+                                                                                $ext = strtolower($archivo->getExtension());
+                                                                                switch ($ext) {
+                                                                                    case 'bmp':
+                                                                                    case 'jpg':
+                                                                                    case 'png': ?>
+                                                                                        <a role="button" onclick="showModal('img/comentarios/<?= $comentario->nombre_Fotografia; ?>')">
+                                                                                            <img class="mt-3"
+                                                                                                 width="100px"
+                                                                                                 src="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"
+                                                                                                 alt="img">
+                                                                                        </a>
+                                                                                        <?php break;
+                                                                                    case 'xlsx':
+                                                                                    case 'xls': ?>
+                                                                                        <a class="d-block mt-3"
+                                                                                           href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
+                                                                                                    class="fa fa-file-excel-o"></i> <?= $comentario->nombre_Fotografia; ?>
+                                                                                        </a>
+                                                                                        <?php break;
+                                                                                    case 'docx':
+                                                                                    case 'doc': ?>
+                                                                                        <a class="d-block mt-3"
+                                                                                           href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
+                                                                                                    class="fa fa-file-word-o"></i> <?= $comentario->nombre_Fotografia; ?>
+                                                                                        </a>
+                                                                                        <?php break;
+                                                                                    case 'pdf': ?>
+                                                                                        <a class="d-block mt-3"
+                                                                                           href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
+                                                                                                    class="fa fa-file-pdf-o"></i> <?= $comentario->nombre_Fotografia; ?>
+                                                                                        </a>
+                                                                                        <?php break;
+                                                                                    default: ?>
+                                                                                        <a class="d-block mt-3"
+                                                                                           href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
+                                                                                                    class="fa fa-file"></i> <?= $comentario->nombre_Fotografia; ?>
+                                                                                        </a>
+                                                                                    <?php }
+                                                                            } ?>
+                                                                        </div>
+                                                                    </div>
+                                                                    <label style="font-size: 12px;">
+                                                                        <br><i class="fas fa-clock"></i> <?= $date->format('H:i:s') ?>
+                                                                        <i class="p-1 far fa-calendar-alt"></i><?= $date->format('d-m-Y') ?>
+                                                                    </label>
+                                                                </div>
+        <!--                                                    </div>-->
                                                         </div>
                                                     </div>
+                                                    <?php }
+                                                } ?>
+                                            </div>
+                                        </div>
 
-                                                    <div class="row">
-
-                                                        <div class="col-sm-8">
-                                                            <div class="form-group">
-                                                                <label><?= nl2br($comentario->Comentario_reporte); ?> </label>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-sm-4 text-right">
-                                                            <?php if ($comentario->nombre_Fotografia != NULL) {
-                                                                switch (explode('.', $comentario->nombre_Fotografia)[1]) {
-                                                                    case 'bmp':
-                                                                    case 'jpg':
-                                                                    case 'png': ?>
-                                                                        <a href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>">
-                                                                            <img width="40%"
-                                                                                 src="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"
-                                                                                 alt="img">
-                                                                        </a>
-                                                                        <?php break;
-                                                                    case 'xlsx':
-                                                                    case 'xls': ?>
-                                                                        <a href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
-                                                                                class="fa fa-file-excel-o"></i> <?= $comentario->nombre_Fotografia; ?>
-                                                                        </a>
-                                                                        <?php break;
-                                                                    case 'docx':
-                                                                    case 'doc': ?>
-                                                                        <a href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
-                                                                                class="fa fa-file-word-o"></i> <?= $comentario->nombre_Fotografia; ?>
-                                                                        </a>
-                                                                        <?php break;
-                                                                    case 'pdf': ?>
-                                                                        <a href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
-                                                                                class="fa fa-file-pdf-o"></i> <?= $comentario->nombre_Fotografia; ?>
-                                                                        </a>
-                                                                        <?php break;
-                                                                    default: ?>
-                                                                        <a href="img/comentarios/<?= $comentario->nombre_Fotografia; ?>"><i
-                                                                                class="fa fa-file"></i> <?= $comentario->nombre_Fotografia; ?>
-                                                                        </a>
-                                                                    <?php }
-                                                            } ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <?php }
-                                        } ?>
-                                    </div>
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <form
-                                            action="<?= $helper->url("ReportesLlenados", "guardarcomentario"); ?>"
-                                            method="post"
-                                            enctype="multipart/form-data">
-
+                                        <div class="col-sm-12">
                                             <div class="row">
                                                 <div class="col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="comentarios">Escribe un comentario:</label>
-                                                        <textarea rows="4" cols="50" class="form-control"
-                                                                  id="comentarios"
-                                                                  name="comentarios" required></textarea>
-                                                    </div>
+                                                    <form
+                                                        action="<?= $helper->url("ReportesLlenados", "guardarcomentario"); ?>"
+                                                        method="post"
+                                                        enctype="multipart/form-data">
 
-                                                    <div class="row">
-                                                        <div class="col-sm-12 text-right">
-                                                            <input type="hidden" name="id_Reporte"
-                                                                   value="<?= $id_Reporte ?>"
-                                                                   id="id_Reporte">
+                                                        <div class="row">
+                                                            <div class="col-sm-12">
+                                                                <div class="form-group">
+                                                                    <label for="comentarios">Escribe un comentario:</label>
+                                                                    <textarea rows="4" cols="50" class="form-control"
+                                                                              id="comentarios"
+                                                                              name="comentarios" required></textarea>
+                                                                    <div class="custom-file mt-2">
+                                                                        <input type="file" class="custom-file-input"
+                                                                               id="file1" name="img_comentario"
+                                                                               lang="es" onchange="updateInputFile(this)">
+                                                                        <label class="custom-file-label" for="file1">Seleccionar
+                                                                            Archivo</label>
+                                                                    </div>
+                                                                </div>
 
-                                                            <div class="form-group">
+                                                                <div class="row">
+                                                                    <div class="col-sm-12 text-right">
+                                                                        <input type="hidden" name="id_Reporte"
+                                                                               value="<?= $id_Reporte ?>"
+                                                                               id="id_Reporte">
 
-                                                                <input type="hidden" name="id_Gpo_Valores_Reporte"
-                                                                       value="<?= $id_Gpo ?>"
-                                                                       id="id_Gpo_Valores_Reporte">
+                                                                        <div class="form-group">
 
-                                                                <input type="hidden" name="id_usuario"
-                                                                       value="<?= $id_usuario ?>"
-                                                                       id="id_usuario">
+                                                                            <input type="hidden" name="id_Gpo_Valores_Reporte"
+                                                                                   value="<?= $id_Gpo ?>"
+                                                                                   id="id_Gpo_Valores_Reporte">
 
-                                                                <button type="submit" value="nuevo campo"
-                                                                        class="btn btn-w-m btn-danger">
-                                                                    Enviar Comentario&nbsp;<img
-                                                                        src="././img/telegram-icon.svg"
-                                                                        alt=""
-                                                                        width="16px">
-                                                                </button>
+                                                                            <input type="hidden" name="id_usuario"
+                                                                                   value="<?= $id_usuario ?>"
+                                                                                   id="id_usuario">
+
+                                                                            <button type="submit" value="nuevo campo"
+                                                                                    class="btn btn-w-m btn-danger">
+                                                                                Enviar Comentario&nbsp;<img
+                                                                                    src="././img/telegram-icon.svg"
+                                                                                    alt=""
+                                                                                    width="16px">
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        </form>
+                                        </div> <!--revisado-->
+
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            </div>
+                    </div>
                     </div>
                 </div>
             </div>

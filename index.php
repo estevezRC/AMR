@@ -8,7 +8,8 @@ $action = $_GET["action"];
 require_once 'config/global.php';
 
 if ((!isset($_SESSION[AUTENTICADO_SUPERVISOR])) && ($controller != "Principal") && ($action != "logueo")) {
-    header("Location: https://" . URL_DESARROLLO);
+    $url = $_SERVER['SERVER_NAME'];
+    header("Location: https://$url");
 } else {
 //Base para los controladores
     require_once 'core/ControladorBase.php';

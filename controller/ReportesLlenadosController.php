@@ -128,41 +128,17 @@ class ReportesLlenadosController extends ControladorBase
         $allcomentarios = $comentario->getAllComentariosReporte($id);
 
         // -----------------------------------------CAMPOS ESPECIALES------------------------------------------------
-        /*$id_usuario = 0;
-        foreach ($allreportellenado as $reporte) {
-            switch ($reporte->tipo_Reactivo_Campo) {
-                //SELECT MONITOREO
-                case "select-monitoreo":
-                    $monitoreo = $comentario->getAllCatMonitoreo();
-                    break;
-
-                case "select-catalogo":
-                    $menucatalogo = $comentario->getCatCategoriaByIdCategoria($reporte->Valor_Default);
-                    break;
-                case "check_list_asistencia":
-                    $idsEmpleados = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                    $allEmpleadosAsistencia = $comentario->getAllEmpleadosByInIdEmpleados($idsEmpleados);
-                    break;
-                case "select-tabla":
-                    $idProyecto = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                    $allInfoProyecto = $comentario->getProyectoById($idProyecto);
-                    break;
-            }
-            $id_usuario = $reporte->id_Usuario;
-        } */
-
-        // -----------------------------------------CAMPOS ESPECIALES------------------------------------------------
         $id_usuario = 0;
         $monitoreo = null;
         $menucatalogo = null;
-        $allEmpleadosAsistencia = null;
-        $allInfoProyecto = null;
+        $datosIdAndName = null;
+        $allRegistrosTablas = null;
         $subcampos = null;
         $createData = function ($allreportellenado) use (
             &$monitoreo,
             &$menucatalogo,
-            &$allEmpleadosAsistencia,
-            &$allInfoProyecto,
+            &$datosIdAndName,
+            &$allRegistrosTablas,
             &$subcampos,
             &$id_usuario,
             &$createData,
@@ -175,17 +151,45 @@ class ReportesLlenadosController extends ControladorBase
                     case "select-monitoreo":
                         $monitoreo = $comentario->getAllCatMonitoreo();
                         break;
+
                     case "select-catalogo":
                         $menucatalogo = $comentario->getCatCategoriaByIdCategoria($reporte->Valor_Default);
                         break;
+
                     case "check_list_asistencia":
-                        $idsEmpleados = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                        $allEmpleadosAsistencia = $comentario->getAllEmpleadosByInIdEmpleados($idsEmpleados);
+                        $ids = str_replace('/', ',', $reporte->valor_Texto_Reporte);
+                        switch ($reporte->Valor_Default) {
+                            case 'empleados':
+                                // OBTENER TODOS LOS EMPLEADOS
+                                $datosIdAndName = $comentario->getAllEmpleadosByInIdEmpleados($ids);
+                                break;
+                            case 'participantes':
+                                // OBTENER TODOS LOS PARTICIPANTES = id_Status_Usuario IN(1,2) AND participante = 1
+                                $datosIdAndName = $comentario->getAllParticipantesIdAndNameByIds($ids);
+                                break;
+                            default;
+                        }
                         break;
+
                     case "select-tabla":
-                        $idProyecto = str_replace('/', ',', $reporte->valor_Texto_Reporte);
-                        $allInfoProyecto = $comentario->getProyectoById($idProyecto);
+                        $id = str_replace('/', ',', $reporte->valor_Texto_Reporte);
+
+                        // OBTENER TODOS LOS REGISTROS DE LA TABLA X
+                        switch ($reporte->Valor_Default) {
+                            case 'proyecto':
+                                // CONSULTAR TABLA DE PROYECTOS
+                                $allRegistrosTablas = $comentario->getAllProyectosIdAndNameById($id);
+                                break;
+                            case 'participante':
+                                if ($id)
+                                    $allRegistrosTablas = $comentario->getAllParticipantesIdAndNameByIds($id);
+                                // PARA CAMPO EN JSON(CAMPO MULTIPLE)
+                                $reporte->Valor_Default = $comentario->getAllParticipantesIdAndName();
+                                break;
+                            default;
+                        }
                         break;
+
                     case "multiple":
                         $IDSubcampos = explode("/", $reporte->Valor_Default);
                         $subcampos = array_map(function ($id) use ($llenadoreporte) {
@@ -343,7 +347,7 @@ class ReportesLlenadosController extends ControladorBase
             "nipUser" => $nipUser, "reporteFirmado" => $reporteFirmado, "perfilesFirma" => $perfilesFirma,
             "allSeguimientosReportesIncidentes" => $allSeguimientosReportesIncidentes, "id_Padre" => $id_Padre,
             "logos" => $logos, "porcentajeReporte" => $porcentaje, "id_Reporte_Seguimiento" => $id_Reporte_Seguimiento,
-            "allEmpleadosAsistencia" => $allEmpleadosAsistencia, "allInfoProyecto" => $allInfoProyecto,
+            "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas,
             "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas, "subCamposMultiple" => $subcampos
         ));
         // */
@@ -367,7 +371,7 @@ class ReportesLlenadosController extends ControladorBase
         $id_Reporte = $_POST['id_Reporte'];
         $id_Gpo = $_POST['id_Gpo_Valores_Reporte'];
         $comentarios = $_POST['comentarios'];
-        $id_usuario = $_POST['id_usuario'];
+        $id_usuario = $_POST['id_usuario'] ?? 1;
         //CONSULTAR ULTIMO COMENTARIO
 
         $comentario = new Comentarios_Reportes($this->adapter);
@@ -381,10 +385,6 @@ class ReportesLlenadosController extends ControladorBase
         $funciones = new FuncionesCompartidas();
         $funciones->guardarNotificacion($id_usuario, $_SESSION[ID_USUARIO_SUPERVISOR], $id_Gpo, 2);
 
-        $last_id = $guardarcomentario['Resultado'];
-        //var_dump($guardarcomentario);
-        if ($last_id != 0 || $last_id != NULL) {
-            //echo $last_id;
             //FOTOGRAFIA
             if (!empty($_FILES["img_comentario"]['name'])) {
 
@@ -393,6 +393,10 @@ class ReportesLlenadosController extends ControladorBase
                 $fecha_mes = substr($fecha_mes, 0, 3);
                 $año_dia = date("dy");
                 $hora = date("His");
+
+                // Obtener ultimo Comentario insertado
+                $ultimoComentario = $comentario->getAllValorMaxComentarios();
+
                 //CARGAR IMAGEN
                 $nombre_img = $_FILES["img_comentario"]['name'];
                 $tipo_img = $_FILES['img_comentario']['type'];
@@ -400,45 +404,37 @@ class ReportesLlenadosController extends ControladorBase
                 $nombre_imagen = $id_Gpo . "_" . $fecha_mes . $año_dia . "_" . $hora . "." . $extension[1];
                 $nombre_imagen = str_replace(' ', '', $nombre_imagen);
                 $target_path = "img/comentarios/";
+
+                if (!is_dir($target_path)) {
+                    mkdir($target_path, 0777, true);
+                }
+
                 $target_path = $target_path . basename($nombre_imagen);
                 $img = "img/comentarios/" . $nombre_imagen;
                 if (move_uploaded_file($_FILES["img_comentario"]['tmp_name'], $target_path)) {
                     $foto = 1;
+
+                    //REGISTRAR FOTO EN TABLA FOTOGRAFIAS
+                    $llenadofotografia = new Fotografia($this->adapter);
+                    $llenadofotografia->set_id_Usuario($_SESSION[ID_USUARIO_SUPERVISOR]);
+                    $llenadofotografia->set_id_Modulo(7);
+                    $llenadofotografia->set_identificador_Fotografia($ultimoComentario);
+                    $llenadofotografia->set_directorio_Fotografia('');
+                    $nombre_Fotografia = str_replace('img/comentarios/', '', $img);
+                    $llenadofotografia->set_nombre_Fotografia($nombre_Fotografia);
+                    $llenadofotografia->set_descripcion_Fotografia(NULL);
+                    $llenadofotografia->set_orientacion_Fotografia(0);
+                    $save_fotografia = $llenadofotografia->saveNewFotografia();
+
                 } else {
                     $foto = 0;
                 }
 
             }
-        }
 
-        $this->redirect("ReportesLlenados", "guardarfotocomentario&last_id=$last_id&img=$img&foto=$foto&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
-
-    }
-
-    public function guardarfotocomentario()
-    {
-        $id_Usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
-        $last_id = $_GET['last_id'];
-        $img = $_GET['img'];
-        $foto = $_GET['foto'];
-        $id_Gpo = $_GET['id_Gpo_Valores_Reporte'];
-        $id_Reporte = $_GET['Id_Reporte'];
-        if ($last_id != 0 || $last_id != NULL) {
-            if ($foto == 1) {
-                $llenadofotografia = new Fotografia($this->adapter);
-                $llenadofotografia->set_id_Usuario($id_Usuario);
-                $llenadofotografia->set_id_Modulo(7);
-                $llenadofotografia->set_identificador_Fotografia($last_id);
-                $llenadofotografia->set_directorio_Fotografia('');
-                $nombre_Fotografia = str_replace('img/comentarios/', '', $img);
-                $llenadofotografia->set_nombre_Fotografia($nombre_Fotografia);
-                $llenadofotografia->set_descripcion_Fotografia(NULL);
-                $llenadofotografia->set_orientacion_Fotografia(0);
-                $save_fotografia = $llenadofotografia->saveNewFotografia();
-            }
-        }
 
         $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
+
     }
 
 
@@ -473,6 +469,11 @@ class ReportesLlenadosController extends ControladorBase
             $nombre_imagen = $idcomentario . "_" . $fecha_mes . $año_dia . "_" . $hora . "." . $extension[1];
             $nombre_imagen = str_replace(' ', '', $nombre_imagen);
             $target_path = "img/comentarios/";
+
+            if (!is_dir($target_path)) {
+                mkdir($target_path, 0777, true);
+            }
+
             $target_path = $target_path . basename($nombre_imagen);
             $img = "img/comentarios/" . $nombre_imagen;
             if (move_uploaded_file($_FILES["img_comentario2"]['tmp_name'], $target_path)) {

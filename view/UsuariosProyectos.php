@@ -10,6 +10,76 @@
         mensajes(insercion, elemento);
 
         obtenerDatosProPer();
+
+        $('.btn_modificar_proyecto').on('click', function(){
+            var id_proyecto = $(this).attr('id');
+
+            $.ajax({
+                url: 'index.php?controller=UsuariosProyectos&action=modificar',
+                method: 'POST',
+                dataType: 'JSON',
+                data: { usuarioproyectoid: id_proyecto},
+                success: function(data) {
+
+                    let selectPerfiles = $('#id_Perfil');
+                    selectPerfiles.empty();
+                    let x = 0;
+                    let dataUser = data.data;
+                    let perfiles = data.perfiles
+                    $('#id_usuario_proyecto').val(dataUser.idUsuarios_Proyectos);
+                    $('#labelUsuario').text(dataUser.nombre_Usuario + ' ' + dataUser.apellido_Usuario);
+                    $('#id_Usuario').val(dataUser.id_Usuario);
+                    $('#labelProyecto').text(dataUser.nombre_Proyecto);
+                    $('#id_Proyecto').val(dataUser.id_Proyecto);
+                    $.each(perfiles, function () {
+                        if (perfiles[x].id_Perfil_Usuario == dataUser.id_Perfil_Usuario)
+                            selectPerfiles.append(`<option value="${dataUser.id_Perfil_Usuario}" selected> ${dataUser.nombre_Perfil}</option>`);
+                        else
+                            selectPerfiles.append(`<option value="${perfiles[x].id_Perfil_Usuario}"> ${perfiles[x].nombre_Perfil} </option>`);
+                        x++;
+                    });
+
+                    $('#myModal2').modal();
+                }
+            })
+        } );
+
+        $('#formUsuariosProyectos').on('submit', function (event) {
+            let idUserProject = $('#id_usuario_proyecto').val();
+            let idUser = $('#id_Usuario').val();
+            let idProject = $('#id_Proyecto').val();
+            let idProfile = $('#id_Perfil').val();
+            var dataPost = {
+                id_usuario_proyecto : idUserProject,
+                id_Usuario : idUser,
+                id_Proyecto : idProject,
+                id_Perfil: idProfile
+            }
+            event.preventDefault();
+            $.ajax({
+                url: 'index.php?controller=UsuariosProyectos&action=guardarmodificacion',
+                method: 'POST',
+                dataType: 'JSON',
+                data: dataPost,
+                beforeSend: function () {
+                    console.log('Envio Before: ');
+                },
+                success: function(data){
+                    if(data.status) {
+                        alertify.success(data.mensaje);
+                    }else {
+                        alertify.error(data.mensaje);
+                    }
+
+                    setTimeout(function () {
+
+                        location.reload();
+                    }, 2100);
+                }
+            });
+        });
+
+
     });
 
     function obtenerDatosProPer() {
@@ -98,11 +168,8 @@
 </div>
 
 
-<?php
-/*--- ACCION MODIFICAR: EDITA UN USUARIO ---*/
-if ($modificar == 1) {
-    ?>
-    <div class="modal modal-viejo" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body">
@@ -116,35 +183,23 @@ if ($modificar == 1) {
 
                     <h4 class="modal-title text-center" id="myModalLabel">Modificar asignación</h4>
 
-                    <form action="<?php echo $helper->url("UsuariosProyectos", "guardarmodificacion"); ?>" method="post"
-                          enctype="multipart/form-data" class="form-horizontal">
-                        <input type="hidden" name="id_usuario_proyecto"
-                               value="<?php echo $datosusuarioproyecto[0]->idUsuarios_Proyectos; ?>"/>
-                        <?php
-                        ?>
+                    <form id="formUsuariosProyectos" class="form-horizontal">
+                        <input type="hidden" name="id_usuario_proyecto" id="id_usuario_proyecto"/>
+
+
                         <label class="control-label">Usuario:</label>
                         <label
-                            class="form-control labelPerfil"> <?php echo $datosusuarioproyecto[0]->nombre_Usuario . " " . $datosusuarioproyecto[0]->apellido_Usuario; ?> </label>
-                        <input name="id_Usuario" value="<?php echo $datosusuarioproyecto[0]->id_Usuario; ?>" hidden>
+                            class="form-control labelPerfil" id="labelUsuario"> </label>
+                        <input name="id_Usuario" id="id_Usuario" hidden>
 
                         <label class="control-label">Proyecto:</label>
                         <label
-                            class="form-control labelPerfil"> <?php echo $datosusuarioproyecto[0]->nombre_Proyecto; ?> </label>
-                        <input name="id_Proyecto" value="<?php echo $datosusuarioproyecto[0]->id_Proyecto; ?>" hidden>
+                            class="form-control labelPerfil" id="labelProyecto"></label>
+                        <input name="id_Proyecto" id="id_Proyecto"  hidden>
 
                         <label class="control-label">Perfil:</label>
-                        <select name="id_Perfil" class="form-control">
-                            <option name="<?php echo $datosusuarioproyecto[0]->nombre_Perfil; ?>"
-                                    id="<?php echo $datosusuarioproyecto[0]->id_Perfil_Usuario; ?>"
-                                    value="<?php echo $datosusuarioproyecto[0]->id_Perfil_Usuario; ?>"><?php echo $datosusuarioproyecto[0]->nombre_Perfil; ?></option>
-                            <?php
-                            foreach ($allPerfiles as $perfil) {
-                                if ($perfil->nombre_Perfil != $datosusuarioproyecto[0]->nombre_Perfil) { ?>
-                                    <option name="<?php echo $perfil->nombre_Perfil; ?>"
-                                            id="<?php echo $perfil->id_Perfil_Usuario; ?>"
-                                            value="<?php echo $perfil->id_Perfil_Usuario; ?>"><?php echo $perfil->nombre_Perfil; ?></option>
-                                <?php }
-                            } ?>
+                        <select name="id_Perfil" class="form-control" id="id_Perfil">
+
                         </select>
 
                         <br/>
@@ -161,7 +216,7 @@ if ($modificar == 1) {
             </div>
         </div>
     </div>
-<?php } ?>
+
 
 
 <?php
@@ -204,7 +259,7 @@ if (($action == "index") || ($action == "modificar")) { ?>
                                     <td><?= $usuarioproyecto->nombre_Proyecto; ?></td>
                                     <td><?= $usuarioproyecto->nombre_Perfil; ?></td>
                                     <td>
-                                        <a href="index.php?controller=UsuariosProyectos&action=modificar&usuarioproyectoid=<?= $usuarioproyecto->idUsuarios_Proyectos; ?>&insercion=<?= $insercion; ?>&newElemento=<?= $newElemento; ?>"
+                                        <a href="#" id="<?= $usuarioproyecto->idUsuarios_Proyectos; ?>" class="btn_modificar_proyecto"
                                            data-trigger="hover" data-content="Modificar" data-toggle="popover">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;
 

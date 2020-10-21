@@ -124,7 +124,7 @@ class ControladorBase
                 }
                 break;
 
-                case 6:
+            case 6:
                 if ($icono == 1)
                     $reporteNombre = "<i class='fas fa-clipboard-list'></i> Asistencia";
                 elseif ($icono == 2)
@@ -141,7 +141,22 @@ class ControladorBase
                 else
                     $reporteNombre = "Termino de jornada laboral";
                 break;
-
+            case 8:
+                if ($icono == 1)
+                    $reporteNombre = "<i class='fa fa-file-o' aria-hidden='true'></i> Documento Entregable";
+                elseif ($icono == 2)
+                    $reporteNombre = "<i class='fa fa-list-alt' aria-hidden='true'></i> Título";
+                else
+                    $reporteNombre = "Documento Entregable";
+                break;
+            case 9:
+                if ($icono == 1)
+                    $reporteNombre = "<i class='far fa-file-alt'></i> Minuta";
+                elseif ($icono == 2)
+                    $reporteNombre = "<i class='far fa-file-alt' aria-hidden='true'></i> Título";
+                else
+                    $reporteNombre = "Minuta";
+                break;
         }
         return $reporteNombre;
     }
@@ -238,7 +253,7 @@ class ControladorBase
                 $nombre_reactivo = "Incidencia";
                 break;
             case "check_list_asistencia":
-                $nombre_reactivo = "Asistencia";
+                $nombre_reactivo = "General(Tabla) Check list";
                 break;
             case "text-cadenamiento":
                 $nombre_reactivo = "Cadenamiento";
@@ -250,7 +265,7 @@ class ControladorBase
                 $nombre_reactivo = "Rango de Fechas";
                 break;
             case "select-tabla":
-                $nombre_reactivo = "General(Tabla)";
+                $nombre_reactivo = "General(Tabla) Menú";
                 break;
             case "decimal":
                 $nombre_reactivo = "Decimal";
@@ -296,6 +311,35 @@ class ControladorBase
         if (preg_match($pattern, $time))
             return true;
         return false;
+    }
+
+    // ****************************** FUNCION PARA VALIDAR DATOS OBLIGATORIOS Y TIPO DE DATO ***************************
+    public function validate($campos)
+    {
+        foreach ($campos as $campo) {
+            if ($campo['obligatorio'] && empty($campo['valorCampo'])) {
+                $data = array(
+                    'mensaje' => 'Ingresar todos los campos que son obligatorios',
+                    'status' => false
+                );
+                break;
+            } elseif ($campo['nombreCampo']) {
+                if (!preg_match($campo["validacion"], $campo['valorCampo'])) {
+                    $data = array(
+                        'mensaje' => "Formato no valido para el campo {$campo['nombreCampo']}",
+                        'status' => false
+                    );
+                    break;
+                } else {
+                    $data = array(
+                        'mensaje' => "Continuar",
+                        'status' => true
+                    );
+                }
+            }
+        }
+
+        return $data;
     }
 
 

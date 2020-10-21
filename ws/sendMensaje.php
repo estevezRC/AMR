@@ -23,6 +23,8 @@ require_once '../model/Gantt.php';
 require_once '../model/Empleados.php';
 require_once '../model/Asistencia.php';
 
+require_once '../core/FormatosCorreo.php';
+
 require_once '../model/LlenadoReporte.php';
 require_once '../vendor/autoload.php';
 
@@ -103,61 +105,8 @@ $funcion = new FuncionesCompartidas();
 
 //$funcion->sendPushNotification($allNotificaciones[0]->token, $data);
 
-
-/*
-function nuevoUsuario($id_Usuario, $correo_Usuario, $pwd, $nombre_Usuario, $apellido_Usuario)
-{
-
-   $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
-   $_SESSION[NOMBRE_EMPRESA_SUPERVISOR];
-
-   $titulo = " <h4> ¡Hola " . $_SESSION[NOMBRE_EMPRESA_SUPERVISOR] . "! </h4> <br>";
-
-   $cuerpo = "Es un gusto para nosotros el ser parte de tus emprendimientos, nuestro compromiso contigo es poner
-       nuestro mayor esfuerzo e ingenio en ofrecerte siempre productos confiables e innovadores que te simplifiquen
-       las actividades laborales diarias.
-       Te enviamos el usuario y contraseña de administrador de " . NAMEAPP . " para que ingreses desde web a través de
-       tu navegador favorito (recomendamos Chrome y Firefox).  Para la versión móvil, descárgala desde Google Play
-       buscandonos como " . NAMEAPP . " <br> <br>";
-
-   $datosUser = "Usuario: " . $correo_Usuario . "<br> Contraseña: " . $pwd . "<br> <br>";
-
-   $botTelegram = "Valida tu cuenta en el siguiente enlace: https://t.me/SupervisorUnoBot?start=" . $id_Usuario . "-" . $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR] . "<br> <br>";
-
-   $instruccionesInstalacion = "
-       <h4>INSTALACIÓN DE LA PLATAFORMA MÓVIL.</h4>
-       1. <a href='https://play.google.com/store/apps/details?id=developer.getitcompany.supervisoruno.hmk'>Descargar Aplicación</a> <br>
-       2. En la primer ocasión que ingresan al sistema, les solicitará su usuario y contraseña para registrar el número de serie de su dispositivo en la base de datos del sistema. <br>
-       3. Una vez sale el mensaje de “Dispositivo registrado”, cerrar la ventana e ingresar datos en el login del sistema. <br>
-       4. Al cargar por primera vez la interfaz, les mostrará un menú vacío respecto a los proyectos que tiene el sistema cargados, se requiere que den clic en continuar o cancelar y el sistema iniciará con la carga de los proyectos definidos en el ambiente web. <br> <br>";
-
-   $despedida = "Estamos atentos a cualquier duda: <br>
-       mail:  contacto@getitcompany.com <br>
-       móvil: 55 3412 5304 <br> <br>
-       Saludos! <br>
-       Equipo Get IT!";
-
-   $mensaje = $titulo . $cuerpo . $datosUser . $botTelegram . $instruccionesInstalacion .$despedida;
-
-   echo $mensaje;
-
-}
-
-nuevoUsuario(1, 'fatotorresortiz@gmail.com', 'Atorres1995', 'Alejandro', 'Torres');
-//*/
-
-
 //$funcion->guardarAvanceActividad(2312,16785,602, 11);
-//
-//$idEmpleados  = "5/2/11/12";
-//$arrayEmpleados = explode("/", $idEmpleados);
-//$idGpoValores = 9222;
-//
-//$funcion->ModificarAsistencia($idGpoValores,$arrayEmpleados);
-//var_dump($funcion->validarFechaDomingo('2020-06-07'));
-
-
-$idEmpleados  = "1";
+$idEmpleados = "1";
 $arrayEmpleados = explode("/", $idEmpleados);
 $grupovalores = 9275;
 $motivo = "Descanso";//"Permiso con Goce";//"Vacaciones";
@@ -170,9 +119,7 @@ $horaAsistencia = "14:18:35";
 //$funcion->procesarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $horaAsistencia, $motivo, $id_Proyecto, $grupovalores);
 
 
-
-
-$idEmpleados  = "2/5/11";
+$idEmpleados = "2/5/11";
 $arrayEmpleados = explode("/", $idEmpleados);
 $grupovalores = 9251;
 $motivo = "Vacaciones";//"Permiso con Goce";//"Descanso";
@@ -185,11 +132,19 @@ $horaAsistencia = "14:18:35";
 //$funcion->ModificarAsistencia($idGpoValores,$arrayEmpleados);
 //var_dump($funcion->validarFechaDomingo('2020-06-07'));
 
-$funcion->modificarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $motivo, $id_Proyecto, $grupovalores);
-
+//$funcion->modificarInformacionControlAsistencia($arrayEmpleados, $fechaInicial, $fechaFinal, $motivo, $id_Proyecto, $grupovalores);
 
 //$a = $funcion->crearRegistrarReportes('Instalación de elemento', '', 7);
 //echo $a; fee
 
 
+/*
+$datos = new FormatosCorreo();
 
+$nombreReporte = 'Minuta de reunión';
+$nombreCarpeta = 'amr';
+$resultado = $datos->obtenerValoresReporteLlenado(29);
+$destinatarios = $datos->obtenerCorreosParticipantesMinuta(1);
+$datos->enviarMinuta($nombreReporte, $resultado, $destinatarios, $nombreCarpeta);
+//print_r($resultado);
+*/

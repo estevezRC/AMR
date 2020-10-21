@@ -185,6 +185,22 @@ $fontStyleb11 = array(
     'color' => '034667'
 );
 
+
+$fontStyleb11bold = array(
+    'name' => 'Arial',
+    'size' => 11,
+    'bold' => true,
+    'color' => '034667'
+);
+
+
+$fontStyleb10 = array(
+    'name' => 'Arial',
+    'size' => 10,
+    'bold' => false,
+    'color' => '034667'
+);
+
 // Begin code
 $section = $phpWord->addSection(array('paperSize' => 'Letter', 'marginLeft' => 1300, 'marginRight' => 1300, 'marginTop' => 1200, 'marginBottom' => 1050));
 
@@ -254,21 +270,102 @@ $row1->addCell(12000, array(
 ))->addText("    " . $tituloReporte, $fontStyleb11);
 $section->addTextBreak();
 
+$campoMultiple = function ($reporteval) {
+    $actividades = [];
+    $valores = [];
+    foreach ($reporteval['valor']->valores->Valores as $valor) {
+        foreach ($reporteval['valor']->subCampos as $subCampo) {
+            foreach ($valor->Valor as $valorSubcampo) {
+                if ($subCampo->id_Campo_Reporte == $valorSubcampo->idCampo) {
+
+                    if ($subCampo->tipo_Reactivo_Campo === "select") {
+                        $valores[] = new stdClass();
+                        $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
+                        $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
+                    } elseif ($subCampo->tipo_Reactivo_Campo === "text-cadenamiento") {
+                        $valores[] = new stdClass();
+                        $cadenamientos = explode(".", $valorSubcampo->valorCampo);
+                        $cadenamientos = array_map(function ($valor) {
+                            return sprintf('%03d', (int)$valor);
+                        }, $cadenamientos);
+                        $cadenamiento = implode(" + ", $cadenamientos);
+                        $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
+                        $valores[count($valores) - 1]->valor = $cadenamiento;
+                    } elseif ($subCampo->tipo_Reactivo_Campo === "decimal") {
+                        $valores[] = new stdClass();
+                        $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
+                        $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
+                    } elseif ($subCampo->tipo_Reactivo_Campo === "number") {
+                        $valores[] = new stdClass();
+                        $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
+                        $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
+                    } elseif ($subCampo->tipo_Reactivo_Campo === "text") {
+                        $valores[] = new stdClass();
+                        $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
+                        $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
+                    }
+                }
+            }
+        }
+
+        array_push($actividades, $valores);
+        $valores = [];
+    }
+    return $actividades;
+};
+
 foreach ($campos as $reporteVal) {
-    $tableCampos1 = $section->addTable('Colspan Rowspan');
-    $row = $tableCampos1->addRow(400, array("exactHeight" => true));
-    $row->addCell(12000, array('vMerge' => 'restart'))->addText($reporteVal['nombre'] . ":", $fontStyleb12);
+    if ($reporteVal['tipo'] !== "multiple") {
+        $tableCampos1 = $section->addTable('Colspan Rowspan');
+        $row = $tableCampos1->addRow(400, array("exactHeight" => true));
+        $row->addCell(12000, array('vMerge' => 'restart'))->addText($reporteVal['nombre'] . ":", $fontStyleb12);
 
-    $tableCampos2 = $section->addTable('Colspan Rowspan');
-    $row1 = $tableCampos2->addRow(400, array("exactHeight" => true));
-    $row1->addCell(12000, array(
-        'vMerge' => 'restart',
-        'borderBottomColor' => 'FB6611',
-        'borderBottomSize' => 6,
-    ))->addText("    " . $reporteVal['valor'], $fontStyleb11);
-    $section->addTextBreak();
+        $tableCampos2 = $section->addTable('Colspan Rowspan');
+        $row1 = $tableCampos2->addRow(400, array("exactHeight" => true));
+        $row1->addCell(12000, array(
+            'vMerge' => 'restart',
+            'borderBottomColor' => 'FB6611',
+            'borderBottomSize' => 6,
+        ))->addText("    " . $reporteVal['valor'], $fontStyleb11);
+        $section->addTextBreak();
+    } else {
+        //var_dump($reporteVal['nombre']);
+        $actividades = $campoMultiple($reporteVal);
+        $tableCampos1 = $section->addTable('Colspan Rowspan');
+        $row = $tableCampos1->addRow(400, array("exactHeight" => false));
+        $celdaPrincipal = $row->addCell(12000, array('vMerge' => 'restart'));
+        $celdaPrincipal->addText($reporteVal['nombre'], $fontStyleb11bold);
+
+        foreach ($actividades as $key => $actividad) {
+            $contador = $key + 1;
+            $row = $tableCampos1->addRow(400, array("exactHeight" => false));
+            $celda = $row->addCell(12000, array('vMerge' => 'restart', 'align' => 'center'));
+            $textrun = $celda->addTextRun();
+            $textrun->addTextBreak();
+
+            $textrun->addText("Actividad $contador", array(
+                'name' => 'Arial',
+                'size' => 11,
+                'bold' => true,
+                'color' => '034667',
+                'underline' => 'single'
+            ));
+
+            $textrun->addTextBreak();
+
+            foreach ($actividad as $subCampo) {
+                $tableCampos1 = $section->addTable('Colspan Rowspan');
+                $row = $tableCampos1->addRow(400, array("exactHeight" => false));
+                $celda = $row->addCell(12000, array('vMerge' => 'restart'));
+                //$celda->addText($subCampo->nombre . ": ", $fontStyleb11bold);
+                $textrun = $celda->addTextRun();
+                $textrun->addText($subCampo->nombre . ": ", $fontStyleb11bold);
+                $textrun->addText($subCampo->valor, $fontStyleb10);
+            }
+        }
+        //die();
+    }
 }
-
 
 $i = 0;
 foreach ($sectionImg as $img) {

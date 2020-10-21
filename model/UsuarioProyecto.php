@@ -77,12 +77,9 @@ class UsuarioProyecto extends EntidadBase
 
         if ($validate) {
             $query = " CALL sp_Add_Up_Usuarios_Proyectos(NULL,$this->id_Usuario,$this->id_Proyecto, $this->id_Perfil_Usuario,'Insertar')";
-            if ($this->db()->query($query)) {
-                return 1;
-            }
-        } else {
-            return 2;
-        }
+            return $this->db()->query($query);
+        } else
+            return false;
     }
 
 
@@ -105,12 +102,9 @@ class UsuarioProyecto extends EntidadBase
 
         if ($validate) {
             $query = "CALL sp_Add_Up_Usuarios_Proyectos($id,$this->id_Usuario,$this->id_Proyecto, $this->id_Perfil_Usuario,'Modificar')";
-            if ($this->db()->query($query)) {
-                return 3;
-            }
-        } else {
-            return 2;
-        }
+            return $this->db()->query($query);
+        } else
+            return false;
     }
 
     public function modificarStatusByIdUsuario($id_Usuario)

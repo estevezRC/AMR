@@ -26,12 +26,101 @@
         }
 
         hiddenNames();
+        hiddenCamposParticipantes();
+
+        let action = '<?= $action ?>';
+        if (action == 'modificar') {
+            let participante = document.getElementById("participante").value;
+            if (participante == 1)
+                showCamposParticipantesM();
+            else
+                hiddenCamposParticipantesM();
+        }
+
         //bloquearbtnNoEmpleados();
         validarDatos1(2);
 
         setTimeout(function () {
             $("#emailU, #pwd1, #pwd2").val('').change();
         }, 500);
+
+        ///////////////////////////////////////////////////////////////////////////////////
+        //                  MOFICAR USER
+        ///////////////////////////////////////////////////////////////////////////////////
+        $('.btn_modificar_user').click(function() {
+            var id_usuario = $(this).attr('id');
+
+            $.ajax({
+                url:'index.php?controller=Usuarios&action=modificar',
+                method: 'POST',
+                dataType: 'JSON',
+                data: {idUsuario : id_usuario},
+                success: function(data) {
+
+                    $('#usuarioid').val(data['data'].id_Usuario)
+                    $('#nameUpdate').val(data['data'].nombre);
+                    $('#surnamePUpdate').val(data['data'].apellido_paterno);
+                    $('#surnameMUpdate').val(data['data'].apellido_materno);
+                    $('#usuarioemailUpdate').val(data['data'].correo_Usuario);
+                    if(data['data'].participante == '1') {
+                        $('#participanteUpdate1').attr('checked', true);
+                        $('#participanteUpdate2').attr('checked', false);
+                        showCamposParticipantesM()
+                    }else {
+                        $('#participanteUpdate1').attr('checked', false);
+                        $('#participanteUpdate2').attr('checked', true);
+                        hiddenCamposParticipantesM();
+                    }
+                    $('#puestoM').val(data['data'].puesto);
+                    $('#empresaM').val(data['data'].empresa);
+                    $('#usuarioareaUpdate').val(data['data'].id_Area);
+
+                    $("#myModalModificarUsuario").modal()
+                }
+            });
+        });
+
+
+        $('#formModificarUser').on('submit', function(event){
+           event.preventDefault();
+
+           $.ajax({
+               url: 'index.php?controller=Usuarios&action=guardarmodificacion',
+               method: 'POST',
+               data: $(this).serialize(),
+               beforeSend: function() {
+                   console.log('Se esta enviando antes');
+               },
+               success: function(data){
+                   alertify.success('Datos de usuarios actualizados correctamente');
+                   setTimeout(function () {
+
+                       location.reload();
+                   }, 2100);
+               }
+           });
+        });
+
+
+        ///////////////////////////////////////////////////////////////////////////////////
+        //                 VIEW USER PASS
+        ///////////////////////////////////////////////////////////////////////////////////
+        $('.btn_view_pwd').click(function () {
+            var id_usuario = $(this).attr('id');
+           console.log('Usuario show pass', id_usuario);
+
+            $.ajax({
+                url: 'index.php?controller=Usuarios&action=verpass',
+                method: 'POST',
+                dataType:'JSON',
+                data: {idUsuario: id_usuario},
+                success: function(data) {
+                    console.log('Data Recib',data);
+                    $('#text_psw').text( data['data'].password_Usuario);
+                }
+            });
+            $('#myModalPwdUser').modal();
+        });
     });
 
     function validarNip() {
@@ -123,9 +212,67 @@
             $('#surnameM').removeAttr("hidden");
             $('#surnameM').removeAttr("required");
             $('#labelSurnameM').removeAttr("hidden");
-
-
         }
+    }
+
+    function showCamposParticipantes() {
+        let labelPuesto = $('#labelPuesto');
+        let labelEmpresa = $('#labelEmpresa');
+        let puesto = $('#puesto');
+        let empresa = $('#empresa');
+
+        labelPuesto.removeAttr("hidden");
+        labelEmpresa.removeAttr("hidden");
+        puesto.removeAttr("hidden");
+        empresa.removeAttr("hidden");
+
+        puesto.attr("required", true);
+        empresa.attr("required", true);
+    }
+
+    function hiddenCamposParticipantes() {
+        let labelPuesto = $('#labelPuesto');
+        let labelEmpresa = $('#labelEmpresa');
+        let puesto = $('#puesto');
+        let empresa = $('#empresa');
+
+        labelPuesto.attr("hidden", true);
+        labelEmpresa.attr("hidden", true);
+        puesto.attr("hidden", true);
+        empresa.attr("hidden", true);
+
+        puesto.removeAttr("required");
+        empresa.removeAttr("required");
+    }
+
+    function showCamposParticipantesM() {
+        let labelPuesto = $('#labelPuestoM');
+        let labelEmpresa = $('#labelEmpresaM');
+        let puesto = $('#puestoM');
+        let empresa = $('#empresaM');
+
+        labelPuesto.removeAttr("hidden");
+        labelEmpresa.removeAttr("hidden");
+        puesto.removeAttr("hidden");
+        empresa.removeAttr("hidden");
+
+        puesto.attr("required", true);
+        empresa.attr("required", true);
+    }
+
+    function hiddenCamposParticipantesM() {
+        let labelPuesto = $('#labelPuestoM');
+        let labelEmpresa = $('#labelEmpresaM');
+        let puesto = $('#puestoM');
+        let empresa = $('#empresaM');
+
+        labelPuesto.attr("hidden", true);
+        labelEmpresa.attr("hidden", true);
+        puesto.attr("hidden", true);
+        empresa.attr("hidden", true);
+
+        puesto.removeAttr("required");
+        empresa.removeAttr("required");
     }
 
 </script>
@@ -200,8 +347,20 @@
                     </select>
 
                     <label class="control-label">Participante:</label><br/>
-                    <input type="radio" name="participante" value="1" checked> Sí&nbsp;
-                    <input type="radio" name="participante" value="0"> No
+                    <input type="radio" name="participante" id="partipante1" value="1"
+                           onclick="showCamposParticipantes()"> Sí&nbsp;
+                    <input type="radio" name="participante" id="partipante2" value="0"
+                           onclick="hiddenCamposParticipantes()" checked> No
+
+                    <br>
+                    <label class="control-label" id="labelPuesto" hidden>*Puesto:</label>
+                    <input type="text" name="puesto" class="form-control" id="puesto" hidden
+                           required>
+
+                    <label class="control-label" id="labelEmpresa" hidden>*Empresa:</label>
+                    <input type="text" name="empresa" class="form-control" id="empresa" hidden
+                           required>
+
 
                     <div class="row" style="margin-top: 1em;">
                         <hr style="border: 1px solid #166D9B; margin: 0px;">
@@ -249,11 +408,8 @@
 </div>
 
 
-<?php
-/*--- ACCION MODIFICAR: EDITA UN USUARIO ---*/
-if ($modificar == 1) {
-    ?>
-    <div class="modal modal-viejo" id="myModalModificarUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+    <div class="modal fade" id="myModalModificarUsuario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body">
@@ -266,36 +422,28 @@ if ($modificar == 1) {
 
                     <h4 class="modal-title" id="myModalLabel" style="text-align: center"> Modificar Usuario</h4>
 
-                    <form action="<?php echo $helper->url("Usuarios", "guardarmodificacion"); ?>" method="post"
+                    <form id="formModificarUser"
                           enctype="multipart/form-data" class="form-horizontal" onsubmit="return validarRadio()">
-                        <input type="hidden" name="usuarioid" value="<?php echo $datosusuario->id_Usuario; ?>"/>
+                        <input type="hidden" name="usuarioid" id="usuarioid"/>
 
 
                         <label class="control-label">*Nombre(s):</label>
-                        <input type="text" name="name" class="form-control" required
-                               value="<?= $datosusuario->nombre; ?>">
+                        <input type="text" name="name" id="nameUpdate" class="form-control" required>
 
                         <label class="control-label">*Apellido Paterno:</label>
-                        <input type="text" name="surnameP" class="form-control" required
-                               value="<?= $datosusuario->apellido_paterno ?>">
+                        <input type="text" name="surnameP" id="surnamePUpdate" class="form-control" required>
 
                         <label class="control-label">*Apellido Materno:</label>
-                        <input type="text" name="surnameM" class="form-control" required
-                               value="<?= $datosusuario->apellido_materno ?>">
+                        <input type="text" name="surnameM" id="surnameMUpdate" class="form-control" required>
 
 
                         <label class="control-label">*Email:</label>
-                        <input type="text" name="usuarioemail" value="<?php echo $datosusuario->correo_Usuario; ?>"
-                               class="form-control" required/>
+                        <input type="text" name="usuarioemail" id="usuarioemailUpdate" class="form-control" required/>
 
-                        <input type="hidden" name="uploadedfile2" id="uploadedfil2"
-                               value="<?php echo $datosusuario->fotografia_Usuario; ?>"/>
+                        <input type="hidden" name="uploadedfile2" id="uploadedfil2"/>
 
                         <label class="control-label">*Área:</label><br>
-                        <select name="usuarioarea" class="form-control">
-                            <option value="<?php echo $datosusuario->id_Area; ?>">
-                                <?php echo $datosusuario->nombre_Area; ?>
-                            </option>
+                        <select name="usuarioarea" id="usuarioareaUpdate" class="form-control">
                             <?php foreach ($allareas as $area) {
                                 if ($area->nombre_Area != $datosusuario->nombre_Area) {
                                     ?>
@@ -304,15 +452,26 @@ if ($modificar == 1) {
                                 <?php }
                             } ?>
                         </select>
-                        <label class="control-label">Participante:</label><br/>
-                        <?php if ($datosusuario->participante == 1) { ?>
-                            <input type="radio" name="participante" value="1" checked> Sí&nbsp;
-                            <input type="radio" name="participante" value="0"> No
-                        <?php } else { ?>
-                            <input type="radio" name="participante" value="1"> Si&nbsp;
-                            <input type="radio" name="participante" value="0" checked> No
 
-                        <?php } ?><br/><br/>
+                        <label class="control-label">Participante:</label><br/>
+                        <input type="radio" name="participante" id="participanteUpdate1" onclick="showCamposParticipantesM()"
+                               value="1"> Sí &nbsp;
+
+                        <input type="radio" name="participante" id="participanteUpdate2" onclick="hiddenCamposParticipantesM()"
+                               value="0"> No
+
+                        <input type="hidden" value="<?php //$datosusuario->participante ?>" id="participante">
+
+                        <br>
+                        <label class="control-label" id="labelPuestoM">*Puesto:</label>
+                        <input type="text" value="<?php //$datosusuario->puesto; ?>" name="puesto" class="form-control"
+                               id="puestoM" required>
+
+                        <label class="control-label" id="labelEmpresaM">*Empresa:</label>
+                        <input type="text" value="<?php //$datosusuario->empresa; ?>" name="empresa" class="form-control"
+                               id="empresaM" required>
+
+                        <br/><br/>
                         <div class="row">
                             <div class="col-md-12 text-right">
                                 <button type="submit" class="btn btn-w-m btn-danger" id="btnModificar">
@@ -324,10 +483,10 @@ if ($modificar == 1) {
                 </div>
             </div>
         </div>
-    </div>
-<? }
-if ($modificar == 2) { ?>
-    <div class="modal modal-viejo" id="myModalPwdUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+</div>
+
+
+    <div class="modal fade" id="myModalPwdUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body">
@@ -340,13 +499,14 @@ if ($modificar == 2) { ?>
                                 aria-hidden="true">&times;</span></button>
 
                     <h4 class="modal-title" id="myModalLabel">Password del usuario</h4>
-
-                    <p><?php echo $datosusuario->password_Usuario; ?></p>
+                    <div class="alert alert-dark  text-center" role="alert">
+                        <strong><p id="text_psw"></p></strong>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-<?php } ?>
+
 
 
 <?php if (($action == "index") || ($action == "modificar") || ($action == "verpass")) { ?>
@@ -395,24 +555,29 @@ if ($modificar == 2) { ?>
 
                                         <?php if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1 || $_SESSION[ID_PERFIL_USER_SUPERVISOR] == 2) { ?>
                                             <td>
-
-                                                <a href="index.php?controller=Usuarios&action=modificar&usuarioid=<?php echo $user->id_Usuario; ?>&insercion=<?php echo $insercion; ?>&newElemento=<?php echo $newElemento; ?>"
+                                                <a href="#" id="<?= $user->id_Usuario; ?>" class="btn_modificar_user"
                                                    data-trigger="hover" data-content="Modificar" data-toggle="popover">
                                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> &nbsp;
 
-                                                <? if ($user->id_Usuario != $_SESSION[ID_USUARIO_SUPERVISOR]) {
-                                                    ?>
+                                                <? if ($user->id_Usuario != $_SESSION[ID_USUARIO_SUPERVISOR]) { ?>
                                                     <a href="#" data-trigger="hover" data-content="Borrar"
                                                        data-toggle="popover"
                                                        onclick="borrarRegistro(<?php echo $user->id_Usuario; ?>, 'usuarioid', '<?php echo $user->nombre_Usuario . " " . $user->apellido_Usuario; ?>', 'Usuarios', 'borrar')">
                                                         <i class="fa fa-trash" aria-hidden="true"></i></a> &nbsp;
-                                                    <?php
-                                                } ?>
+                                                <?php } ?>
 
-                                                <a href="index.php?controller=Usuarios&action=verpass&usuarioid=<?php echo $user->id_Usuario; ?>"
-                                                   data-trigger="hover" data-content="Ver contraseña"
-                                                   data-toggle="popover">
-                                                    <i class="fa fa-eye" aria-hidden="true"></i></a> &nbsp;
+                                                <? if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) { ?>
+                                                    <a href="#" id="<?php echo $user->id_Usuario; ?>" class="btn_view_pwd"
+                                                       data-trigger="hover" data-content="Ver contraseña"
+                                                       data-toggle="popover">
+                                                        <i class="fa fa-eye" aria-hidden="true"></i></a> &nbsp;
+
+                                                    <a href="#" data-trigger="hover"
+                                                       data-content="Enviar correo de bienvenida"
+                                                       data-toggle="popover"
+                                                       onclick="enviarCorreo(<?= $user->id_Usuario; ?>, 'usuarioid', '<?php echo $user->nombre_Usuario . " " . $user->apellido_Usuario; ?>', 'Usuarios', 'enviarCorreo')">
+                                                        <i class="fas fa-envelope-open-text"></i></a> &nbsp;
+                                                <? } ?>
 
                                                 <?php if ($user->llave != null) {
                                                     ?>

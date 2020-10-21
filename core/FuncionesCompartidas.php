@@ -101,7 +101,7 @@ class FuncionesCompartidas extends ControladorBase
     function sendPushNotification($to = '', $data = array())
     {
 
-        $apiKey = 'AAAA9T0GHIE:APA91bFnV2HQP1C0dSNMNwkfwjI9T8Kc5poiF9DitywyWAijDQgXk7WGQSBvdg1qInL9869hwON53EYTzYBahVkPNUjo4jAbzhbXP6xnGKzErx1wOaEsQ8-ANmgHNX40KwgLhgPxFy9j';
+        $apiKey = 'AAAAeZkawMg:APA91bFcfF-JTphhdD3whmuCA2sK9Bfw6WkA7PhMVdptyh8bZVLyq5JBHAKKwmCp5ySlSMTet8NCLjbpvwFHhnFAhBJrrQBEnvrt6QLTGuV6g0zTLPrR46jXy3zGCdwCb4h82Jk_wCEx';
 
         $fields = array(
             'to' => $to,
@@ -458,14 +458,44 @@ class FuncionesCompartidas extends ControladorBase
 
                     case "check_list_asistencia":
                         $nombre = $valores->nombre_Campo;
-                        $idsEmpleados = str_replace('/', ',', $valores->valor_Texto_Reporte);
-                        $allEmpleadosAsistencia = $reportes->getAllEmpleadosByInIdEmpleados($idsEmpleados);
+                        $ids = str_replace('/', ',', $valores->valor_Texto_Reporte);
 
-                        $empleados = array_map(function ($empleado) {
-                            return trim("{$empleado->nombre} {$empleado->apellidos}");
-                        }, $allEmpleadosAsistencia);
+                        switch ($valores->Valor_Default) {
+                            case 'empleados':
+                                // OBTENER TODOS LOS EMPLEADOS
+                                $datosIdAndName = $reportes->getAllEmpleadosByInIdEmpleados($ids);
+                                break;
+                            case 'participantes':
+                                // OBTENER TODOS LOS PARTICIPANTES = id_Status_Usuario IN(1,2) AND participante = 1
+                                $datosIdAndName = $reportes->getAllParticipantesIdAndNameByIds($ids);
+                                break;
+                            default;
+                        }
 
-                        $valor = implode(', ', $empleados);
+                        $datos = array_map(function ($datos) {
+                            return $datos->nombre;
+                        }, $datosIdAndName);
+
+                        $valor = implode(', ', $datos);
+                        break;
+
+                    case "select-tabla":
+                        $nombre = $valores->nombre_Campo;
+                        $id = str_replace('/', ',', $valores->valor_Texto_Reporte);
+
+                        // OBTENER TODOS LOS REGISTROS DE LA TABLA X
+                        switch ($valores->Valor_Default) {
+                            case 'proyecto':
+                                // CONSULTAR TABLA DE PROYECTOS
+                                $allRegistrosTablas = $reportes->getAllProyectosIdAndNameById($id);
+                                break;
+                            case 'participante':
+                                $allRegistrosTablas = $reportes->getAllParticipantesIdAndName();
+                                break;
+                            default;
+                        }
+
+                        $valor = $allRegistrosTablas[0]->nombre;
                         break;
 
                     case "select-catalogo":
@@ -520,6 +550,21 @@ class FuncionesCompartidas extends ControladorBase
                         $nombre = $valores->nombre_Campo;
                         $valor = "Desde $fechaInicio hasta $fechaFinal";
                         break;
+
+                    case "multiple":
+                        $nombre = $valores->nombre_Campo;
+                        $valoresSubcampos = json_decode($valores->valor_Texto_Reporte);
+                        $campos = explode("/", $valores->Valor_Default);
+
+                        $campos = array_map(function ($id) use ($reportes) {
+                            return $reportes->getCampoById($id);
+                        }, $campos);
+
+                        $valor = new stdClass();
+                        $valor->subCampos = $campos;
+                        $valor->valores = $valoresSubcampos;
+                        break;
+
                     default:
                         $nombre = $valores->nombre_Campo;
                         $valor = $valores->valor_Texto_Reporte;
@@ -528,7 +573,8 @@ class FuncionesCompartidas extends ControladorBase
                 // Añadir campos al arrelo que sera devuelto por la funcion
                 array_push($arrayValores, array(
                     'nombre' => $nombre,
-                    'valor' => $valor
+                    'valor' => $valor,
+                    'tipo' => $valores->tipo_Reactivo_Campo
                 ));
             }
         }

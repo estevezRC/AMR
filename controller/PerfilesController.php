@@ -54,38 +54,11 @@ class PerfilesController extends ControladorBase
     /*--- VISTA MODIFICAR perfil ---*/
     public function modificar()
     {
-        if (isset($_GET["perfilid"])) {
-            // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            $insercion = $_GET['insercion'];
-            $newElemento = $_GET['newElemento'];
-            if ($insercion != 0 && !empty($newElemento)) {
-                $insercion = 0;
-                $newElemento = '';
-            }
-
-            $perfil = new perfil($this->adapter);
-            $id = (int)$_GET["perfilid"];
-            $datosperfil = $perfil->getperfilById($id);
-
-
-            // PERFILES DE LA EMPRESA
-            if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
-                $noId_Perfil_User = '';
-                $allperfiles = $perfil->getAllPerfiles($noId_Perfil_User);
-            } else {
-                $noId_Perfil_User = ' where id_Perfil_Usuario NOT IN (1)';
-                $allperfiles = $perfil->getAllPerfiles($noId_Perfil_User);
-            }
-
-            $empresa = new Empresa($this->adapter);
-            $allempresas = $empresa->getAllEmpresas();
-            $modificar = 1;
-            $mensaje = "Perfiles";
-        }
-        $this->view("index", array(
-            "allperfiles" => $allperfiles, "datosperfil" => $datosperfil, "modificar" => $modificar,
-            "allempresas" => $allempresas, "mensaje" => $mensaje, "insercion" => $insercion,
-            "newElemento" => $newElemento
+        $perfil = new perfil($this->adapter);
+        $id = (int)$_POST["perfilid"];
+        $datosperfil = $perfil->getperfilById($id);
+        echo json_encode(array(
+            'data' => $datosperfil
         ));
     }
 
@@ -147,10 +120,17 @@ class PerfilesController extends ControladorBase
     {
         //COMPROBAR CAMPOS VACIOS
         if (empty($_POST["nombre_Perfil"])) {
-            $save = "Llenar todos los campos";
+            $mensaje = "Llenar todos los campos";
+            $status = false;
         } //SE GUARDA MODIFICACION
         else {
             $perfil = new perfil($this->adapter);
+
+            $id = $_POST["id_Perfil_Usuario"];
+
+            $perfilActual = $perfil->getPerfilById($id);
+            $nombreNuevo = $_POST["nombre_Perfil"];
+
             if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) {
                 $noId_Perfil_User = '';
                 $allperfiles = $perfil->getAllPerfiles($noId_Perfil_User);
@@ -158,26 +138,25 @@ class PerfilesController extends ControladorBase
                 $noId_Perfil_User = ' where id_Perfil_Usuario NOT IN (1)';
                 $allperfiles = $perfil->getAllPerfiles($noId_Perfil_User);
             }
-            $id = $_POST["id_Perfil_Usuario"];
-
-            $perfilActual = $perfil->getPerfilById($id);
-            $nombreNuevo = $_POST["nombre_Perfil"];
 
             $perfil->setnombre_Perfil($nombreNuevo);
             $perfil->setid_Empresa($_SESSION[ID_EMPRESA_SUPERVISOR]);
             $save = $perfil->modificarperfil($id, $allperfiles);
 
             // SECCION PARA EL MODULO DE MENSAJES CON ALERTIFY
-            if ($save == 3) {
-                $insercion = 3;
+            if ($save) {
+                $status = true;
                 $mensaje = 'Se ha modificado el perfil "' . $perfilActual->nombre_Perfil . '"';
             } else {
-                $insercion = 2;
-                $mensaje = 'El área "' . $nombreNuevo . '" ya existe';
+                $status = false;
+                $mensaje = 'El perfil "' . $nombreNuevo . '" ya existe';
             }
 
         }
-        $this->redirect("Perfiles", "index&insercion=$insercion&newElemento=$mensaje");
+
+        echo json_encode([
+            'mensaje' => $mensaje, 'status' => $status
+        ]);
     }
 
     /*--- METODO BORRAR USUARIO ---*/
