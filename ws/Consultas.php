@@ -2254,7 +2254,7 @@ class Consultas
                             FROM Comentarios_Reportes cr 
                             INNER JOIN Usuarios u ON cr.id_Usuario = u.id_Usuario 
                             INNER JOIN empleados_usuarios eu ON u.`id_Usuario` = eu.`id_usuario` 
-                            WHERE cr.id_Gpo = $idGpo AND cr.id_Status = 1";
+                            WHERE cr.id_Gpo = $idGpo AND cr.id_Status = 1 ORDER BY fecha ASC";
 
         //echo $consulta_fotos;
         try {
