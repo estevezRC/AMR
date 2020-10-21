@@ -62,3 +62,8 @@ $theme-colors: map-merge(
   ),
   $theme-colors
 );
+
+$custom-file-text: (
+        en: "Browse",
+        es: "Elegir"
+);
