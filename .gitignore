@@ -1,3 +1,5 @@
 /img
 /vendor
 /.idea
+/node_modules
+*.lock
