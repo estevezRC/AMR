@@ -6,8 +6,7 @@ class Consultas
 {
 
     function __construct()
-    {
-    }
+    {}
 
     public static function getCatReportes($idUsuario)
     {
