@@ -5,8 +5,6 @@
 <?php
 $accion = $_GET['accion'];
 ?>
-
-
 <script>
     function mostrarInputSeguimiento() {
         var selectedValue = tipo_Reporte.options[tipo_Reporte.selectedIndex].value;
@@ -349,10 +347,11 @@ $accion = $_GET['accion'];
 
         $.ajax({
             data: {id_Proyecto: id_Proyecto},
+            dataType: 'JSON',
             url: "index.php?controller=Reportes&action=getAllReportesByIdProyecto",
             method: "POST",
-            success: function (response) {
-                let respuestaJSON = $.parseJSON(response);
+            success: function (respuestaJSON) {
+
                 console.log(respuestaJSON);
 
                 var $secondChoice = $("#id_ReporteDuplicarReporte");
@@ -375,6 +374,7 @@ $accion = $_GET['accion'];
     }
 
     $(document).ready(function () {
+        console.log('JQUERY WORKS');
         let accion = '<?php echo $action; ?>';
         let selectedValueMod;
 
@@ -410,7 +410,7 @@ $accion = $_GET['accion'];
         }
 
 
-        var insercion = <?php echo $insercion; ?>;
+        var insercion = '<?php echo $insercion; ?>';
         var elemento = '<?php echo $newElemento; ?>';
         mensajes(insercion, elemento);
 
@@ -427,6 +427,80 @@ $accion = $_GET['accion'];
             }, 2100);
             //}
         });
+
+        $('#formAddVideoManual').submit(function (evento) {
+            evento.preventDefault();
+            let wrapper = $('.wrapper');
+            let progress_bar = $('.progress-bar');
+            const formVideo = document.getElementById("formAddVideoManual");
+            const formData = new FormData(formVideo);
+            console.log(Array.from(formData.entries()));
+            progress_bar.removeClass('bg-success bg-danger').addClass('bg-info');
+            progress_bar.css('width', '0%');
+            progress_bar.html('Preparando...');
+            wrapper.fadeIn();
+            $.ajax({
+                xhr: function () {
+                    let xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (e) {
+                        if (e.lengthComputable) {
+                            let percentComplete = Math.floor((e.loaded / e.total) * 100);
+
+                            //Mostramos la barra
+                            progress_bar.css("width", percentComplete + "%");
+                            progress_bar.html(percentComplete + "%");
+                        }
+                    }, false);
+                    return xhr;
+                },
+                url: 'index.php?controller=Reportes&action=addVideoManual',
+                method: 'POST',
+                dataType: 'JSON',
+                data: formData,
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend: function () {
+                    $('button', formVideo).attr('disabled', true);
+                    $('#btn_submit_video').attr('disabled', true);
+                }
+            }).done(res => {
+                console.log(res);
+                if (res.status) {
+                    progress_bar.removeClass('bg-info').addClass('bg-success');
+                    progress_bar.html('!Listo¡');
+                    $('#formAddVideoManual').trigger("reset");
+                    alertify.success(res.mensaje);
+
+                    setTimeout(() => {
+                        wrapper.fadeOut();
+                        progress_bar.removeClass('bg-success bg-danger').addClass('bg-info');
+                        progress_bar.css('width', '0%');
+
+                    }, 1500);
+
+                    setTimeout(() => {
+                        $('#addVideoModal').modal('hide');
+                        location.reload();
+                    }, 2000);
+
+                } else {
+                    alertify.warning(res.mensaje);
+                    progress_bar.css('width', '100%');
+                    progress_bar.html(res.mensaje);
+                }
+            }).fail(err => {
+                progress_bar.removeClass('bg-success bg-info').addClass('bg-danger');
+                progress_bar.html('Ha ocurrido un error!');
+                alertify.error('Ha ocurrido un error!');
+            }).always(() => {
+                $('button', formVideo).attr('disabled', false);
+                $('#btn_submit_video').attr('disabled', false);
+            });
+
+        });
+
+
     });
 
     function enviarDatosForDuplicar() {
@@ -458,6 +532,7 @@ $accion = $_GET['accion'];
 
     }
 </script>
+
 
 <div class="modal fade" id="myModalAddReportes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -505,11 +580,11 @@ $accion = $_GET['accion'];
                             <?php } ?>
 
                             <?php if (empty($reporteTipoOcho)) { ?>
-                                <option value="8"> Documentos Entregables </option>
+                                <option value="8"> Documentos Entregables</option>
                             <?php } ?>
 
                             <?php if (empty($reporteTipoNueve)) { ?>
-                                <option value="9"> Minuta </option>
+                                <option value="9"> Minuta</option>
                             <?php } ?>
                         </select>
                     </div>
@@ -725,6 +800,52 @@ $accion = $_GET['accion'];
 </div>
 
 
+<!-- **************** SECCION DE AGREGAR NUEVO VIDEO DE MANUALES *************************** -->
+<div class="modal fade" id="addVideoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cargar nuevo video</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddVideoManual" enctype="multipart/form-data" class="form-group">
+                    <div class="row mt-3 mb-4">
+                        <div class="col-lg-12">
+                            <label for="tituloVideo" class="form-control-label">Titulo</label>
+                            <input type="text" name="tituloVideo" id="tituloVideo" class="form-control">
+                        </div>
+                        <div class="col-lg-12 mt-1">
+                            <label for="Cargar archivo" class="form-control-label">Cargar Archivo</label>
+                            <input type="file" name="video_file" id="video_file" class="form-control">
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="wrapper mt-5" style="display: none;">
+                                <div class="progress progress-wrapper">
+                                    <div class="progress-bar progress-bar-striped bg-info progress-bar-animated progress-bar"
+                                         role="progressbar" style="width: 80%;">0%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary" id="btn_submit_video">Subir</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <?php
 /*------------------------------------ ACCION INDEX: MUESTRA TODOS LOS REPORTES --------------------------------------*/
 if (($action == "index") || ($action == "modificar")) { ?>
@@ -815,39 +936,230 @@ if (($action == "index") || ($action == "modificar")) { ?>
 
 <?php if ($action == "ayuda") { ?>
 
-    <div class="container-fluid flex-column justify-content-center p-3">
+<div class="container-fluid flex-column justify-content-center p-3">
 
-        <div class="row d-flex justify-content-between">
-            <div class="col-sm-10 d-flex align-items-center">
-                <h3 class="text-secondary"> <?php echo $mensaje; ?> </h3>
+    <div class="container-fluid flex-column justify-content-center p-3 animated fadeIn slow">
+        <div class="row pt-4 d-flex justify-content-center">
+            <div class="col-11 p-0 shadow">
+                <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
+                    <div class="col-sm-10 d-flex align-items-center">
+                        <h4 class="text-white m-0 py-2">
+                            <?= $mensaje; ?>
+                        </h4>
+                    </div>
+                    <div class="col-sm-2 d-flex justify-content-center align-items-center">
+                        <? if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) { ?>
+                            <a class="px-2 m-1 h4 text-white" href="#" data-trigger="hover"
+                               data-content="Nueva Manual"
+                               data-toggle="modal" data-target="#addVideoModal" data-original-title="" title="">
+                                <i class="fa fa-plus-square" aria-hidden="true"></i></a>
+                        <? } ?>
+                    </div>
+                </div>
+
+                <div class="card ">
+                    <div class="w-100 d-flex justify-content-between mb-3 bg-primary rounded-top">
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <h4 class="text-white m-0 py-2">
+                                <i class="fas fa-book"></i> Manuales de ayuda </h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <?php
+                            $info = '';
+                            $extension = '';
+                            if (is_array($registros) || is_object($registros)) {
+                                foreach ($registros as $registroVideo) {
+                                    $info = new SplFileInfo($registroVideo->ruta_video);
+                                    $extension = $info->getExtension();
+                                    if ($extension == 'docx' || $extension == 'xlsx' || $extension == 'pdf') {
+                                        ?>
+                                        <div class="col-sm-3" style="padding-bottom: 3em;">
+                                            <div class="card text-center">
+                                                <a href="videoManuales/<?php echo $registroVideo->ruta_video; ?>" style="padding: 5%" target="_blank">
+                                                    <img src="videoManuales/file-<?= $extension; ?>.svg"
+                                                         class="text-danger" alt="Imagen Extension" style="max-width: 55%;">
+                                                </a>
+                                                <div class="card-body text-center" style="margin-top: 0em;">
+                                                    <h5 class="card-title text-center"
+                                                        style="font-size: 14px;width: 100%;margin-top: -0.5em;">
+                                                        <a href="videoManuales/<?php echo $registroVideo->ruta_video; ?>"
+                                                           target="_blank">
+                                                            <p class="card-text"><?php echo $registroVideo->titulo; ?></p>
+                                                        </a>
+                                                    </h5>
+                                                </div>
+                                                <!--<div class="card-footer">
+                                                    <small class="text-muted">Last updated 3 mins ago</small>
+                                                </div>-->
+                                            </div>
+                                        </div>
+
+                                        <?php
+                                    }
+                                }
+                            } ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="w-100 d-flex justify-content-between mb-3 bg-primary rounded-top">
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <h4 class="text-white m-0 py-2">
+                                <i class="fas fa-photo-video"></i> Videos de ayuda </h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row ">
+
+                            <?php
+                            $info = '';
+                            $extension = '';
+                            if (is_array($registros) || is_object($registros)) {
+                                foreach ($registros as $registroVideo) {
+                                    $info = new SplFileInfo($registroVideo->ruta_video);
+                                    $extension = $info->getExtension();
+                                    if ($extension == 'mp4' || $extension == 'mkv' || $extension == 'avi') {
+                                        ?>
+
+                                        <div class="col-sm-4 mt-2">
+                                            <div class="card">
+                                                <iframe src="videoManuales/<?php echo $registroVideo->ruta_video; ?>"
+                                                        frameborder="0"></iframe>
+                                                <div class="card-body">
+                                                    <p class="card-text"><?php echo $registroVideo->titulo; ?></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <?php
+                                    }
+                                }
+                            } else { ?>
+                                <div class="alert alert-warning">NO HAY REGISTROS!</div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
+    </div>
 
 
-        <hr class="linea-separadora">
-        <div class="row pt-3 d-flex justify-content-center">
-            <div class="col-11">
-
-                <div class="container">
-
-                    <div class="card text-white mb-3" style="max-width: 70rem;">
-                        <div class="card-header bg-success"> Manuales</div>
-                        <div class="card-body">
-
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a target="_blank" href="descargables/material_ayuda/manualUsuarioSupervisor.pdf">
-                                        Manual Supervisor.uno</a>
-                                </li>
-                            </ul>
+    <!--<div class="row pt-3 d-flex justify-content-center">
+        <div class="col-12">
+            <div class="container">
+                <div class="card" style="max-width: 70rem;">
+                    <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <h4 class="text-white m-0 py-2">
+                                <i class="fas fa-book"></i> Manuales de ayuda </h4>
+                        </div>
+                        <div class="col-sm-2 d-flex justify-content-center align-items-center">
+                            <? /* if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) { */ ?>
+                                <a class="px-2 m-1 h4 text-white" href="#" data-trigger="hover"
+                                   data-content="Nueva Manual"
+                                   data-toggle="modal" data-target="#addVideoModal" data-original-title="" title="">
+                                    <i class="fa fa-plus-square" aria-hidden="true"></i></a>
+                            <? /* } */ ?>
                         </div>
                     </div>
 
+                    <div class="card-body">
+                        <div class="row">
+                            <?php
+    /*                            $info = '';
+                                $extension = '';
+                                if (is_array($registros) || is_object($registros)) {
+                                    foreach ($registros as $registroVideo) {
+                                        $info = new SplFileInfo($registroVideo->ruta_video);
+                                        $extension = $info->getExtension();
+                                        if ($extension == 'docx' || $extension == 'xlsx' || $extension == 'pdf') {
+                                            */ ?>
+                                        <div class="col-md-2 col-sm-4 col-6 mt-2">
+                                            <div class="card">
+                                                <div class="container mt-1 text-danger">
+                                                    <a href="videoManuales/<?php /*echo $registroVideo->ruta_video; */ ?>"
+                                                       target="_blank">
+                                                        <img src="videoManuales/file-<? /*= $extension; */ ?>.svg"
+                                                             class="text-danger"
+                                                             alt="Imagen Extension"
+                                                             style="max-width: 100%; height: auto; display: table-cell;">
+                                                    </a>
 
+                                                </div>
+                                                <div class="card-body">
+                                                    <a href="videoManuales/<?php /*echo $registroVideo->ruta_video; */ ?>"
+                                                       target="_blank"><p
+                                                                class="card-text"><?php /*echo $registroVideo->titulo; */ ?></p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <?php
+    /*                                    }
+                                    }
+                                } */ ?>
+
+
+                        </div>
+
+                    </div>
                 </div>
+
+
+                <hr class="linea-separadora">
+                <div class="card" style="max-width: 70rem;">
+                    <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <h4 class="text-white m-0 py-2">
+                                <i class="fas fa-photo-video"></i> Videos de ayuda </h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row ">
+
+                            <?php
+    /*                            $info = '';
+                                $extension = '';
+                                if (is_array($registros) || is_object($registros)) {
+                                    foreach ($registros as $registroVideo) {
+                                        $info = new SplFileInfo($registroVideo->ruta_video);
+                                        $extension = $info->getExtension();
+                                        if ($extension == 'mp4' || $extension == 'mkv' || $extension == 'avi') {
+                                            */ ?>
+
+                                        <div class="col-sm-4 mt-2">
+                                            <div class="card">
+                                                <iframe src="videoManuales/<?php /*echo $registroVideo->ruta_video; */ ?>"
+                                                        frameborder="0"></iframe>
+                                                <div class="card-body">
+                                                    <p class="card-text"><?php /*echo $registroVideo->titulo; */ ?></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <?php
+    /*                                    }
+                                    }
+                                } else { */ ?>
+                                <div class="alert alert-warning">NO HAY REGISTROS!</div>
+                            <?php /*} */ ?>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
         </div>
 
-    </div>
-<?php } ?>
+    </div>-->
+    <?php } ?>
+
+
+
