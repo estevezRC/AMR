@@ -5,12 +5,14 @@ class ReportesController extends ControladorBase
     public $conectar;
     public $adapter;
     public $id_Proyecto_constant;
+    private EntidadBase $connectorDB;
 
     public function __construct()
     {
         parent::__construct();
         $this->conectar = new Conectar();
         $this->adapter = $this->conectar->conexion();
+        $this->connectorDB = new EntidadBase('', $this->adapter);
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
 
         require_once 'core/FuncionesCompartidas.php';
@@ -93,10 +95,13 @@ class ReportesController extends ControladorBase
     /*-------------------------------------- MANUALES DEL SISTEMA -----------------------------------------*/
     public function ayuda()
     {
+        $registros = $this->connectorDB->getAllVideosManuales();
         $mensaje = "Material de Ayuda";
 
+
         $this->view("index", array(
-            "mensaje" => $mensaje
+            "mensaje" => $mensaje,
+            'registros' => $registros
         ));
     }
 
@@ -245,7 +250,6 @@ class ReportesController extends ControladorBase
         ]);
 
     }
-
 
 
     /*------------------------------------------ METODO CREAR NUEVO REPORTE ------------------------------------------*/
@@ -506,6 +510,65 @@ class ReportesController extends ControladorBase
         $getAllReportes = $reportes->getAllReporte($id_Proyecto);
 
         echo json_encode($getAllReportes);
+    }
+
+
+    public function addVideoManual()
+    {
+        $info = '';
+        $extension = '';
+        $mReporte = new Reporte($this->adapter);
+        $tituloVideo = $_REQUEST['tituloVideo'];
+        if ($_FILES['video_file']['tmp_name']) {
+            $nombre_archivo = $_FILES['video_file']['name'];
+            $nombre_archivo = strtolower(str_replace(' ', '_', $nombre_archivo));
+            $info = new SplFileInfo($nombre_archivo);
+            $extension = $info->getExtension();
+            if ($extension == 'mp4' || $extension == 'mkv' || $extension == 'avi') {
+                $ruta = 'videoManuales/videos/';
+                $extension = 'videos';
+            } else if ($extension == 'docx' || $extension == 'xlsx' || $extension == 'pdf') {
+                $ruta = 'videoManuales/documents/';
+                $extension = 'documents';
+            } else {
+                $ruta = 'videoManuales/others/';
+                $extension = 'others';
+            }
+
+
+            if (!is_dir($ruta)) {
+                mkdir($ruta, 0777, true);
+            }
+
+            $ruta = $ruta . basename($nombre_archivo);
+
+            if (move_uploaded_file($_FILES['video_file']['tmp_name'], $ruta)) {
+                $mReporte->setTitulo($tituloVideo)
+                    ->setRutaVideo($extension.'/'.$nombre_archivo)
+                    ->saveNewVideoManual();
+
+                $data = array(
+                    'mensaje' => 'El video se ha cargado correctamente!',
+                    'status' => true
+                );
+
+            }
+        } else {
+
+            $data = array(
+                'mensaje' => 'El video no se ha cargado!',
+                'status' => false
+            );
+        }
+
+
+        echo json_encode($data);
+    }
+
+    public function truncateTable() {
+        $mReporte = new Reporte($this->adapter);
+        $mReporte->truncateTable();
+
     }
 }
 
