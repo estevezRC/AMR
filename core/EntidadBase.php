@@ -2574,6 +2574,18 @@ WHERE Id_Reporte IN ($id)");
         return $resultSet;
     }
 
+    // OBTENER ULTMO COMENTARIO REGISTRADO
+    public function getAllValorMaxComentarios()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT count(id_comentario) as cantidadComentario FROM Comentarios_Reportes");
+        if ($row = $query->fetch_row()) {
+            $resultSet = trim($row[0]);
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     /*--- reportes: CONSULTAR COMENTARIOS DE REPORTES---*/
     public function consultarFotoComentario($id)
     {
@@ -3411,6 +3423,23 @@ WHERE Id_Reporte IN ($id)");
     }
 
     // ******************************************* END SECCION DE PARTICIPANTES ****************************************
+    // *****************************************************************************************************************
+
+    // *****************************************************************************************************************
+    // ********************************************* SECCION DE CARGA DE VIDEO ******************************************
+    // *****************************************************************************************************************
+    public function getAllVideosManuales()
+    {
+        $resultSet = array();
+        $query1 = "SELECT * FROM videos_manuales WHERE status = 1";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+    // ******************************************* END SECCION DE CARGA DE VIDEO **************************************
     // *****************************************************************************************************************
 
 }

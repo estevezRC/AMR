@@ -1,0 +1,18 @@
+{
+  "name": "aasapp_conmex",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mariocherrerag/aasapp_conmex.git",
+  "license": "MIT",
+  "scripts": {
+    "scss": "node-sass scss/estilos.scss css/estilos.css",
+    "min-css" : "csso css/estilos.css -o css/estilos.min.css",
+    "compile-scss": "yarn scss & yarn min-css"
+  },
+  "dependencies": {
+    "bootstrap": "^4.5.3",
+    "csso": "^4.0.3",
+    "csso-cli": "^3.0.0",
+    "node-sass": "^4.14.1"
+  }
+}

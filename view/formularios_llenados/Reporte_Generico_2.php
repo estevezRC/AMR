@@ -106,7 +106,7 @@ if ($noarchivos > 0 || $noimg > 0) {
     $col_detalles = "col-sm-6 p-0 m-2";
 } ?>
 
-<div class="row justify-content-around" id="report_content" data-id="report_content">
+<div class="row justify-content-around " id="report_content" data-id="report_content">
     <div class="<?php echo $col_detalles; ?> panel-resumen" id="panel_resumen"
          data-id="panel_resumen">
 

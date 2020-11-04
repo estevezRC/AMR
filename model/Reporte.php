@@ -15,6 +15,12 @@ class Reporte extends EntidadBase
     private $Perfiles;
     private $id_Seguimiento;
 
+    private $id_video;
+    private $titulo;
+    private $ruta_video;
+    private $status;
+
+
     public function __construct($adapter)
     {
         $table = "Cat_Reportes";
@@ -166,6 +172,35 @@ class Reporte extends EntidadBase
     }
 
 
+    //////////////////////////////////////////////////////////////////////////////////
+    /// CARGAR VIDEO DE MANUALES
+    //////////////////////////////////////////////////////////////////////////////////
+
+    public function setIdVideo($id_video): Reporte
+    {
+        $this->id_video = $id_video;
+        return $this;
+    }
+
+    public function setTitulo($titulo): Reporte
+    {
+        $this->titulo = $titulo;
+        return $this;
+    }
+
+    public function setRutaVideo($ruta_video): Reporte
+    {
+        $this->ruta_video = $ruta_video;
+        return $this;
+    }
+
+    public function setStatus($status): Reporte
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+
     /*-------------------------------------------- REPORTES: REGISTRAR REPORTE ---------------------------------------*/
     public function saveNewReporte($reportes)
     {
@@ -217,6 +252,25 @@ class Reporte extends EntidadBase
             return 3;
         }
     }
+
+    public function saveNewVideoManual()
+    {
+        $query = "INSERT INTO videos_manuales (titulo, ruta_video, status) VALUES ('$this->titulo', '$this->ruta_video', '1')";
+        if ($this->db()->query($query)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+   public function truncateTable() {
+       $query = "TRUNCATE videos_manuales";
+       if ($this->db()->query($query)) {
+           return true;
+       } else {
+           return false;
+       }
+   }
 }
 
 ?>
