@@ -6,8 +6,7 @@ class Consultas
 {
 
     function __construct()
-    {
-    }
+    {}
 
     public static function getCatReportes($idUsuario)
     {
@@ -3728,5 +3727,71 @@ WHERE mc.mat_Id_Reporte = $idsReporte AND mc.mat_Telegram = 1 AND us.id_telegram
             return false;
         }
     }//getMaxGpoValores
+
+    public static function getPermisosUsuarios()
+    {
+        $consulta = "SELECT * FROM Permisos_Usuarios pu";
+
+        //echo $consulta;
+        try {
+            $comando = DataBase::getInstance()->getDb()->prepare($consulta);
+
+            $comando->execute();
+
+            $resultado = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return $resultado;
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }//getMaxGpoValores
+
+    public static function obtenerDatosAvanceGantt()
+    {
+        $consulta = "SELECT av.id_nodo nodo,av.gpo_valores gpo FROM avance_actividad av 
+                        WHERE av.id_proyecto = 8";
+
+        //echo $consulta;
+        try {
+            // Preparar sentencia
+            $comando = Database::getInstance()->getDb()->prepare($consulta);
+            // Ejecutar sentencia preparada
+            $comando->execute();
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
+            //$comando->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public static function obtenerDatosAvanceGantt1($posicion,$idReporte)
+    {
+        $consulta = "SELECT aa.`gpo_valores` as gpo,rl.`id_Gpo_Padre` AS gpoPadre,rl.`id_Reporte`,aa.`id_nodo` FROM `avance_actividad` aa 
+                        INNER JOIN Reportes_Llenados rl ON aa.`gpo_valores` = rl.`id_Gpo_Valores_Reporte`
+                        WHERE aa.`id_proyecto` = 8 ORDER BY aa.`gpo_valores` DESC LIMIT $posicion,200";
+
+        //AND rl.`id_Reporte` = $idReporte
+
+        echo $consulta;
+        try {
+            // Preparar sentencia
+            $comando = Database::getInstance()->getDb()->prepare($consulta);
+            // Ejecutar sentencia preparada
+            $comando->execute();
+
+            $result = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
+            //$comando->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 
 }
