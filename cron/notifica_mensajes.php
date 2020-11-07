@@ -49,7 +49,7 @@ function reportesByTipos($fechaAnterior,$textoFinal) {
     ConsultasCron::sendMessageTelegram(1186730512, $textoFinal);
     ConsultasCron::sendMessageTelegram(262453015, $textoFinal);
     ConsultasCron::sendMessageTelegram(298180244, $textoFinal);
-    //ConsultasCron::sendMessageTelegram(1108981510, $textoFinal);
+    ConsultasCron::sendMessageTelegram(1108981510, $textoFinal);
 }
 
 function reportesByTramo($fechaAnterior,$textoFinal,$fechaFormat) {
