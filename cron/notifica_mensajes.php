@@ -5,15 +5,21 @@ require_once 'ConsultasCron.php';
 $fecha_actual = date("Y-m-d");
 $fechaAnterior = date("Y-m-d", strtotime($fecha_actual . "- 1 days"));
 
-reportesByTramo($fechaAnterior);
-reportesByTipos($fechaAnterior);
+$fecha = new DateTime($fechaAnterior);
+$fechaFormat = $fecha->format('d/m/Y');
+$fechaFormat = date("d/m/Y",strtotime($fechaAnterior));
 
-function reportesByTipos($fechaAnterior) {
+$textoFinal = "<strong>AMERICAS RESOURCES</strong>";
+
+reportesByTramo($fechaAnterior,$textoFinal,$fechaFormat);
+//reportesByTipos($fechaAnterior);
+
+function reportesByTipos($fechaAnterior,$textoFinal) {
     $contadorReportesByReportes = ConsultasCron::contadorReportesByReporte($fechaAnterior);
     $texto = "";
     $totalReportes = 0;
     $cont = 0;
-    $textoFinal = '';
+    //$textoFinal = '';
     foreach ($contadorReportesByReportes as $contReportes){
         $nombreProyecto = $contReportes['nombre'];
         $total = $contReportes['total'];
@@ -32,22 +38,26 @@ function reportesByTipos($fechaAnterior) {
     }
 
     if ($cont == 0) {
-        $textoFinal = "El dia $fechaAnterior <strong>No se han registrado reportes</strong>";
+        $textoFinal .= "\n $texto";//"El dia $fechaAnterior <strong>No se han registrado reportes</strong>";
         //$textoPersonal = 'El día ' . $fechaAnterior . ' se registraron ' . $contadorReportesByReportes . ' nuevos reportes';
     } else {
-        $textoFinal = "El dia $fechaAnterior se registraron $totalReportes nuevos reportes \n $texto";
+        $textoFinal .= "\n $texto";//El dia $fechaAnterior se registraron $totalReportes nuevos reportes \n $texto";
         //$textoPersonal = 'El día ' . $fechaAnterior . ' se registraron ' . $contadorReportesByReportes . ' nuevos reportes';
     }
+
+    //echo $textoFinal;
     ConsultasCron::sendMessageTelegram(1186730512, $textoFinal);
     ConsultasCron::sendMessageTelegram(262453015, $textoFinal);
+    ConsultasCron::sendMessageTelegram(298180244, $textoFinal);
+    //ConsultasCron::sendMessageTelegram(1108981510, $textoFinal);
 }
 
-function reportesByTramo($fechaAnterior) {
+function reportesByTramo($fechaAnterior,$textoFinal,$fechaFormat) {
     $contadorReportesByTramo = ConsultasCron::contadorReportes($fechaAnterior);
     $texto = "";
     $totalReportes = 0;
     $cont = 0;
-    $textoFinal = "";
+    //$textoFinal = "";
     foreach ($contadorReportesByTramo as $contReportes){
         $nombreProyecto = $contReportes['nombreProyecto'];
         $total = $contReportes['total'];
@@ -60,15 +70,18 @@ function reportesByTramo($fechaAnterior) {
 
 
     if ($cont == 0) {
-        $textoFinal = "El dia $fechaAnterior <strong>No se han registrado reportes</strong>";
+        $textoFinal .= "\nEl dia $fechaFormat <strong>No se insertaron nuevos registros</strong>";
         //$textoPersonal = 'El día ' . $fechaAnterior . ' se registraron ' . $contadorReportesByReportes . ' nuevos reportes';
     } else {
-        $textoFinal = "El dia $fechaAnterior se registraron $totalReportes nuevos reportes \n $texto";
+        $textoFinal .= "\nEl dia $fechaFormat se insertaron $totalReportes nuevos registros \n $texto";
         //$textoPersonal = 'El día ' . $fechaAnterior . ' se registraron ' . $contadorReportesByReportes . ' nuevos reportes';
     }
-    ConsultasCron::sendMessageTelegram(1186730512, $textoFinal);
-    ConsultasCron::sendMessageTelegram(262453015, $textoFinal);
-    ConsultasCron::sendMessageTelegram(298180244, $textoFinal);
+
+    reportesByTipos($fechaAnterior,$textoFinal);
+
+    //ConsultasCron::sendMessageTelegram(1186730512, $textoFinal);
+    //ConsultasCron::sendMessageTelegram(262453015, $textoFinal);
+    //ConsultasCron::sendMessageTelegram(298180244, $textoFinal);
     //ConsultasCron::sendMessageTelegram(1108981510, $textoFinal);
 }
 
