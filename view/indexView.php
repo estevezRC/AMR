@@ -475,6 +475,11 @@ if ($controller_vistas == "Empresas_Proyectos") {
     include 'EmpresasProyectos.php';
 }
 
+
+if ($controller_vistas == "Estadisticas") {
+    include 'Estadisticas.php';
+}
+
 ?>
 
 <script>
