@@ -150,6 +150,13 @@
                                 </a>
                             </li>
 
+                            <li>
+                                <a class="dropdown-item" href="index.php?controller=Estadisticas&action=index2">
+                                    <i class="fas fa-project-diagram"></i>
+                                    Estadisticas Inventario
+                                </a>
+                            </li>
+
                             <?php if (!$existeGantt) { ?>
                                 <li>
                                     <a class="dropdown-item"
