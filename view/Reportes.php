@@ -1038,7 +1038,11 @@ if (($action == "index") || ($action == "modificar")) { ?>
                                     }
                                 }
                             } else { ?>
-                                <div class="alert alert-warning">NO HAY REGISTROS!</div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="alert alert-warning">NO HAY REGISTROS!</div>
+                                    </div>
+                                </div>
                             <?php } ?>
                         </div>
                     </div>

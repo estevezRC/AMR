@@ -385,6 +385,11 @@ class ReportesLlenadosController extends ControladorBase
         $funciones = new FuncionesCompartidas();
         $funciones->guardarNotificacion($id_usuario, $_SESSION[ID_USUARIO_SUPERVISOR], $id_Gpo, 2);
 
+//        $last_id = $guardarcomentario['Resultado'];
+        //var_dump($guardarcomentario);
+//        if ($last_id != 0 || $last_id != NULL) {
+            //echo $last_id;
+
             //FOTOGRAFIA
             if (!empty($_FILES["img_comentario"]['name'])) {
 
@@ -436,6 +441,32 @@ class ReportesLlenadosController extends ControladorBase
         $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
 
     }
+
+   /* public function guardarfotocomentario()
+    {
+        $id_Usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
+        $last_id = $_GET['last_id'];
+        $img = $_GET['img'];
+        $foto = $_GET['foto'];
+        $id_Gpo = $_GET['id_Gpo_Valores_Reporte'];
+        $id_Reporte = $_GET['Id_Reporte'];
+        if ($last_id != 0 || $last_id != NULL) {
+            if ($foto == 1) {
+                $llenadofotografia = new Fotografia($this->adapter);
+                $llenadofotografia->set_id_Usuario($id_Usuario);
+                $llenadofotografia->set_id_Modulo(7);
+                $llenadofotografia->set_identificador_Fotografia($last_id);
+                $llenadofotografia->set_directorio_Fotografia('');
+                $nombre_Fotografia = str_replace('img/comentarios/', '', $img);
+                $llenadofotografia->set_nombre_Fotografia($nombre_Fotografia);
+                $llenadofotografia->set_descripcion_Fotografia(NULL);
+                $llenadofotografia->set_orientacion_Fotografia(0);
+                $save_fotografia = $llenadofotografia->saveNewFotografia();
+            }
+        }
+
+        $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
+    }*/
 
 
     public function editarcomentario()
