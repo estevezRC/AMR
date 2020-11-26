@@ -3442,5 +3442,55 @@ WHERE Id_Reporte IN ($id)");
     // ******************************************* END SECCION DE CARGA DE VIDEO **************************************
     // *****************************************************************************************************************
 
+    // *****************************************************************************************************************
+    // ********************************************* ESTADISTICAS INVENTARIO AMR ******************************************
+    // *****************************************************************************************************************
+
+    public function getAllDatosInventario($arrayConfiguraciones)
+    {
+        $resultSet = array();
+        $query1 = "SELECT 
+    V.id_Gpo_Valores_Reporte,
+    GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[0],V.valor_Texto_Reporte,NULL)) AS 'fecha',
+ GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[1],V.valor_Texto_Reporte,NULL)) AS 'hora',
+    GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[2],V.valor_Texto_Reporte,NULL)) AS 'observaciones',
+    GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[3],V.valor_Texto_Reporte, NULL)) AS 'movimiento',
+    GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[4],(SELECT CONCAT(us.nombre_Usuario,' ',us.apellido_Usuario) 
+    FROM VW_getAllUsuarios AS us WHERE us.id_Usuario = V.valor_Texto_Reporte),NULL)) AS 'responsable',
+    GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[5],V.valor_Texto_Reporte,NULL)) AS 'elemento',
+    GROUP_CONCAT(IF(V.id_Configuracion_Reporte = $arrayConfiguraciones[6],V.valor_Texto_Reporte,NULL)) AS 'cantidad'
+FROM
+    (SELECT 
+        *
+    FROM
+        Valores_Reportes_Campos
+    WHERE
+        id_Configuracion_Reporte IN ($arrayConfiguraciones[0], $arrayConfiguraciones[1], $arrayConfiguraciones[2], $arrayConfiguraciones[3], $arrayConfiguraciones[4], $arrayConfiguraciones[5], $arrayConfiguraciones[6])) AS V
+GROUP BY V.id_Gpo_Valores_Reporte";
+
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getConfiguracionReportes($idReporte)
+    {
+        $resultSet = array();
+        $query1 = "SELECT crc.id_Configuracion_Reporte,crc.nombre_Campo FROM VW_getAllConfReportesCampos crc 
+                        WHERE crc.id_Reporte = $idReporte ORDER BY crc.Secuencia";
+
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+    // *****************************************************************************************************************
+    // ********************************************* ESTADISTICAS INVENTARIO AMR ******************************************
+    // *****************************************************************************************************************
 }
 
