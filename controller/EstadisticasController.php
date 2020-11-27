@@ -5,6 +5,7 @@ class EstadisticasController extends ControladorBase
 {
     public $conectar;
     public $adapter;
+    private $connectorDB;
 
     public function __construct()
     {
@@ -12,6 +13,7 @@ class EstadisticasController extends ControladorBase
         $this->conectar = new Conectar();
         $this->adapter = $this->conectar->conexion();
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
+        $this->connectorDB = new EntidadBase('', $this->adapter);
     }
 
     // FUNCION PARA MOSTRAR LOS DATOS A NIVEL EMPRESA
@@ -42,6 +44,17 @@ class EstadisticasController extends ControladorBase
 
         $this->view("index", array(
             'mensaje' => $mensaje, 'registros' => $registros
+        ));
+    }
+
+    public function estadisticas()
+    {
+        $mensaje = '<i class="fas fa-table"></i> Estadisticas';
+
+        $estadisticas = $this->connectorDB->getEstadisticasReportes();
+
+        $this->view("index", array(
+            'mensaje' => $mensaje, 'estadisticas' => $estadisticas
         ));
     }
 
