@@ -9,6 +9,7 @@ class GraficasController extends ControladorBase
     public $adapter;
     public $id_Proyecto_constant;
     public $estructura;
+    private $connectorDB;
 
     public function __construct()
     {
@@ -18,6 +19,7 @@ class GraficasController extends ControladorBase
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
         $this->url = $_SERVER["REQUEST_URI"];
         $this->estructura = [];
+        $this->connectorDB = new EntidadBase('', $this->adapter);
 
         require_once 'vendor/autoload.php';
     }
@@ -42,9 +44,8 @@ class GraficasController extends ControladorBase
         }
 
 
-        /* *********************************** GRAFICA DE USUARIOS ****************************************** */
-        $usuario = new Usuario($this->adapter);
-        $allUser = $usuario->getAllUsuariosReportesTotal($this->id_Proyecto_constant);
+        // ************************************* GRAFICA DE USUARIOS ***************************************************
+        $allUser = $this->connectorDB->getAllUsuariosReportesTotal($this->id_Proyecto_constant);
         $resul = array();
         $i = 0;
         $n = 0;
@@ -64,9 +65,10 @@ class GraficasController extends ControladorBase
                 $n++;
             }
         }
-        /* *********************************** GRAFICA DE REPORTES ****************************************** */
-        $usuario = new Usuario($this->adapter);
-        $allReportes = $usuario->getGraficaReportes($this->id_Proyecto_constant);
+
+
+        // *************************************** GRAFICA DE REPORTES *************************************************
+        $allReportes = $this->connectorDB->getGraficaReportes($this->id_Proyecto_constant);
         //var_dump($allReportes);
         $reportes = [];
         if (is_array($allReportes) || is_object($allReportes)) {
@@ -81,8 +83,35 @@ class GraficasController extends ControladorBase
             }
         }
 
-        $this->view("index", array("resul" => $resul, "resulNombrel" => $resulNombrel,
-            "allReportes" => $arrayreportes, "mensaje" => $mensaje, "nuevoResul" => $nuevoResultado, "reportes" => $reportes
+
+        // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
+        if ($this->id_Proyecto_constant == 1) // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+            $id_Reportes = 41;
+        if ($this->id_Proyecto_constant == 2) // PROYECTO Tramo B. Cadereyta - Reynosa
+            $id_Reportes = 68;
+        if ($this->id_Proyecto_constant == 3) // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+            $id_Reportes = 78;
+        if ($this->id_Proyecto_constant == 4) // PROYECTO Tramo D. Matamoros - Reynosa
+            $id_Reportes = 84;
+        if ($this->id_Proyecto_constant == 5) // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+            $id_Reportes = 90;
+        if ($this->id_Proyecto_constant == 6) // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+            $id_Reportes = 96;
+        if ($this->id_Proyecto_constant == 8) // PROYECTO Entrenamiento
+            $id_Reportes = 57;
+        elseif ($this->id_Proyecto_constant == 10) // PROYECTO Administración
+            $id_Reportes = "41,68,78,84,90,96,57";
+
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($id_Reportes);
+
+
+        // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
+        // falta consulta, pendiente por realizar
+
+
+
+        $this->view("index", array('resul' => $resul, 'resulNombrel' => $resulNombrel, 'allReportes' => $arrayreportes,
+            'mensaje' => $mensaje, 'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas
         ));
     }
 

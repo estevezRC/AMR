@@ -3489,6 +3489,25 @@ GROUP BY V.id_Gpo_Valores_Reporte";
         $query->close();
         return $resultSet;
     }
+
+    public function getEstadisticasReportes($id_Reportes) {
+        $resultSet = array();
+        $query1 = "SELECT EI.elemento as elemento,
+                EI.id_Reporte,
+                SUM(IF(EI.movimiento = 'Entrada',EI.cantidad,0)) AS totalEntrada,
+                SUM(IF(EI.movimiento = 'Salida',EI.cantidad,0)) AS totalSalida,
+                sum(IF(EI.movimiento = 'Entrada',EI.cantidad,0)) - sum(IF(EI.movimiento = 'Salida',EI.cantidad,0)) as totalStock
+            FROM VW_getAllEstadisticasInventario EI 
+            WHERE EI.id_Reporte IN($id_Reportes)
+            GROUP BY EI.elemento";
+
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
     // *****************************************************************************************************************
     // ********************************************* ESTADISTICAS INVENTARIO AMR ******************************************
     // *****************************************************************************************************************
