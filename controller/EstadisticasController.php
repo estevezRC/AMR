@@ -50,8 +50,22 @@ class EstadisticasController extends ControladorBase
     public function estadisticas()
     {
         $mensaje = '<i class="fas fa-table"></i> Estadisticas';
+        if ($this->id_Proyecto_constant == 1)
+            $id_Reportes = "41,57,68,78,84,90,96";
+        if ($this->id_Proyecto_constant == 2)
+            $id_Reportes = "68";
+        if ($this->id_Proyecto_constant == 3)
+            $id_Reportes = "78";
+        if ($this->id_Proyecto_constant == 4)
+            $id_Reportes = "84";
+        if ($this->id_Proyecto_constant == 5)
+            $id_Reportes = "90";
+        if ($this->id_Proyecto_constant == 6)
+            $id_Reportes = "96";
+        if ($this->id_Proyecto_constant == 8)
+            $id_Reportes = "57";
 
-        $estadisticas = $this->connectorDB->getEstadisticasReportes();
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($id_Reportes);
 
         $this->view("index", array(
             'mensaje' => $mensaje, 'estadisticas' => $estadisticas

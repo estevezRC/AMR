@@ -3490,7 +3490,7 @@ GROUP BY V.id_Gpo_Valores_Reporte";
         return $resultSet;
     }
 
-    public function getEstadisticasReportes() {
+    public function getEstadisticasReportes($id_Reportes) {
         $resultSet = array();
         $query1 = "SELECT EI.elemento as elemento,
                 EI.id_Reporte,
@@ -3498,7 +3498,7 @@ GROUP BY V.id_Gpo_Valores_Reporte";
                 SUM(IF(EI.movimiento = 'Salida',EI.cantidad,0)) AS totalSalida,
                 sum(IF(EI.movimiento = 'Entrada',EI.cantidad,0)) - sum(IF(EI.movimiento = 'Salida',EI.cantidad,0)) as totalStock
             FROM VW_getEstadisticasInventario EI 
-            WHERE EI.`id_Reporte` = 41 
+            WHERE EI.id_Reporte IN($id_Reportes)
             GROUP BY EI.elemento";
 
         $query = $this->db->query($query1);
