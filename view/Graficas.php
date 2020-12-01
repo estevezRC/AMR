@@ -24,7 +24,11 @@
                             <div class="col-12 col-md-6 mb-5">
                                 <div class="card">
                                     <h5 class="card-header">
-                                        <b>Inventario</b>
+
+                                        <a href="index.php?controller=Estadisticas&action=estadisticas">
+                                            <b>Inventario</b>
+                                        </a>
+
                                     </h5>
                                     <div class="card-body">
                                         <table id="example" class="table table-striped">
@@ -85,7 +89,7 @@
                                                 <tr>
                                                     <td> <?= $contador; ?> </td>
                                                     <td> <?= $avance->nombre; ?> </td>
-                                                    <td> <?= $avance->valor; ?> metros </td>
+                                                    <td> <?= $avance->valor; ?> metros</td>
                                                 </tr>
 
                                                 <?
