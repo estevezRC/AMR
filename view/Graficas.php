@@ -62,112 +62,41 @@
                                 </div>
                             </div>
 
-                            <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10) {
-                                $cantidad = 3;
-                                for ($i = 1; $i <= $cantidad; $i++) { ?>
-                                    <div class="col-12 col-md-6 mb-5">
-                                        <div class="card">
-                                            <h5 class="card-header">
-                                                <b>Avance de FO Tramo <?= $i; ?></b>
-                                            </h5>
-                                            <div class="card-body">
-                                                <table id="example" class="table table-striped p-3">
-                                                    <thead class="bg-primary text-light">
-                                                    <tr>
-                                                        <th>No.</th>
-                                                        <th>Material</th>
-                                                        <th>Total en Stock</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Tritubo</td>
-                                                        <td>890m</td>
-                                                    </tr>
 
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Inmexf</td>
-                                                        <td>120m</td>
-                                                    </tr>
+                            <div class="col-12 col-md-6 mb-5">
+                                <div class="card">
+                                    <h5 class="card-header">
+                                        <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                    </h5>
+                                    <div class="card-body">
+                                        <table id="example" class="table table-striped p-3">
+                                            <thead class="bg-primary text-light">
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Material</th>
+                                                <th>Total Avance</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Prueba</td>
-                                                        <td>450m</td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>4</td>
-                                                        <td>Prueba 2</td>
-                                                        <td>750m</td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>5</td>
-                                                        <td>Prueba 3</td>
-                                                        <td>150m</td>
-                                                    </tr>
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <? } ?>
-                            <? } else { ?>
-                                <div class="col-12 col-md-6 mb-5">
-                                    <div class="card">
-                                        <h5 class="card-header">
-                                            <b>Avance de FO Tramo <?= $_SESSION[ID_PROYECTO_SUPERVISOR]; ?></b>
-                                        </h5>
-                                        <div class="card-body">
-                                            <table id="example" class="table table-striped p-3">
-                                                <thead class="bg-primary text-light">
+                                            <?
+                                            $contador = 1;
+                                            foreach ($arrayAvancesFO as $avance) { ?>
                                                 <tr>
-                                                    <th>No.</th>
-                                                    <th>Material</th>
-                                                    <th>Total en Stock</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Tritubo</td>
-                                                    <td>890m</td>
+                                                    <td> <?= $contador; ?> </td>
+                                                    <td> <?= $avance->nombre; ?> </td>
+                                                    <td> <?= $avance->valor; ?> metros </td>
                                                 </tr>
 
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Inmexf</td>
-                                                    <td>120m</td>
-                                                </tr>
+                                                <?
+                                                $contador++;
+                                            } ?>
 
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td>Prueba</td>
-                                                    <td>450m</td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td>Prueba 2</td>
-                                                    <td>750m</td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>5</td>
-                                                    <td>Prueba 3</td>
-                                                    <td>150m</td>
-                                                </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            <? } ?>
+                            </div>
 
 
                         </div>

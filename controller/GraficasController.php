@@ -84,34 +84,99 @@ class GraficasController extends ControladorBase
         }
 
 
-        // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
-        if ($this->id_Proyecto_constant == 1) // PROYECTO Tramo A. Monterrey - Nuevo Laredo
-            $id_Reportes = 41;
-        if ($this->id_Proyecto_constant == 2) // PROYECTO Tramo B. Cadereyta - Reynosa
-            $id_Reportes = 68;
-        if ($this->id_Proyecto_constant == 3) // PROYECTO Tramo C. Libramiento de Reynosa Sur II
-            $id_Reportes = 78;
-        if ($this->id_Proyecto_constant == 4) // PROYECTO Tramo D. Matamoros - Reynosa
-            $id_Reportes = 84;
-        if ($this->id_Proyecto_constant == 5) // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
-            $id_Reportes = 90;
-        if ($this->id_Proyecto_constant == 6) // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
-            $id_Reportes = 96;
-        if ($this->id_Proyecto_constant == 8) // PROYECTO Entrenamiento
-            $id_Reportes = 57;
-        elseif ($this->id_Proyecto_constant == 10) // PROYECTO Administración
-            $id_Reportes = "41,68,78,84,90,96,57";
+        // *************************************************************************************************************
+        // ***************************** SECCION DE ASIGNACION DE IDS DE REPORTES POR PROYECTO *************************
+        if ($this->id_Proyecto_constant == 1) { // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+            $idReportesInv = 41;
+            $idReportesFO = 4;
+        }
+        if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
+            $idReportesInv = 68;
+            $idReportesFO = 8;
+        }
+        if ($this->id_Proyecto_constant == 3) { // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+            $idReportesInv = 78;
+            $idReportesFO = 13;
+        }
+        if ($this->id_Proyecto_constant == 4) { // PROYECTO Tramo D. Matamoros - Reynosa
+            $idReportesInv = 84;
+            $idReportesFO = 29;
+        }
+        if ($this->id_Proyecto_constant == 5) { // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+            $idReportesInv = 90;
+            $idReportesFO = 24;
+        }
+        if ($this->id_Proyecto_constant == 6) { // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+            $idReportesInv = 96;
+            $idReportesFO = 19;
+        }
+        if ($this->id_Proyecto_constant == 8) { // PROYECTO Entrenamiento
+            $idReportesInv = 57;
+            $idReportesFO = 59;
+        }
+        if ($this->id_Proyecto_constant == 10) { // PROYECTO Administración
+            $idReportesInv = '41,68,78,84,90,96,57';
+            $idReportesFO = '4,8,13,29,24,19,59';
+        }
 
-        $estadisticas = $this->connectorDB->getEstadisticasReportes($id_Reportes);
+
+        // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($idReportesInv);
 
 
         // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
-        // falta consulta, pendiente por realizar
+        $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO);
 
+        $avanceJson = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultados);
+
+        $arrayAvancesFO = (object)[
+            'tritubo' => (object)[
+                'nombre' => 'Tritubo', 'valor' => 0
+            ],
+            'pruebas' => (object)[
+                'nombre' => 'Pruebas', 'valor' => 0
+            ],
+            'inmersionFO' => (object)[
+                'nombre' => 'Inmersión FO', 'valor' => 0
+            ],
+            'reposicionAsfalto' => (object)[
+                'nombre' => 'Reposición de asfalto', 'valor' => 0
+            ],
+        ];
+
+        $getValor = function ($arrayValores) {
+            $coincidencia = array_filter($arrayValores, function ($element) {
+                return $element->idCampo == 36;
+
+            });
+            return is_numeric(array_values($coincidencia)[0]->valorCampo) ? array_values($coincidencia)[0]->valorCampo : 0;
+
+        };
+
+        foreach ($avanceJson as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo')
+                        $arrayAvancesFO->tritubo->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas')
+                        $arrayAvancesFO->pruebas->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO')
+                        $arrayAvancesFO->inmersionFO->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto')
+                        $arrayAvancesFO->reposicionAsfalto->valor += $getValor($valor->Valor);
+                }
+            }
+        }
+        //print_r($arrayAvancesFO);
+        //die();
+        // *************************************************************************************************************
 
 
         $this->view("index", array('resul' => $resul, 'resulNombrel' => $resulNombrel, 'allReportes' => $arrayreportes,
-            'mensaje' => $mensaje, 'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas
+            'mensaje' => $mensaje, 'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas,
+            'arrayAvancesFO' => $arrayAvancesFO
         ));
     }
 
