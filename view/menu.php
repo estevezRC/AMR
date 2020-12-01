@@ -151,8 +151,8 @@
                             </li>
 
                             <li>
-                                <a class="dropdown-item" href="index.php?controller=Estadisticas&action=index2">
-                                    <i class="fas fa-project-diagram"></i>
+                                <a class="dropdown-item" href="index.php?controller=Estadisticas&action=estadisticas">
+                                    <i class="fas fa-table"></i>
                                     Estadisticas Inventario
                                 </a>
                             </li>

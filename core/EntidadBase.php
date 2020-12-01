@@ -3489,8 +3489,50 @@ GROUP BY V.id_Gpo_Valores_Reporte";
         $query->close();
         return $resultSet;
     }
+
+    public function getEstadisticasReportes($id_Reportes)
+    {
+        $resultSet = array();
+        $query1 = "SELECT EI.elemento as elemento,
+                EI.id_Reporte,
+                SUM(IF(EI.movimiento = 'Entrada',EI.cantidad,0)) AS totalEntrada,
+                SUM(IF(EI.movimiento = 'Salida',EI.cantidad,0)) AS totalSalida,
+                sum(IF(EI.movimiento = 'Entrada',EI.cantidad,0)) - sum(IF(EI.movimiento = 'Salida',EI.cantidad,0)) as totalStock
+            FROM VW_getAllEstadisticasInventario EI 
+            WHERE EI.id_Reporte IN($id_Reportes)
+            GROUP BY EI.elemento";
+
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+
+    public function getJsonAvancesFO($idReporte)
+    {
+        $resultSet = array();
+        $query1 = "SELECT V.id_Gpo_Valores_Reporte, V.id_Reporte, V.id_Status_Elemento,
+            group_concat(if((V.id_Campo_Reporte = 1),V.valor_Texto_Reporte,NULL) separator ',') AS fecha,
+            group_concat(if((V.id_Campo_Reporte = 2),V.valor_Texto_Reporte,NULL) separator ',') AS hora,
+            group_concat(if((V.id_Campo_Reporte = 18),V.valor_Texto_Reporte,NULL) separator ',') AS observaciones,
+            group_concat(if((V.id_Campo_Reporte = 3),V.valor_Texto_Reporte,NULL) separator ',') AS descripción,
+            group_concat(if((V.id_Campo_Reporte = 37),V.valor_Texto_Reporte,NULL) separator ',') AS actividad,
+            group_concat(if((V.id_Campo_Reporte = 38),V.valor_Texto_Reporte,NULL) separator ',') AS frente 
+            FROM (SELECT * FROM VW_getAllValoresReportes vr) V WHERE id_Reporte IN ($idReporte) AND id_Status_Elemento = 1 
+            GROUP BY V.id_Gpo_Valores_Reporte";
+
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     // *****************************************************************************************************************
     // ********************************************* ESTADISTICAS INVENTARIO AMR ******************************************
     // *****************************************************************************************************************
 }
-

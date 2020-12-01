@@ -9,6 +9,7 @@ class GraficasController extends ControladorBase
     public $adapter;
     public $id_Proyecto_constant;
     public $estructura;
+    private $connectorDB;
 
     public function __construct()
     {
@@ -18,6 +19,7 @@ class GraficasController extends ControladorBase
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
         $this->url = $_SERVER["REQUEST_URI"];
         $this->estructura = [];
+        $this->connectorDB = new EntidadBase('', $this->adapter);
 
         require_once 'vendor/autoload.php';
     }
@@ -42,9 +44,8 @@ class GraficasController extends ControladorBase
         }
 
 
-        /* *********************************** GRAFICA DE USUARIOS ****************************************** */
-        $usuario = new Usuario($this->adapter);
-        $allUser = $usuario->getAllUsuariosReportesTotal($this->id_Proyecto_constant);
+        // ************************************* GRAFICA DE USUARIOS ***************************************************
+        $allUser = $this->connectorDB->getAllUsuariosReportesTotal($this->id_Proyecto_constant);
         $resul = array();
         $i = 0;
         $n = 0;
@@ -64,9 +65,10 @@ class GraficasController extends ControladorBase
                 $n++;
             }
         }
-        /* *********************************** GRAFICA DE REPORTES ****************************************** */
-        $usuario = new Usuario($this->adapter);
-        $allReportes = $usuario->getGraficaReportes($this->id_Proyecto_constant);
+
+
+        // *************************************** GRAFICA DE REPORTES *************************************************
+        $allReportes = $this->connectorDB->getGraficaReportes($this->id_Proyecto_constant);
         //var_dump($allReportes);
         $reportes = [];
         if (is_array($allReportes) || is_object($allReportes)) {
@@ -81,8 +83,100 @@ class GraficasController extends ControladorBase
             }
         }
 
-        $this->view("index", array("resul" => $resul, "resulNombrel" => $resulNombrel,
-            "allReportes" => $arrayreportes, "mensaje" => $mensaje, "nuevoResul" => $nuevoResultado, "reportes" => $reportes
+
+        // *************************************************************************************************************
+        // ***************************** SECCION DE ASIGNACION DE IDS DE REPORTES POR PROYECTO *************************
+        if ($this->id_Proyecto_constant == 1) { // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+            $idReportesInv = 41;
+            $idReportesFO = 4;
+        }
+        if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
+            $idReportesInv = 68;
+            $idReportesFO = 8;
+        }
+        if ($this->id_Proyecto_constant == 3) { // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+            $idReportesInv = 78;
+            $idReportesFO = 13;
+        }
+        if ($this->id_Proyecto_constant == 4) { // PROYECTO Tramo D. Matamoros - Reynosa
+            $idReportesInv = 84;
+            $idReportesFO = 29;
+        }
+        if ($this->id_Proyecto_constant == 5) { // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+            $idReportesInv = 90;
+            $idReportesFO = 24;
+        }
+        if ($this->id_Proyecto_constant == 6) { // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+            $idReportesInv = 96;
+            $idReportesFO = 19;
+        }
+        if ($this->id_Proyecto_constant == 8) { // PROYECTO Entrenamiento
+            $idReportesInv = 57;
+            $idReportesFO = 59;
+        }
+        if ($this->id_Proyecto_constant == 10) { // PROYECTO Administración
+            $idReportesInv = '41,68,78,84,90,96,57';
+            $idReportesFO = '4,8,13,29,24,19,59';
+        }
+
+
+        // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($idReportesInv);
+
+
+        // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
+        $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO);
+
+        $avanceJson = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultados);
+
+        $arrayAvancesFO = (object)[
+            'tritubo' => (object)[
+                'nombre' => 'Tritubo', 'valor' => 0
+            ],
+            'pruebas' => (object)[
+                'nombre' => 'Pruebas', 'valor' => 0
+            ],
+            'inmersionFO' => (object)[
+                'nombre' => 'Inmersión FO', 'valor' => 0
+            ],
+            'reposicionAsfalto' => (object)[
+                'nombre' => 'Reposición de asfalto', 'valor' => 0
+            ],
+        ];
+
+        $getValor = function ($arrayValores) {
+            $coincidencia = array_filter($arrayValores, function ($element) {
+                return $element->idCampo == 36;
+
+            });
+            return is_numeric(array_values($coincidencia)[0]->valorCampo) ? array_values($coincidencia)[0]->valorCampo : 0;
+
+        };
+
+        foreach ($avanceJson as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo')
+                        $arrayAvancesFO->tritubo->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas')
+                        $arrayAvancesFO->pruebas->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO')
+                        $arrayAvancesFO->inmersionFO->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto')
+                        $arrayAvancesFO->reposicionAsfalto->valor += $getValor($valor->Valor);
+                }
+            }
+        }
+        //print_r($arrayAvancesFO);
+        //die();
+        // *************************************************************************************************************
+
+
+        $this->view("index", array('resul' => $resul, 'resulNombrel' => $resulNombrel, 'allReportes' => $arrayreportes,
+            'mensaje' => $mensaje, 'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas,
+            'arrayAvancesFO' => $arrayAvancesFO
         ));
     }
 

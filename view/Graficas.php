@@ -18,25 +18,114 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <div class="row">
-                            <div class="col-12 col-md-5 my-md-0 my-3 px-2">
-                                <div id="reportes_usuarios" class=" shadow-sm chartdiv mx-auto  bg-light"></div>
+
+                        <div class="row m-2">
+
+                            <div class="col-12 col-md-6 mb-5">
+                                <div class="card">
+                                    <h5 class="card-header">
+                                        <b>Inventario</b>
+                                    </h5>
+                                    <div class="card-body">
+                                        <table id="example" class="table table-striped">
+                                            <thead class="bg-primary text-light">
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Material</th>
+                                                <th>Total en Stock</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
+                                                foreach ($estadisticas as $row => $registro) {
+                                                    $elementArr = explode('(', $registro->elemento);
+                                                    $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                                    //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                    ?>
+
+                                                    <tr>
+                                                        <td><?= $row + 1; ?></td>
+                                                        <td><?= $registro->elemento; ?></td>
+                                                        <td><?= "$registro->totalStock $unidad_medida"; ?></td>
+                                                    </tr>
+                                                <? }
+                                            } else { ?>
+                                                <tr class="odd">
+                                                    <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                        disponible en esta tabla
+                                                    </td>
+                                                </tr>
+                                            <? } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-12 col-md-7 mb-3">
-                                <div id="reportes_utilizados" class="shadow-sm chartdiv-600 mx-auto bg-light"></div>
+
+
+                            <div class="col-12 col-md-6 mb-5">
+                                <div class="card">
+                                    <h5 class="card-header">
+                                        <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                    </h5>
+                                    <div class="card-body">
+                                        <table id="example" class="table table-striped p-3">
+                                            <thead class="bg-primary text-light">
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Material</th>
+                                                <th>Total Avance</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            <?
+                                            $contador = 1;
+                                            foreach ($arrayAvancesFO as $avance) { ?>
+                                                <tr>
+                                                    <td> <?= $contador; ?> </td>
+                                                    <td> <?= $avance->nombre; ?> </td>
+                                                    <td> <?= $avance->valor; ?> metros </td>
+                                                </tr>
+
+                                                <?
+                                                $contador++;
+                                            } ?>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
+
+
                         </div>
+
+                        <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
+                            <div class="row mt-2">
+                                <div class="col-12 col-md-6 mb-5">
+                                    <div id="reportes_usuarios" class=" shadow-sm chartdiv mx-auto bg-light"></div>
+                                </div>
+                                <div class="col-12 col-md-6 mb-5">
+                                    <div id="reportes_utilizados" class="shadow-sm chartdiv mx-auto bg-light"></div>
+                                </div>
+                            </div>
+
+                            <!-- Chart code -->
+                            <script src="js/graficas.js"></script>
+                            <script>
+                                dashBoard(<?= json_encode($nuevoResul, JSON_NUMERIC_CHECK); ?>,
+                                    <?= json_encode($reportes, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK); ?>); // end am4core.ready()
+                            </script>
+
+                        <? } ?>
+
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Chart code -->
-    <script src="js/graficas.js"></script>
-    <script>
-        dashBoard(<?php echo json_encode($nuevoResul, JSON_NUMERIC_CHECK); ?>,
-            <?php echo json_encode($reportes, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK); ?>); // end am4core.ready()
-    </script>
 <?php }
 
 if ($action == "avances") { ?>
