@@ -1026,8 +1026,17 @@ if (($action == "index") || ($action == "modificar")) { ?>
 
                                         <div class="col-sm-4 mt-2">
                                             <div class="card">
-                                                <iframe src="videoManuales/<?php echo $registroVideo->ruta_video; ?>"
-                                                        frameborder="0"></iframe>
+                                                <!--<iframe src="videoManuales/<?php /*echo $registroVideo->ruta_video; */?>"
+                                                        frameborder="0"></iframe>-->
+
+                                                <video controls style="
+                                                    height: auto;
+                                                    width: 100%;
+                                                ">
+                                                    <source src="videoManuales/<?php echo $registroVideo->ruta_video; ?>" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+
                                                 <div class="card-body">
                                                     <p class="card-text"><?php echo $registroVideo->titulo; ?></p>
                                                 </div>

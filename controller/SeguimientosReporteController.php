@@ -66,103 +66,104 @@ class SeguimientosReporteController extends ControladorBase
         }
         // **************************************** BITACORA LOGOUT BY PROYECTO ****************************************
 
+        if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10)
+            $this->redirect('Graficas', 'index');
+        else {
+            $seguimientoreporte = new ReporteLlenado($this->adapter);
+            $area = $_SESSION[ID_AREA_SUPERVISOR];
 
-        $seguimientoreporte = new ReporteLlenado($this->adapter);
+            $mensaje = $this->nombreReporteId($tipo_Reporte, 1);
+            //EXCLUIR REPORTES
+            switch ($tipo_Reporte) {
+                case '0,1':
+                    /*$valores = new Campo($this->adapter);
+                    $reportesIncidencia = $valores->getAllCatReportesByTipoReporte($id_Proyecto);
 
-        $area = $_SESSION[ID_AREA_SUPERVISOR];
+                    if ($reportesIncidencia == '' || empty($reportesIncidencia)) {
+                        $noreportes = '';
+                    } else {
+                        $id_Seguimiento = array();
+                        foreach ($reportesIncidencia as $reporte) {
+                            $id_Seguimiento[] = $reporte->id_Reporte_Seguimiento;
+                        }
 
-
-        $mensaje = $this->nombreReporteId($tipo_Reporte, 1);
-        //EXCLUIR REPORTES
-        switch ($tipo_Reporte) {
-            case '0,1':
-                /*$valores = new Campo($this->adapter);
-                $reportesIncidencia = $valores->getAllCatReportesByTipoReporte($id_Proyecto);
-
-                if ($reportesIncidencia == '' || empty($reportesIncidencia)) {
+                        $id_SeguimientoStr = implode(",", $id_Seguimiento);
+                        $noreportes = 'AND rl.id_Reporte NOT IN(' . $id_SeguimientoStr . ')';
+                    }*/
                     $noreportes = '';
-                } else {
-                    $id_Seguimiento = array();
-                    foreach ($reportesIncidencia as $reporte) {
-                        $id_Seguimiento[] = $reporte->id_Reporte_Seguimiento;
+                    $tipo_Reporte1 = '0,6,7,9';
+                    $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
+                    break;
+                case '2':
+                    $noreportes = '';
+                    $tipo_Reporte1 = '2';
+                    $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
+                    break;
+                case '3':
+                    $noreportes = '';
+                    $tipo_Reporte1 = '3';
+                    $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
+                    break;
+                case 'reportesIncidencia':
+                    $noreportes = '';
+                    $tipo_Reporte1 = '1';
+                    $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoReporteIncidencia2($area, $id_Proyecto, $tipo_Reporte1);
+                    $mensaje = "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Incidentes";
+                    // OBTENER REPORTES DE INCIDENCIA CONFIGURADOS
+                    $reportesSinConfigurar = $seguimientoreporte->getAllCampoReporteByAreaTipo($id_Proyecto, $area, 1, $noreportes);
+                    break;
+                case '5':
+                    $tipo_Reporte1 = '5';
+                    $tituloReporte = $_GET['codigo'];
+                    $allseguimientosreportes = $seguimientoreporte->getAllPlanosByTituloReporte($area, $id_Proyecto, $tipo_Reporte1, $tituloReporte);
+
+                    $mensaje = "<i class='fa fa-file-o' aria-hidden='true'></i> Documentos BIM";
+                    break;
+                case 'papelera':
+
+                    $allseguimientosreportes = '';
+
+                    // OBTENER TODOS LOS TIPOS DE REPORTES LLENADOS
+                    $allTiposReporteLlenado = $seguimientoreporte->getAllTiposPlantillasLenados();
+
+                    // VALIDAR QUE LA CONSULTA DEVUELVA DATOS
+                    if ($allTiposReporteLlenado) {
+                        $tipoPlantilla = array();
+                        foreach ($allTiposReporteLlenado as $reporte) {
+                            $tipoPlantilla[] = $reporte->clas_Reporte;
+                        }
+
+                        // CONVERTIR EL ARRAY DE DATOS A STRING
+                        $tipoPlantillaSTR = implode(",", $tipoPlantilla);
+
+                        // OBTENER TODOS LOS REGISTROS CON STATUS = 0
+                        $allseguimientosreportes = $seguimientoreporte->getAllReportesLlenadosPapelera($area, $id_Proyecto, $tipoPlantillaSTR, 0);
                     }
 
-                    $id_SeguimientoStr = implode(",", $id_Seguimiento);
-                    $noreportes = 'AND rl.id_Reporte NOT IN(' . $id_SeguimientoStr . ')';
-                }*/
-                $noreportes = '';
-                $tipo_Reporte1 = '0,6,7,9';
-                $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
-                break;
-            case '2':
-                $noreportes = '';
-                $tipo_Reporte1 = '2';
-                $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
-                break;
-            case '3':
-                $noreportes = '';
-                $tipo_Reporte1 = '3';
-                $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
-                break;
-            case 'reportesIncidencia':
-                $noreportes = '';
-                $tipo_Reporte1 = '1';
-                $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoReporteIncidencia2($area, $id_Proyecto, $tipo_Reporte1);
-                $mensaje = "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Incidentes";
-                // OBTENER REPORTES DE INCIDENCIA CONFIGURADOS
-                $reportesSinConfigurar = $seguimientoreporte->getAllCampoReporteByAreaTipo($id_Proyecto, $area, 1, $noreportes);
-                break;
-            case '5':
-                $tipo_Reporte1 = '5';
-                $tituloReporte = $_GET['codigo'];
-                $allseguimientosreportes = $seguimientoreporte->getAllPlanosByTituloReporte($area, $id_Proyecto, $tipo_Reporte1, $tituloReporte);
+                    $mensaje = "<i class='fas fa-trash-restore-alt'></i> Papelera";
 
-                $mensaje = "<i class='fa fa-file-o' aria-hidden='true'></i> Documentos BIM";
-                break;
-            case 'papelera':
-
-                $allseguimientosreportes = '';
-
-                // OBTENER TODOS LOS TIPOS DE REPORTES LLENADOS
-                $allTiposReporteLlenado = $seguimientoreporte->getAllTiposPlantillasLenados();
-
-                // VALIDAR QUE LA CONSULTA DEVUELVA DATOS
-                if ($allTiposReporteLlenado) {
-                    $tipoPlantilla = array();
-                    foreach ($allTiposReporteLlenado as $reporte) {
-                        $tipoPlantilla[] = $reporte->clas_Reporte;
-                    }
-
-                    // CONVERTIR EL ARRAY DE DATOS A STRING
-                    $tipoPlantillaSTR = implode(",", $tipoPlantilla);
-
-                    // OBTENER TODOS LOS REGISTROS CON STATUS = 0
-                    $allseguimientosreportes = $seguimientoreporte->getAllReportesLlenadosPapelera($area, $id_Proyecto, $tipoPlantillaSTR, 0);
-                }
-
-                $mensaje = "<i class='fas fa-trash-restore-alt'></i> Papelera";
-
-                break;
-            default:
-                break;
-        }
+                    break;
+                default:
+                    break;
+            }
 
 
-        if ($id_Proyecto != '') {
-            $noElementos = $seguimientoreporte->getAllCampoReporte($id_Proyecto);
-        }
+            if ($id_Proyecto != '') {
+                $noElementos = $seguimientoreporte->getAllCampoReporte($id_Proyecto);
+            }
 
 
-        if (empty($noElementos)) {
-            $this->redirect('Plantilla', 'index');
-        } else {
-            // /*
-            $this->view("index", array(
-                "allseguimientosreporte" => $allseguimientosreportes, "tipo_Reporte" => $tipo_Reporte, "mensaje" => $mensaje,
-                "id_Reporte" => $id_Reporte, "reportesSinConfigurar" => $reportesSinConfigurar, "codigoPlano" => $tituloReporte
-            ));
+            if (empty($noElementos)) {
+                $this->redirect('Plantilla', 'index');
+            } else {
+                // /*
+                $this->view("index", array(
+                    "allseguimientosreporte" => $allseguimientosreportes, "tipo_Reporte" => $tipo_Reporte, "mensaje" => $mensaje,
+                    "id_Reporte" => $id_Reporte, "reportesSinConfigurar" => $reportesSinConfigurar, "codigoPlano" => $tituloReporte
+                ));
 
-            // */
+                // */
+            }
         }
 
     }
@@ -352,12 +353,12 @@ class SeguimientosReporteController extends ControladorBase
         $c_identificador_reporte = "Identificador reporte: <span style='color:#C9302C'>" . $c_identificador_reporte . "</span>";
         $mensaje_seguimiento = "Búsqueda <h4> " . $c_nombre_reporte . ", " . $c_estado_reporte . ", " . $c_fecha_inicio . ", " . $c_fecha_final . ", " . $c_palabras_clave . ", " . $c_identificador_reporte . $cadena_incidencias . "</h4>";
 
-       // /*
-       $this->view("index", array(
-           "allseguimientosreporte" => $allseguimientosreportes, "mensaje" => $mensaje_seguimiento,
-           "tipo_Reporte" => "busqueda"
-       ));
-       // */
+        // /*
+        $this->view("index", array(
+            "allseguimientosreporte" => $allseguimientosreportes, "mensaje" => $mensaje_seguimiento,
+            "tipo_Reporte" => "busqueda"
+        ));
+        // */
 
     }
 

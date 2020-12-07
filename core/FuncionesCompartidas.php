@@ -163,17 +163,17 @@ class FuncionesCompartidas extends ControladorBase
                         break;
                 }
 
-                //if ($this->url == 'supervisor.uno') {
-                if ($idUsuario != $idUsuarioTemp)
-                    $this->guadarNotificacionMatrizComunicacion($userMatriz->mat_Id_Usuario, $getAllReportesLlenado[0]->id_Usuario, $getAllReportesLlenado[0]->id_Gpo_Valores_Reporte, $tipo_Reporte);
+                if ($this->url == 'supervisor.uno') {
+                    if ($idUsuario != $idUsuarioTemp)
+                        $this->guadarNotificacionMatrizComunicacion($userMatriz->mat_Id_Usuario, $getAllReportesLlenado[0]->id_Usuario, $getAllReportesLlenado[0]->id_Gpo_Valores_Reporte, $tipo_Reporte);
 
-                if ($idUsuario != $idUsuarioTemp)
-                    $this->medio_Notificacion($userMatriz->mat_Id_Usuario, $telegram, $correo, 0, $push, $getAllReportesLlenado, $idTelegram, $Token, $correoUsuario, $nombreUsuario, $apellidoUsuario, $info_fotografia, $id_Proyecto, $id_EmpresaGral, $nombreCarpeta);
-                else
-                    $this->medio_Notificacion($userMatriz->mat_Id_Usuario, 0, 0, 0, $push, $getAllReportesLlenado, $idTelegram, $Token, $correoUsuario, $nombreUsuario, $apellidoUsuario, $info_fotografia, $id_Proyecto, $id_EmpresaGral, $nombreCarpeta);
+                    if ($idUsuario != $idUsuarioTemp)
+                        $this->medio_Notificacion($userMatriz->mat_Id_Usuario, $telegram, $correo, 0, $push, $getAllReportesLlenado, $idTelegram, $Token, $correoUsuario, $nombreUsuario, $apellidoUsuario, $info_fotografia, $id_Proyecto, $id_EmpresaGral, $nombreCarpeta);
+                    else
+                        $this->medio_Notificacion($userMatriz->mat_Id_Usuario, 0, 0, 0, $push, $getAllReportesLlenado, $idTelegram, $Token, $correoUsuario, $nombreUsuario, $apellidoUsuario, $info_fotografia, $id_Proyecto, $id_EmpresaGral, $nombreCarpeta);
 
-                $idUsuarioTemp = $idUsuario;
-                //}
+                    $idUsuarioTemp = $idUsuario;
+                }
             }
         }
     }

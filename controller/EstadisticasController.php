@@ -47,23 +47,26 @@ class EstadisticasController extends ControladorBase
         ));
     }
 
+
     public function estadisticas()
     {
         $mensaje = '<i class="fas fa-table"></i> Estadisticas';
-        if ($this->id_Proyecto_constant == 1)
-            $id_Reportes = "41,57,68,78,84,90,96";
-        if ($this->id_Proyecto_constant == 2)
-            $id_Reportes = "68";
-        if ($this->id_Proyecto_constant == 3)
-            $id_Reportes = "78";
-        if ($this->id_Proyecto_constant == 4)
-            $id_Reportes = "84";
-        if ($this->id_Proyecto_constant == 5)
-            $id_Reportes = "90";
-        if ($this->id_Proyecto_constant == 6)
-            $id_Reportes = "96";
-        if ($this->id_Proyecto_constant == 8)
-            $id_Reportes = "57";
+        if ($this->id_Proyecto_constant == 1) // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+            $id_Reportes = 41;
+        if ($this->id_Proyecto_constant == 2) // PROYECTO Tramo B. Cadereyta - Reynosa
+            $id_Reportes = 68;
+        if ($this->id_Proyecto_constant == 3) // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+            $id_Reportes = 78;
+        if ($this->id_Proyecto_constant == 4) // PROYECTO Tramo D. Matamoros - Reynosa
+            $id_Reportes = 84;
+        if ($this->id_Proyecto_constant == 5) // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+            $id_Reportes = 90;
+        if ($this->id_Proyecto_constant == 6) // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+            $id_Reportes = 96;
+        if ($this->id_Proyecto_constant == 8) // PROYECTO Entrenamiento
+            $id_Reportes = 57;
+        elseif ($this->id_Proyecto_constant == 10) // PROYECTO Administración
+            $id_Reportes = "41,68,78,84,90,96,57";
 
         $estadisticas = $this->connectorDB->getEstadisticasReportes($id_Reportes);
 

@@ -49,10 +49,10 @@
                         <?php
                         if (is_array($registros) || is_object($registros)) {
                             foreach ($registros as $registro) {
-                                $elementArr = explode('(',$registro->elemento);
-                                $unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                $elementArr = explode('(', $registro->elemento);
+                                $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
                                 ?>
-
                                 <tr>
                                     <td><?= $registro->id_Gpo_Valores_Reporte; ?></td>
                                     <td><?= $registro->fecha; ?></td>
@@ -61,10 +61,9 @@
                                     <td><?= $registro->movimiento; ?></td>
                                     <td><?= $registro->responsable; ?></td>
                                     <td><?= $elementArr[0] ?></td>
-                                    <td><?= $registro->cantidad . ' ' .$unidad_medida  ?></td>
+                                    <td><?= "$registro->cantidad $unidad_medida"; ?></td>
                                 </tr>
-                            <? } ?>
-                            <?php
+                            <? }
                         }
                         ?>
                         </tbody>
@@ -98,11 +97,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <?php
-                        if (is_array($estadisticas) || is_object($estadisticas)) {
+                        <? if (is_array($estadisticas) || is_object($estadisticas)) {
                             foreach ($estadisticas as $row => $registro) {
-                                $elementArr = explode('(',$registro->elemento);
-                                $unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                $elementArr = explode('(', $registro->elemento);
+                                $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
                                 ?>
 
                                 <tr>
@@ -110,10 +109,9 @@
                                     <td><?= $registro->elemento; ?></td>
                                     <td><?= $registro->totalEntrada; ?></td>
                                     <td><?= $registro->totalSalida; ?></td>
-                                    <td><?= $registro->totalStock; ?></td>
+                                    <td><?= "$registro->totalStock $unidad_medida"; ?></td>
                                 </tr>
-                            <? } ?>
-                            <?php
+                            <? }
                         }
                         ?>
                         </tbody>

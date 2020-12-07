@@ -49,8 +49,8 @@
                                 </a>
                             </li>
 
-                            <li class="dropdown">
-                                <?php if (empty($datosDocBim[0]) && empty($datosDocBim[1])) { ?>
+                            <!--<li class="dropdown">
+                                <?php /*if (empty($datosDocBim[0]) && empty($datosDocBim[1])) { */?>
                                     <a href="#" id="newElementoDocBim" class="dropdown-item dropdown-toggle">
                                         <i class="fa fa-file-o"> </i> BIM <span class="caret"></span>
                                     </a>
@@ -58,8 +58,8 @@
                                     <ul class="dropdown-menu" id="codigosDocBimMenu1">
                                         <li><a href='#' class='dropdown-item'> Sin Códigos </a></li>
                                     </ul>
-                                <?php } elseif (empty($datosDocBim[0])) { ?>
-                                    <a href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?php echo $datosDocBim[1]; ?>&tipo_Reporte=5"
+                                <?php /*} elseif (empty($datosDocBim[0])) { */?>
+                                    <a href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?php /*echo $datosDocBim[1]; */?>&tipo_Reporte=5"
                                        id="newElementoDocBim" class="dropdown-item dropdown-toggle">
                                         <i class="fa fa-file-o"> </i> BIM <span class="caret"></span>
                                     </a>
@@ -68,44 +68,44 @@
                                         <li><a href='#' class='dropdown-item'> Sin Códigos </a></li>
                                     </ul>
 
-                                <?php } else { ?>
+                                <?php /*} else { */?>
 
-                                    <a href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?php echo $datosDocBim[1]; ?>&tipo_Reporte=5"
+                                    <a href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?php /*echo $datosDocBim[1]; */?>&tipo_Reporte=5"
                                        id="newElementoDocBim" class="dropdown-item dropdown-toggle">
                                         <i class="fa fa-file-o"> </i> BIM <span class="caret"></span>
                                     </a>
 
                                     <ul class="dropdown-menu">
-                                        <?php foreach ($datosDocBim[0] as $x => $datos) { ?>
+                                        <?php /*foreach ($datosDocBim[0] as $x => $datos) { */?>
                                             <li class="dropdown">
                                                 <a target='_blank' class='dropdown-item dropdown-toggle'
                                                    style='overflow-wrap: break-word;'
-                                                   href="index.php?controller=ReportesLlenados&action=visualizarPlanos&id_Reporte=<?php echo $datosDocBim[0][$x]->id_Reporte; ?>&titulo_Reporte=<?php echo $datosDocBim[0][$x]->titulo_Reporte; ?>">
-                                                    <?php echo $datosDocBim[0][$x]->titulo_Reporte ?>
+                                                   href="index.php?controller=ReportesLlenados&action=visualizarPlanos&id_Reporte=<?php /*echo $datosDocBim[0][$x]->id_Reporte; */?>&titulo_Reporte=<?php /*echo $datosDocBim[0][$x]->titulo_Reporte; */?>">
+                                                    <?php /*echo $datosDocBim[0][$x]->titulo_Reporte */?>
                                                 </a>
                                                 <ul class="dropdown-menu">
                                                     <li>
                                                         <a class="dropdown-item"
-                                                           href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?php echo $datosDocBim[0][$x]->id_Reporte; ?>&tipo_Reporte=5&codigo=<?php echo $datosDocBim[0][0]->titulo_Reporte; ?>">
+                                                           href="index.php?controller=LlenadosReporte&action=mostrarreportenuevo&Id_Reporte=<?php /*echo $datosDocBim[0][$x]->id_Reporte; */?>&tipo_Reporte=5&codigo=<?php /*echo $datosDocBim[0][0]->titulo_Reporte; */?>">
                                                             Nuevo </a>
                                                     </li>
                                                     <li>
                                                         <a class="dropdown-item"
-                                                           href="index.php?controller=SeguimientosReporte&action=index&tipo=5&codigo=<?php echo $datosDocBim[0][$x]->titulo_Reporte; ?>">
+                                                           href="index.php?controller=SeguimientosReporte&action=index&tipo=5&codigo=<?php /*echo $datosDocBim[0][$x]->titulo_Reporte; */?>">
                                                             Historial </a>
                                                     </li>
                                                 </ul>
                                             </li>
-                                        <?php } ?>
+                                        <?php /*} */?>
                                     </ul>
-                                <?php } ?>
-                            </li>
+                                <?php /*} */?>
+                            </li>-->
 
-                            <li>
+                            <!--<li>
                                 <a class="dropdown-item" href="#">
                                     <i class="fa fa-file-image-o" aria-hidden="true"></i> Gestor documental
                                 </a>
-                            </li>
+                            </li>-->
 
                         </ul>
                     </li>
@@ -130,43 +130,36 @@
                             <li>
                                 <a class="dropdown-item" href="index.php?controller=Graficas&action=index">
                                     <i class="fa fa-bar-chart"></i>
-                                    Gráficas
+                                    Dashboard
                                 </a>
                             </li>
 
-                            <li>
+                            <!-- <li>
                                 <?php
-                                switch ($_SESSION[ID_PROYECTO_SUPERVISOR]) {
-                                    case 0:
-                                        $id_Gpo_Valores = 1;
-                                        break;
-                                }
-                                ?>
+                            /*switch ($_SESSION[ID_PROYECTO_SUPERVISOR]) {
+                                     case 0:
+                                         $id_Gpo_Valores = 1;
+                                         break;
+                                 }
+                                 */ ?>
 
                                 <a class="dropdown-item"
-                                   href="index.php?controller=Graficas&action=avances&id_Gpo_Valores=<?php echo $id_Gpo_Valores ?>">
+                                   href="index.php?controller=Graficas&action=avances&id_Gpo_Valores=<?php /*echo $id_Gpo_Valores */ ?>">
                                     <i class="fas fa-chart-pie"></i>
                                     Avances
                                 </a>
-                            </li>
+                            </li>-->
 
-                            <li>
-                                <a class="dropdown-item" href="index.php?controller=Estadisticas&action=index2">
-                                    <i class="fas fa-project-diagram"></i>
-                                    Estadisticas Inventario
-                                </a>
-                            </li>
-
-                            <?php if (!$existeGantt) { ?>
+                            <?php /*if (!$existeGantt) { */ ?><!--
                                 <li>
                                     <a class="dropdown-item"
-                                       href="index.php?controller=Graficas&action=diagrama&id_Gpo_Valores=<?php echo $id_Gpo_Valores ?>">
+                                       href="index.php?controller=Graficas&action=diagrama&id_Gpo_Valores=<?php /*echo $id_Gpo_Valores */ ?>">
                                         <i class="fas fa-project-diagram"></i>
                                         Diagrama de Árbol
                                     </a>
                                 </li>
-                            <?php } else {
-                                if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) { ?>
+                            <?php /*} else {
+                                if ($_SESSION[ID_PERFIL_USER_SUPERVISOR] == 1) { */ ?>
                                     <li class="dropdown">
                                         <a class="dropdown-item dropdown-toggle"
                                            href="index.php?controller=Gantt&action=index">
@@ -180,20 +173,20 @@
                                             </li>
                                         </ul>
                                     </li>
-                                <? } else { ?>
+                                <?/* } else { */ ?>
                                     <li>
                                         <a class="dropdown-item" href="index.php?controller=Gantt&action=index">
                                             <i class="fas fa-chart-line"></i> Diagrama de Gantt </a>
                                         </a>
                                     </li>
 
-                                <?php }
-                            } ?>
+                                --><?php /*}
+                            } */ ?>
 
                             <li>
                                 <a class="dropdown-item" href="index.php?controller=Graficas&action=mapa">
                                     <i class="fa fa-map"></i>
-                                    Mapa Georreferenciado
+                                    Mapa de ubicaciones
                                 </a>
                             </li>
 
@@ -350,7 +343,7 @@
                             <li>
                                 <a class="dropdown-item" href="index.php?controller=Areas&action=index">
                                     <i class="fa fa-sitemap"></i>
-                                    Areas
+                                    Áreas
                                 </a>
                             </li>
 
@@ -361,12 +354,13 @@
                                 </a>
                             </li>
 
-                            <li>
+                            <!--<li>
                                 <a class="dropdown-item" href="index.php?controller=Cat_Dispositivos&action=index">
                                     <i class="fa fa-mobile"></i>
                                     Dispositivos
                                 </a>
-                            </li>
+                            </li>-->
+
                         </ul>
                     </li>
                 <?php }
