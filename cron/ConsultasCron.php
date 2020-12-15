@@ -31,7 +31,7 @@ class ConsultasCron
                     INNER JOIN empleados_usuarios as eus on us.id_Usuario = eus.id_usuario
                     WHERE p.id_Status_Proyecto = 1 AND eus.id_empleado_usuario NOT IN(1,2,18)  
                     AND vwrl.id_Status_Elemento = 1  AND vwrl.tipo_Reporte IN (0,1,2,3,4,9) 
-                    AND vwrl.fecha_registro >= '2020-01-01 00:00:00' AND vwrl.fecha_registro <= '2020-12-12 23:59:59' group by p.id_Proyecto";
+                    AND vwrl.fecha_registro >= '$fecha 00:00:00' AND vwrl.fecha_registro <= '$fecha 23:59:59' group by p.id_Proyecto";
         //echo $consulta;
         try {
             // Preparar sentencia
@@ -85,7 +85,7 @@ class ConsultasCron
                     INNER JOIN Proyectos as p on vwrl.id_Proyecto = p.id_Proyecto
                     WHERE vwrl.id_Usuario = us.id_Usuario AND vwrl.id_Status_Elemento = 1 AND vwrl.tipo_Reporte IN (0,1,2,3,4,9) 
                     AND p.id_Status_Proyecto = 1  AND eus.id_empleado_usuario NOT IN(1,2,18)
-                    AND vwrl.fecha_registro >= '2020-01-01 00:00:00' AND vwrl.fecha_registro <= '2020-12-12 23:59:59' GROUP BY vwrl.id_Usuario";
+                    AND vwrl.fecha_registro >= '$fecha 00:00:00' AND vwrl.fecha_registro <= '$fecha 23:59:59' GROUP BY vwrl.id_Usuario";
         //echo $consulta;
         try {
             // Preparar sentencia
