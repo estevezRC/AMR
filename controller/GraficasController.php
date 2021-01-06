@@ -123,7 +123,7 @@ class GraficasController extends ControladorBase
             $idReporteInc = 2;
         }
         if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
-            $idReportesInv =;
+            $idReportesInv = 68;
             $idReportesFO = 8;
             $idReporteInc = 9;
         }
