@@ -108,6 +108,8 @@ class SeguimientosReporteController extends ControladorBase
                     $noreportes = '';
                     $tipo_Reporte1 = '1';
                     $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoReporteIncidencia2($area, $id_Proyecto, $tipo_Reporte1);
+                    //print_r($allseguimientosreportes);
+                    //die();
                     $mensaje = "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Incidentes";
                     // OBTENER REPORTES DE INCIDENCIA CONFIGURADOS
                     $reportesSinConfigurar = $seguimientoreporte->getAllCampoReporteByAreaTipo($id_Proyecto, $area, 1, $noreportes);

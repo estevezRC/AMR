@@ -16,94 +16,462 @@
                         </h4>
                     </div>
                 </div>
+
+                <div class="row m-2">
+                    <div class="col-12 col-md-6 mb-5">
+
+                            <div class="alert alert-warning alert-dismissable">
+                                <h5 class="text-center">
+                                    <strong>Fechas consultadas</strong><br>
+                                </h5>
+                                <hr>
+                                <h6  id="fechainicio"><strong>Fecha Inicio:</strong> <?= $fechaactuali; ?></h6>
+                                <h6  id="fechafin"> <strong>Fecha Fin:</strong> <?= $fechaactualf; ?></h6>
+                            </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-5">
+                            <div class="col-lg-12">
+                                <form class="form-horizontal">
+                                    <div class="row">
+                                        <div class="col-lg-6 " >
+                                            <h6 class="control-label"><b>Fecha incio:</b></h6>
+                                            <input id="fechainicio1" type="date"  name="fechainicio1" class="form-control"/>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <h6 class="control-label"><b>Fecha fin:</b></h6>
+                                            <input id="fechafin1" type="date" name="fechafin1" class="form-control"/>
+
+                                        </div>
+                                    </div>
+                                    <input name="idReporteInc" id="idReporteInc" type="hidden" value="<?= $idReporteInc;?> " class="form-control">
+                                    <br>
+                                    <div class="row ">
+                                        <div class="col-lg-4 text-center"></div>
+                                        <div class="col-lg-4 text-center">
+                                            <button type="button" class="btn btn-w-m btn-primary btn-block center"
+                                                    id="btnfiltar" onclick="filtrarporfecha();">
+                                                Filtrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form> <br>
+                            </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="row m-2">
+                    <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
+                        <div class="col-12 col-md-6 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <a href="index.php?controller=Estadisticas&action=estadisticas">
+                                        <b>Inventario</b>
+                                    </a>
+                                </h5>
+                                <div class="card-body">
+                                    <table id="example" class="table table-striped">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total en Stock</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="inventario">
+                                        <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
+                                            foreach ($estadisticas as $row => $registro) {
+                                                $elementArr = explode('(', $registro->elemento);
+                                                $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                ?>
+
+                                                <tr>
+                                                    <td><?= $row + 1; ?></td>
+                                                    <td><?= $registro->elemento; ?></td>
+                                                    <td><?= "$registro->totalStock $unidad_medida"; ?></td>
+                                                </tr>
+                                            <? }
+                                        } else { ?>
+                                            <tr class="odd">
+                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                    disponible en esta tabla
+                                                </td>
+                                            </tr>
+                                        <? } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                </h5>
+                                <div class="card-body">
+                                    <table class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="tramoFO">
+                                        <?
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFO as $avance) { ?>
+                                            <tr>
+                                                <td> <?= $contador; ?> </td>
+                                                <td> <?= $avance->nombre; ?> </td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                            </tr>
+
+                                            <?
+                                            $contador++;
+                                        } ?>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <? } ?>
+                </div>
+
+                <div class="row m-2">
+                    <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10) { ?>
+                        <div class="col-12 col-md-12 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <a href="index.php?controller=Estadisticas&action=estadisticas">
+                                        <b>Inventario</b>
+                                    </a>
+                                </h5>
+                                <div class="card-body">
+                                    <table id="example" class="table table-striped">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total en Stock</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="inventario">
+                                        <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
+                                            foreach ($estadisticas as $row => $registro) {
+                                                $elementArr = explode('(', $registro->elemento);
+                                                $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                ?>
+
+                                                <tr>
+                                                    <td><?= $row + 1; ?></td>
+                                                    <td><?= $registro->elemento; ?></td>
+                                                    <td><?= "$registro->totalStock $unidad_medida"; ?></td>
+                                                </tr>
+                                            <? }
+                                        } else { ?>
+                                            <tr class="odd">
+                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                    disponible en esta tabla
+                                                </td>
+                                            </tr>
+                                        <? } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                </h5>
+                                <div class="card-body">
+                                    <table id="example" class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance</th>
+                                            <th>Tramo A</th>
+                                            <th>Tramo B</th>
+                                            <th>Tramo C</th>
+                                            <th>Tramo D</th>
+                                            <th>Tramo E</th>
+                                            <th>Tramo F</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="fogeneral">
+                                        <?
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFOG as $avance) { ?>
+                                            <tr>
+                                                <td> <?= $contador; ?> </td>
+                                                <td> <?= $avance->nombre; ?> </td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorA; ?> metros</td>
+                                                <td> <?= $avance->valorB; ?> metros</td>
+                                                <td> <?= $avance->valorC; ?> metros</td>
+                                                <td> <?= $avance->valorD; ?> metros</td>
+                                                <td> <?= $avance->valorE; ?> metros</td>
+                                                <td> <?= $avance->valorF; ?> metros</td>
+                                            </tr>
+                                            <?
+                                            $contador++;
+                                        } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <? } ?>
+                </div>
+
+
+
+                <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
+                    <div class="col-sm-12 d-flex align-items-center">
+                        <h4 class="text-white m-0 py-2">
+                            <i class='fa fa-bar-chart' aria-hidden='true'></i>
+                            Estadísticas
+                        </h4>
+                    </div>
+                </div>
+
+
+
                 <div class="row">
                     <div class="col-12">
 
-                        <div class="row m-2">
-
-                            <div class="col-12 col-md-6 mb-5">
-                                <div class="card">
-                                    <h5 class="card-header">
-
-                                        <a href="index.php?controller=Estadisticas&action=estadisticas">
-                                            <b>Inventario</b>
-                                        </a>
-
-                                    </h5>
-                                    <div class="card-body">
-                                        <table id="example" class="table table-striped">
+                        <div class=" col-md-6 mb-5 mt-3">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Tiempo Transcurrido del Proyecto</b>
+                                </h5>
+                                <div class="row">
+                                    <div class="card-body col-md-12">
+                                        <table  id="example" class="table table-striped p-3 table-bordered" >
                                             <thead class="bg-primary text-light">
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Material</th>
-                                                <th>Total en Stock</th>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Día</th>
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Semana</th>
+                                                <th style="color: white !important;" class="text-center"> Mes</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
-                                            <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
-                                                foreach ($estadisticas as $row => $registro) {
-                                                    $elementArr = explode('(', $registro->elemento);
-                                                    $unidad_medida = str_replace(')', '', $elementArr[1]);
-                                                    //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
-                                                    ?>
-
-                                                    <tr>
-                                                        <td><?= $row + 1; ?></td>
-                                                        <td><?= $registro->elemento; ?></td>
-                                                        <td><?= "$registro->totalStock $unidad_medida"; ?></td>
-                                                    </tr>
-                                                <? }
-                                            } else { ?>
-                                                <tr class="odd">
-                                                    <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                        disponible en esta tabla
-                                                    </td>
-                                                </tr>
-                                            <? } ?>
+                                            <tbody id="tiempoproyecto">
+                                            <tr>
+                                                <td class="text-center"><?= $tiempoproyecto->dias_transcurridos; ?></td>
+                                                <td class="text-center"><?= $tiempoproyecto->semanas_transcurridos; ?></td>
+                                                <td class="text-center"> <?= $tiempoproyecto->meses_transcurridos; ?> </td>
+                                            </tr>
                                             </tbody>
                                         </table>
+                                        <h5 class="text-center"><b>Días Restantes</b></h5>
+                                        <h5 class="text-center" id="tiemporesta"><b><?= $tiempoproyecto->dias_restantes; ?> </b></h5>
                                     </div>
                                 </div>
                             </div>
-
-
-                            <div class="col-12 col-md-6 mb-5">
-                                <div class="card">
-                                    <h5 class="card-header">
-                                        <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
-                                    </h5>
-                                    <div class="card-body">
-                                        <table id="example" class="table table-striped p-3">
-                                            <thead class="bg-primary text-light">
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Material</th>
-                                                <th>Total Avance</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-
-                                            <?
-                                            $contador = 1;
-                                            foreach ($arrayAvancesFO as $avance) { ?>
-                                                <tr>
-                                                    <td> <?= $contador; ?> </td>
-                                                    <td> <?= $avance->nombre; ?> </td>
-                                                    <td> <?= $avance->valor; ?> metros</td>
-                                                </tr>
-
-                                                <?
-                                                $contador++;
-                                            } ?>
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-
                         </div>
+
+                        <div class="col-12 col-md-12 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Incidentes</b>
+                                </h5>
+                                <div class="row">
+                                    <div class="card-body col-md-6">
+                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                            <thead class="bg-primary text-light">
+                                            <tr style="background-color: #0C3E6D;"><th colspan="3">Total de incidentes, Abierto / Cerrado</th></tr>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">
+                                                    Abiertos</th>
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">
+                                                    Cerrados</th>
+                                                <th style="color: white !important;" class="text-center"> Total</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody id="totalincidentes">
+                                            <tr>
+                                                <td class="text-center"><?= $totalabierto->abierto; ?></td>
+                                                <td class="text-center"><?= $totalcerrado->cerrado; ?></td>
+                                                <td class="text-center"> <?= $totalincidentes; ?> </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="card-body col-md-6">
+                                        <table id="example" class="table table-striped p-3 table-bordered">
+                                            <thead class="bg-primary text-light">
+                                            <tr style="background-color: #0C3E6D;"><th colspan="2">Incidentes Registrados</th></tr>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Tipo de incidentes</th>
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Total</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody id="inidentesregistrados">
+                                            <tr>
+                                                <td class="text-center">Accidente</td>
+                                                <td id="" class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->accidente)){
+                                                        $tipoincidencia->accidente=0;
+                                                    }
+                                                    echo $tipoincidencia->accidente;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Bloqueo Carretero</td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->bloqueo)){
+                                                        $tipoincidencia->bloqueo=0;
+                                                    }
+                                                    echo $tipoincidencia->bloqueo;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Ejecución</td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->ejecucion)){
+                                                        $tipoincidencia->ejecucion=0;
+                                                    }
+                                                    echo $tipoincidencia->ejecucion;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Equipamiento</td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->equipamiento)){
+                                                        $tipoincidencia->equipamiento=0;
+                                                    }
+                                                    echo $tipoincidencia->equipamiento;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Señalización</td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->señalizacion)){
+                                                        $tipoincidencia->señalizacion=0;
+                                                    }
+                                                    echo $tipoincidencia->señalizacion;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Vandalismo </td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->vandalismo)){
+                                                        $tipoincidencia->vandalismo=0;
+                                                    }
+                                                    echo $tipoincidencia->vandalismo;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Meteorológico</td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->meteorologico)){
+                                                        $tipoincidencia->meteorologico=0;
+                                                    }
+                                                    echo $tipoincidencia->meteorologico;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">Otro </td>
+                                                <td class="text-center">
+                                                    <?php
+                                                    if (empty($tipoincidencia->otro)){
+                                                        $tipoincidencia->otro=0;
+                                                    }
+                                                    echo $tipoincidencia->otro;
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Registros</b>
+                                </h5>
+                                <div class="row">
+                                    <div class="card-body col-md-4">
+                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                            <thead class="bg-primary text-light">
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Total Registros</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="totalregistros">
+                                            <tr>
+                                                <td class="text-center"><?= $resgistropormes->totalregistro; ?></td>
+                                            </tr>
+                                            <tr class="odd">
+                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                    disponible en esta tabla
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="card-body col-md-12">
+                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                            <thead class="bg-primary text-light">
+                                            <tr style="background-color: #0C3E6D;"><th colspan="4">Distribución de registro por usuario</th></tr>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Usuario</th>
+                                                <th style="color: white !important; vertical-align: middle" class="text-center">Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="distribucionusuario">
+                                            <?php foreach ($resgistroporusuario as $dato) { ?>
+                                            <tr>
+                                                <td class="text-center"><?= $dato->nombre .' '. $dato->apellido_paterno.' '.$dato->apellido_materno; ?></td>
+                                                <td class="text-center"><?= $dato->total; ?></td>
+                                            </tr>
+                                            <?php } ?>
+                                            <tr class="odd">
+                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                    disponible en esta tabla
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
 
                         <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
                             <div class="row mt-2">
@@ -124,6 +492,9 @@
 
                         <? } ?>
 
+                        <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10) { ?>
+                    </div>
+                        <? } ?>
 
                     </div>
                 </div>
@@ -946,3 +1317,159 @@ if ($action == "diagrama") { ?>
         </div>
     </div>
 <?php } ?>
+
+
+<script>
+    function filtrarporfecha(){
+
+    var fechainicio = $('#fechainicio1').val();
+    var fechafin = $('#fechafin1').val();
+    var idReporteInc = $('#idReporteInc').val();
+
+    var datos = "fechainicio="+fechainicio+"&fechafin="+fechafin+"&idReporteInc="+idReporteInc;
+
+        $.ajax({
+            type: 'POST',  // Envío con método POST
+            //url: './consulta.php',  // Fichero destino (el PHP que trata los datos)
+            url: "./index.php?controller=Graficas&action=inventarioporfecha",
+            data: datos, // Datos que se envían
+            //dataType: 'json'
+        }).done(function( msg ) {  // Función que se ejecuta si todo ha ido bien
+            //console.log(msg);
+            $("#consola").html(msg);  // Escribimos en el div consola el mensaje devuelto
+            var json = JSON.parse(msg);
+            var resultado = json.resultado;
+            console.log(json);
+
+            var tiempoproyecto = `  <tr>
+                                    <td class="text-center"> `+resultado.tiempoproyecto.dias_transcurridos+`</td>
+                                    <td class="text-center">`+resultado.tiempoproyecto.semanas_transcurridos+`</td>
+                                    <td class="text-center"> `+resultado.tiempoproyecto.meses_transcurridos+` </td>
+                                    </tr>`;
+            var tiempoproyecto = `  <tr>
+                                    <td class="text-center"> `+resultado.tiempoproyecto.dias_transcurridos+`</td>
+                                    <td class="text-center">`+resultado.tiempoproyecto.semanas_transcurridos+`</td>
+                                    <td class="text-center"> `+resultado.tiempoproyecto.meses_transcurridos+` </td>
+                                    </tr>`;
+            var tiemporesta = `<h5 class="text-center"><b>`+resultado.tiempoproyecto.dias_restantes+` </b></h5>`;
+            var totalincidentes = ` <tr>
+                                    <td class="text-center">`+resultado.totalabierto.abierto+`</td>
+                                    <td class="text-center">`+resultado.totalcerrado.cerrado+`</td>
+                                    <td class="text-center"> `+resultado.totalincidentes+` </td>
+                                    </tr>`;
+            var inidentesregistrados = `
+                                    <tr>
+                                    <td class="text-center">Accidente</td>
+                                    <td id="" class="text-center">
+                                    `+resultado.tipoincidencia.accidente+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td class="text-center">Bloqueo Carretero</td>
+                                    <td class="text-center">
+                                     `+resultado.tipoincidencia.bloqueo+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td class="text-center">Ejecución</td>
+                                    <td class="text-center">
+                                   `+resultado.tipoincidencia.ejecucion+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td class="text-center">Equipamiento</td>
+                                    <td class="text-center">
+                                     `+resultado.tipoincidencia.equipamiento+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td class="text-center">Señalización</td>
+                                    <td class="text-center">
+                                   `+resultado.tipoincidencia.señalizacion+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                     <td class="text-center">Vandalismo </td>
+                                     <td class="text-center">
+                                     `+resultado.tipoincidencia.vandalismo+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td class="text-center">Meteorológico</td>
+                                    <td class="text-center">
+                                     `+resultado.tipoincidencia.meteorologico+`
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <td class="text-center">Otro </td>
+                                    <td class="text-center">
+                                     `+resultado.tipoincidencia.otro+`
+                                    </td>
+                                    </tr>
+            `;
+            var totalregistros = `  <tr>
+                                    <td class="text-center"> `+resultado.resgistropormes.totalregistro+`</td>
+                                    </tr>`;
+
+            var distribucionusuario = resultado.resgistroporusuario.map((registro) => {
+                return `<tr>
+                    <td class="text-center">${registro.nombre} ${registro.apellido_paterno} ${registro.apellido_materno}</td>
+                    <td class="text-center">${registro.total}</td>
+                </tr>`
+            }).join('');
+
+            var fechainicio = `<h6><strong>Fecha Inicio:</strong> `+resultado.fechaInicio+` </h6>`;
+
+            var fechafin = `<h6><strong>Fecha Inicio:</strong> `+resultado.fechaFinal+` </h6>`;
+
+           //console.log(Object.values(resultado.arrayAvancesFO));
+           var tramoFO = Object.values(resultado.arrayAvancesFO).map((registro, index) => {
+                return `<tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td class="text-center">${registro.nombre}</td>
+                    <td class="text-center">${registro.valor} metros</td>
+                </tr>`
+            }).join('');
+
+            var fogeneral = Object.values(resultado.arrayAvancesFOG).map((registro, index) => {
+                return `<tr>
+                <td class="text-center">${index + 1}</td>
+                <td class="text-center">${registro.nombre} </td>
+                <td class="text-center"> ${registro.valor} metros</td>
+                <td class="text-center"> ${registro.valorA}  metros</td>
+                <td class="text-center"> ${registro.valorB}  metros</td>
+                <td class="text-center"> ${registro.valorC}  metros</td>
+                <td class="text-center"> ${registro.valorD}  metros</td>
+                <td class="text-center"> ${registro.valorE}  metros</td>
+                <td class="text-center"> ${registro.valorF}  metros</td>
+                </tr>`
+            }).join('');
+
+            var inventario = resultado.estadisticas.map((registro, index) => {
+                return `<tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td class="text-center">${registro.elemento} </td>
+                    <td class="text-center">${registro.totalStock}</td>
+                    </tr>`
+            }).join('');
+
+            $('#tiempoproyecto').html(tiempoproyecto);
+            $('#tiemporesta').html(tiemporesta);
+            $('#totalincidentes').html(totalincidentes);
+            $('#inidentesregistrados').html(inidentesregistrados);
+            $('#totalregistros').html(totalregistros);
+            $('#distribucionusuario').html(distribucionusuario);
+            $('#fechainicio').html(fechainicio);
+            $('#fechafin').html(fechafin);
+            $('#tramoFO').html(tramoFO);
+            $('#fogeneral').html(fogeneral);
+            $('#inventario').html(inventario);
+
+            }).fail(function (jqXHR, textStatus, errorThrown){ // Función que se ejecuta si algo ha ido mal
+            // Mostramos en consola el mensaje con el error que se ha producido
+            $("#consola").html("The following error occured: "+ textStatus +" "+ errorThrown);
+        });
+
+    }
+
+</script>

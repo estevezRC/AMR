@@ -23,9 +23,16 @@ class GraficasController extends ControladorBase
 
         require_once 'vendor/autoload.php';
     }
-
     public function index()
     {
+        //$fechainicio='2020-09-19';
+        //$fechafin='2020-04-30';
+        //$fechainicio = $_REQUEST["fecha_inicio"];
+        //$fechafin = $_REQUEST["fecha_fin"];
+
+        //print_r($fechainicio);
+        //print_r($fechafin);
+        //die();
         //PROYECTO
         /*$id_Proyecto_Actual = (int)$_POST["id_Proyecto"];
         if (!empty($id_Proyecto_Actual)) {
@@ -35,7 +42,7 @@ class GraficasController extends ControladorBase
             session_start();
             $_SESSION[ID_PROYECTO_SUPERVISOR] = $datosproyecto->id_Proyecto;
         }
-        $id_Proyecto = $_SESSION[ID_PROYECTO_SUPERVISOR];*/
+        $id_Proyecto = $_SESSION[ID_PROYECTO_SUPERVISOR];*/ // Estadísticas
 
 
         $mensaje = $_GET['mensaje'];
@@ -89,48 +96,276 @@ class GraficasController extends ControladorBase
         if ($this->id_Proyecto_constant == 1) { // PROYECTO Tramo A. Monterrey - Nuevo Laredo
             $idReportesInv = 41;
             $idReportesFO = 4;
+            $idReporteInc = 2;
         }
         if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
             $idReportesInv = 68;
             $idReportesFO = 8;
+            $idReporteInc = 9;
         }
         if ($this->id_Proyecto_constant == 3) { // PROYECTO Tramo C. Libramiento de Reynosa Sur II
             $idReportesInv = 78;
             $idReportesFO = 13;
+            $idReporteInc = 15;
         }
         if ($this->id_Proyecto_constant == 4) { // PROYECTO Tramo D. Matamoros - Reynosa
             $idReportesInv = 84;
             $idReportesFO = 29;
+            $idReporteInc = 30;
         }
         if ($this->id_Proyecto_constant == 5) { // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
             $idReportesInv = 90;
             $idReportesFO = 24;
+            $idReporteInc = 25;
         }
         if ($this->id_Proyecto_constant == 6) { // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
             $idReportesInv = 96;
             $idReportesFO = 19;
+            $idReporteInc = 20;
         }
         if ($this->id_Proyecto_constant == 8) { // PROYECTO Entrenamiento
             $idReportesInv = 57;
             $idReportesFO = 59;
+            $idReporteInc = '2,9,15,30,25,20';
+
         }
         if ($this->id_Proyecto_constant == 10) { // PROYECTO Administración
             $idReportesInv = '41,68,78,84,90,96,57';
             $idReportesFO = '4,8,13,29,24,19,59';
+            $idReporteInc = '2,9,15,30,25,20';
         }
 
+        // ************************************** DATO INCIDENCIA CERRADO/ABIERTO***************************************
+        $fechaactuali = date('Y-m').'-01'.' 00:00:00';
+        $fechaactualf = date('Y-m-d').' 23:59:59';
 
+        $fecha = " AND fecha_registro >= '$fechaactuali' AND fecha_registro <= '$fechaactualf'";
+        $fechainv = " AND fecha >= '$fechaactuali' AND fecha <= '$fechaactualf'";
+
+        $totalabierto = $this->connectorDB->getAllIncidenciaAbierto($idReporteInc,$fecha)[0];
+        $totalcerrado = $this->connectorDB->getAllIncidenciacerrado($idReporteInc,$fecha)[0];
+        $totalincidentes= $totalabierto->abierto + $totalcerrado->cerrado;
+
+        $tipoincidencia = $this->connectorDB->gettipoincidenciatotal($idReporteInc,$fecha)[0];
+        //**************************+**************registros total******************************************************
+        $resgistropormes = $this->connectorDB->getregistrosporfechas($idReporteInc,$fecha)[0];
+        //**************************+**************registros por usuario************************************************
+        $resgistroporusuario = $this->connectorDB->getregistrosporusuarios($idReporteInc,$fecha);
+        //*********************************Tiempo promedio de atenccion, tipo de insidencia*****************************
+        //$tiempopromedio = $this->connectorDB->gettipoincidencia($idconfiguracion,$fecha);
+        //*********************************Tiempo Transcurrido del proyecto*********************************************
+        $tiempoproyecto = $this->connectorDB->gettipotranscurridoproyecto($fechaactuali)[0];
         // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
-        $estadisticas = $this->connectorDB->getEstadisticasReportes($idReportesInv);
-
-
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($idReportesInv,$fechainv);
         // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
-        $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO);
+        $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO,$fecha);
+        $resultadosgeneral = $this->connectorDB->getJsonAvancesFO($idReportesFO,$fecha);
+        /*$valores = array('4', '8', '13','29','24','19','59');
+        $array_res = array();
+        $array_num = count($valores);
+            for ($i=0;$i< $array_num;$i++){
+                $resultado2 = $this->connectorDB->getJsonAvancesFO($valores[$i],$fecha);
+                array_push($array_res,$resultado2);
+            }*/
 
+        $resultadoA = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+        $resultadoB = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+        $resultadoC = $this->connectorDB->getJsonAvancesFO(13,$fecha);
+        $resultadoD = $this->connectorDB->getJsonAvancesFO(29,$fecha);
+        $resultadoE = $this->connectorDB->getJsonAvancesFO(24,$fecha);
+        $resultadoF = $this->connectorDB->getJsonAvancesFO(19,$fecha);
+        //$resultado = $this->connectorDB->getJsonAvancesFO(59,$fecha);
+        //*****************************
+        $avanceJsonG = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadosgeneral);
+        $avanceJsonA = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoA);
+        $avanceJsonB = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoB);
+        $avanceJsonC = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoC);
+        $avanceJsonD = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoD);
+        $avanceJsonE = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoE);
+        $avanceJsonF = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoF);
+        $arrayAvancesFOG = (object)[
+            'tritubo' => (object)[
+                'nombre' => 'Tritubo', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+            'pruebas' => (object)[
+                'nombre' => 'Pruebas', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+            'inmersionFO' => (object)[
+                'nombre' => 'Inmersión FO', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+            'reposicionAsfalto' => (object)[
+                'nombre' => 'Reposición de asfalto', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+        ];
+        $getValorG = function ($arrayValores) {
+            $coincidencia = array_filter($arrayValores, function ($element) {
+                return $element->idCampo == 36;
+            });
+            return is_numeric(array_values($coincidencia)[0]->valorCampo) ? array_values($coincidencia)[0]->valorCampo : 0;
+        };
+        foreach ($avanceJsonG as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valor += $getValorG($valor->Valor);
+                        //$arrayAvancesFOG->tritubo->valor += $getValorG($valor->Valor);
+                       // $arrayAvancesFOG->tritubo->valorA += $getValorG($valor->Valor);//$resultado3[0][0];
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valor += $getValorG($valor->Valor);
+                        //$arrayAvancesFOG->tritubo->valorA = $resultadoA[0][0];
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valor += $getValorG($valor->Valor);
+                        //$arrayAvancesFOG->tritubo->valorA = $resultadoA[0][0];
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valor += $getValorG($valor->Valor);
+                       // $arrayAvancesFOG->tritubo->valorA = $resultadoA[0][0];
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonA as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorA += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorA += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorA += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorA += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonB as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorB += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorB += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorB += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorB += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonC as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorC += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorC += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorC += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorC += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonD as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorD += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorD += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorD += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorD += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonE as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorE += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorE += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorE += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorE += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonF as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorF += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorF += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorF += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorF += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        //*****************************
         $avanceJson = array_map(function ($resultado) {
             return json_decode($resultado->actividad); // $resultado->actividad;
         }, $resultados);
-
         $arrayAvancesFO = (object)[
             'tritubo' => (object)[
                 'nombre' => 'Tritubo', 'valor' => 0
@@ -145,7 +380,6 @@ class GraficasController extends ControladorBase
                 'nombre' => 'Reposición de asfalto', 'valor' => 0
             ],
         ];
-
         $getValor = function ($arrayValores) {
             $coincidencia = array_filter($arrayValores, function ($element) {
                 return $element->idCampo == 36;
@@ -154,7 +388,6 @@ class GraficasController extends ControladorBase
             return is_numeric(array_values($coincidencia)[0]->valorCampo) ? array_values($coincidencia)[0]->valorCampo : 0;
 
         };
-
         foreach ($avanceJson as $registro) {
             foreach ($registro->Valores as $valor) {
                 foreach ($valor->Valor as $opcionesCampos) {
@@ -169,15 +402,397 @@ class GraficasController extends ControladorBase
                 }
             }
         }
-        //print_r($arrayAvancesFO);
-        //die();
         // *************************************************************************************************************
-
+        //print_r($arrayAvancesFOG);
+        //die();
 
         $this->view("index", array('resul' => $resul, 'resulNombrel' => $resulNombrel, 'allReportes' => $arrayreportes,
             'mensaje' => $mensaje, 'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas,
-            'arrayAvancesFO' => $arrayAvancesFO
+            'arrayAvancesFO' => $arrayAvancesFO, 'totalabierto' => $totalabierto, 'totalincidentes' => $totalincidentes, 'totalcerrado' => $totalcerrado,
+            'idReporteInc' => $idReporteInc, 'tipoincidencia' => $tipoincidencia, 'resgistropormes' => $resgistropormes, 'resgistroporusuario' => $resgistroporusuario,
+            'tiempoproyecto' => $tiempoproyecto, 'arrayAvancesFOG' => $arrayAvancesFOG, 'fechaactuali' => $fechaactuali, 'fechaactualf' => $fechaactualf
         ));
+    }
+    public function inventarioporfecha()
+    {
+
+
+        $fechaInicio = $_REQUEST['fechainicio'];
+        $fechaFinal = $_REQUEST['fechafin'];
+        $idReporteInc = $_REQUEST['idReporteInc'];
+        $fechaInicio = $fechaInicio.' 00:00:00';
+        $fechaFinal = $fechaFinal.' 23:59:59';
+
+       $mensaje = $_GET['mensaje'];
+        if (empty($mensaje)) {
+            $mensaje = "<i class='fa fa-bar-chart' aria-hidden='true'></i> Dashboard ";
+        }
+
+
+        // ************************************* GRAFICA DE USUARIOS ***************************************************
+        $allUser = $this->connectorDB->getAllUsuariosReportesTotal($this->id_Proyecto_constant);
+        $resul = array();
+        $i = 0;
+        $n = 0;
+        $nuevoResultado = [];
+        if (is_array($allUser) || is_object($allUser)) {
+            foreach ($allUser as $user) {
+                $resul[$i][0] = $user->nombre;
+                $resul[$i][1] = $user->total;
+                array_push($nuevoResultado, ['user' => $user->nombre, 'reportes' => $user->total]);
+                $i++;
+            }
+        }
+        $resulNombre = array();
+        if (is_array($allUser) || is_object($allUser)) {
+            foreach ($allUser as $username) {
+                $resulNombrel[$n][0] = $username->nombre;
+                $n++;
+            }
+        }
+
+
+        // *************************************** GRAFICA DE REPORTES *************************************************
+        $allReportes = $this->connectorDB->getGraficaReportes($this->id_Proyecto_constant);
+        //var_dump($allReportes);
+        $reportes = [];
+        if (is_array($allReportes) || is_object($allReportes)) {
+            foreach ($allReportes as $key => $reporte) {
+                if ($key < 7) {
+                    $arrayreportes[$key][0] = $reporte->nombre_Reporte;
+                    $arrayreportes[$key][1] = $reporte->cantidad;
+                    array_push($reportes, ['nombre' => $reporte->nombre_Reporte, 'cantidad' => $reporte->cantidad]);
+                } else {
+                    break;
+                }
+            }
+        }
+
+
+        // *************************************************************************************************************
+        // ***************************** SECCION DE ASIGNACION DE IDS DE REPORTES POR PROYECTO *************************
+        if ($this->id_Proyecto_constant == 1) { // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+            $idReportesInv = 41;
+            $idReportesFO = 4;
+            $idReporteInc = 2;
+        }
+        if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
+            $idReportesInv = 68;
+            $idReportesFO = 8;
+            $idReporteInc = 9;
+        }
+        if ($this->id_Proyecto_constant == 3) { // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+            $idReportesInv = 78;
+            $idReportesFO = 13;
+            $idReporteInc = 15;
+        }
+        if ($this->id_Proyecto_constant == 4) { // PROYECTO Tramo D. Matamoros - Reynosa
+            $idReportesInv = 84;
+            $idReportesFO = 29;
+            $idReporteInc = 30;
+        }
+        if ($this->id_Proyecto_constant == 5) { // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+            $idReportesInv = 90;
+            $idReportesFO = 24;
+            $idReporteInc = 25;
+        }
+        if ($this->id_Proyecto_constant == 6) { // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+            $idReportesInv = 96;
+            $idReportesFO = 19;
+            $idReporteInc = 20;
+        }
+        if ($this->id_Proyecto_constant == 8) { // PROYECTO Entrenamiento
+            $idReportesInv = 57;
+            $idReportesFO = 59;
+            $idReporteInc = '2,9,15,30,25,20';
+
+        }
+        if ($this->id_Proyecto_constant == 10) { // PROYECTO Administración
+            $idReportesInv = '41,68,78,84,90,96,57';
+            $idReportesFO = '4,8,13,29,24,19,59';
+            $idReporteInc = '2,9,15,30,25,20';
+        }
+
+        // ************************************** DATO INCIDENCIA CERRADO/ABIERTO***************************************
+
+        $fecha = " AND fecha_registro >= '$fechaInicio' AND fecha_registro <= '$fechaFinal'";
+
+        //$fechaactuali = date('Y-m-d').' 00:00:00';
+        //$fechaactuali = '2020-10-09 00:00:00';
+        //$fechaactualf = date('Y-m-d').' 23:59:59';
+
+        //$fecha = " AND fecha_registro >= '$fechaactuali' AND fecha_registro <= '$fechaactualf'";
+        $fechainv = " AND fecha >= '$fechaInicio' AND fecha <= '$fechaFinal'";
+
+        $totalabierto = $this->connectorDB->getAllIncidenciaAbierto($idReporteInc,$fecha)[0];
+        $totalcerrado = $this->connectorDB->getAllIncidenciacerrado($idReporteInc,$fecha)[0];
+        $totalincidentes= $totalabierto->abierto + $totalcerrado->cerrado;
+
+
+        $tipoincidencia = $this->connectorDB->gettipoincidenciatotal($idReporteInc,$fecha)[0];
+        //**************************+**************registros total******************************************************
+        $resgistropormes = $this->connectorDB->getregistrosporfechas($idReporteInc,$fecha)[0];
+        //**************************+**************registros por usuario************************************************
+        $resgistroporusuario = $this->connectorDB->getregistrosporusuarios($idReporteInc,$fecha);
+        //*********************************Tiempo promedio de atenccion, tipo de insidencia*****************************
+        //$tiempopromedio = $this->connectorDB->gettipoincidencia($idconfiguracion,$fecha);
+        //*********************************Tiempo Transcurrido del proyecto*********************************************
+        $tiempoproyecto = $this->connectorDB->gettipotranscurridoproyecto($fechaInicio)[0];
+        // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($idReportesInv,$fechainv);
+        // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
+        $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO,$fecha);
+        $resultadosgeneral = $this->connectorDB->getJsonAvancesFO($idReportesFO,$fecha);
+        /*$valores = array('4', '8', '13','29','24','19','59');
+        $array_res = array();
+        $array_num = count($valores);
+            for ($i=0;$i< $array_num;$i++){
+                $resultado2 = $this->connectorDB->getJsonAvancesFO($valores[$i],$fecha);
+                array_push($array_res,$resultado2);
+            }*/
+
+        $resultadoA = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+        $resultadoB = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+        $resultadoC = $this->connectorDB->getJsonAvancesFO(13,$fecha);
+        $resultadoD = $this->connectorDB->getJsonAvancesFO(29,$fecha);
+        $resultadoE = $this->connectorDB->getJsonAvancesFO(24,$fecha);
+        $resultadoF = $this->connectorDB->getJsonAvancesFO(19,$fecha);
+        //$resultado = $this->connectorDB->getJsonAvancesFO(59,$fecha);
+        //*****************************
+        $avanceJsonG = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadosgeneral);
+        $avanceJsonA = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoA);
+        $avanceJsonB = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoB);
+        $avanceJsonC = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoC);
+        $avanceJsonD = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoD);
+        $avanceJsonE = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoE);
+        $avanceJsonF = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultadoF);
+        $arrayAvancesFOG = (object)[
+            'tritubo' => (object)[
+                'nombre' => 'Tritubo', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+            'pruebas' => (object)[
+                'nombre' => 'Pruebas', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+            'inmersionFO' => (object)[
+                'nombre' => 'Inmersión FO', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+            'reposicionAsfalto' => (object)[
+                'nombre' => 'Reposición de asfalto', 'valor' => 0, 'valorA' => 0, 'valorB' => 0, 'valorC' => 0, 'valorD' => 0, 'valorE' => 0, 'valorF' => 0
+            ],
+        ];
+        $getValorG = function ($arrayValores) {
+            $coincidencia = array_filter($arrayValores, function ($element) {
+                return $element->idCampo == 36;
+            });
+            return is_numeric(array_values($coincidencia)[0]->valorCampo) ? array_values($coincidencia)[0]->valorCampo : 0;
+        };
+        foreach ($avanceJsonG as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valor += $getValorG($valor->Valor);
+                        //$arrayAvancesFOG->tritubo->valor += $getValorG($valor->Valor);
+                        // $arrayAvancesFOG->tritubo->valorA += $getValorG($valor->Valor);//$resultado3[0][0];
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valor += $getValorG($valor->Valor);
+                        //$arrayAvancesFOG->tritubo->valorA = $resultadoA[0][0];
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valor += $getValorG($valor->Valor);
+                        //$arrayAvancesFOG->tritubo->valorA = $resultadoA[0][0];
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valor += $getValorG($valor->Valor);
+                        // $arrayAvancesFOG->tritubo->valorA = $resultadoA[0][0];
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonA as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorA += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorA += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorA += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorA += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonB as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorB += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorB += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorB += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorB += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonC as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorC += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorC += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorC += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorC += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonD as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorD += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorD += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorD += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorD += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonE as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorE += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorE += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorE += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorE += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        foreach ($avanceJsonF as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    //$resultado3 = $this->connectorDB->getJsonAvancesFO(4,$fecha);
+                    //$resultado4 = $this->connectorDB->getJsonAvancesFO(8,$fecha);
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo'){
+                        $arrayAvancesFOG->tritubo->valorF += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas'){
+                        $arrayAvancesFOG->pruebas->valorF += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO'){
+                        $arrayAvancesFOG->inmersionFO->valorF += $getValorG($valor->Valor);
+                    }
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto'){
+                        $arrayAvancesFOG->reposicionAsfalto->valorF += $getValorG($valor->Valor);
+                    }
+                }
+            }
+        }
+        //*****************************
+        $avanceJson = array_map(function ($resultado) {
+            return json_decode($resultado->actividad); // $resultado->actividad;
+        }, $resultados);
+        $arrayAvancesFO = (object)[
+            'tritubo' => (object)[
+                'nombre' => 'Tritubo', 'valor' => 0
+            ],
+            'pruebas' => (object)[
+                'nombre' => 'Pruebas', 'valor' => 0
+            ],
+            'inmersionFO' => (object)[
+                'nombre' => 'Inmersión FO', 'valor' => 0
+            ],
+            'reposicionAsfalto' => (object)[
+                'nombre' => 'Reposición de asfalto', 'valor' => 0
+            ],
+        ];
+        $getValor = function ($arrayValores) {
+            $coincidencia = array_filter($arrayValores, function ($element) {
+                return $element->idCampo == 36;
+
+            });
+            return is_numeric(array_values($coincidencia)[0]->valorCampo) ? array_values($coincidencia)[0]->valorCampo : 0;
+
+        };
+        foreach ($avanceJson as $registro) {
+            foreach ($registro->Valores as $valor) {
+                foreach ($valor->Valor as $opcionesCampos) {
+                    if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo')
+                        $arrayAvancesFO->tritubo->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas')
+                        $arrayAvancesFO->pruebas->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO')
+                        $arrayAvancesFO->inmersionFO->valor += $getValor($valor->Valor);
+                    else if ($opcionesCampos->idCampo->valor == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto')
+                        $arrayAvancesFO->reposicionAsfalto->valor += $getValor($valor->Valor);
+                }
+            }
+        }
+        // *************************************************************************************************************
+
+        $datos['resultado'] = array('resul' => $resul, 'resulNombrel' => $resulNombrel, 'allReportes' => $arrayreportes,
+            'mensaje' => $mensaje, 'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas,
+            'arrayAvancesFO' => $arrayAvancesFO, 'totalabierto' => $totalabierto, 'totalincidentes' => $totalincidentes, 'totalcerrado' => $totalcerrado,
+            'idReporteInc' => $idReporteInc, 'tipoincidencia' => $tipoincidencia, 'resgistropormes' => $resgistropormes, 'resgistroporusuario' => $resgistroporusuario,
+            'tiempoproyecto' => $tiempoproyecto, 'arrayAvancesFOG' => $arrayAvancesFOG, 'fechaInicio' => $fechaInicio, 'fechaFinal' => $fechaFinal);
+        echo json_encode($datos);
     }
 
     public function avances()
