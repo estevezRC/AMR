@@ -42,12 +42,12 @@ class GraficasController extends ControladorBase
             session_start();
             $_SESSION[ID_PROYECTO_SUPERVISOR] = $datosproyecto->id_Proyecto;
         }
-        $id_Proyecto = $_SESSION[ID_PROYECTO_SUPERVISOR];*/
+        $id_Proyecto = $_SESSION[ID_PROYECTO_SUPERVISOR];*/ // Estadísticas
 
 
         $mensaje = $_GET['mensaje'];
         if (empty($mensaje)) {
-            $mensaje = "<i class='fa fa-bar-chart' aria-hidden='true'></i> Estadística ";
+            $mensaje = "<i class='fa fa-bar-chart' aria-hidden='true'></i> Dashboard ";
         }
 
 
@@ -425,7 +425,7 @@ class GraficasController extends ControladorBase
 
        $mensaje = $_GET['mensaje'];
         if (empty($mensaje)) {
-            $mensaje = "<i class='fa fa-bar-chart' aria-hidden='true'></i> Estadística ";
+            $mensaje = "<i class='fa fa-bar-chart' aria-hidden='true'></i> Dashboard ";
         }
 
 

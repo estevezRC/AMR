@@ -59,6 +59,193 @@
                     </div>
                 </div>
 
+
+
+
+
+                <div class="row m-2">
+                    <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
+                        <div class="col-12 col-md-6 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <a href="index.php?controller=Estadisticas&action=estadisticas">
+                                        <b>Inventario</b>
+                                    </a>
+                                </h5>
+                                <div class="card-body">
+                                    <table id="example" class="table table-striped">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total en Stock</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="inventario">
+                                        <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
+                                            foreach ($estadisticas as $row => $registro) {
+                                                $elementArr = explode('(', $registro->elemento);
+                                                $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                ?>
+
+                                                <tr>
+                                                    <td><?= $row + 1; ?></td>
+                                                    <td><?= $registro->elemento; ?></td>
+                                                    <td><?= "$registro->totalStock $unidad_medida"; ?></td>
+                                                </tr>
+                                            <? }
+                                        } else { ?>
+                                            <tr class="odd">
+                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                    disponible en esta tabla
+                                                </td>
+                                            </tr>
+                                        <? } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                </h5>
+                                <div class="card-body">
+                                    <table class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="tramoFO">
+                                        <?
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFO as $avance) { ?>
+                                            <tr>
+                                                <td> <?= $contador; ?> </td>
+                                                <td> <?= $avance->nombre; ?> </td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                            </tr>
+
+                                            <?
+                                            $contador++;
+                                        } ?>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <? } ?>
+                </div>
+
+                <div class="row m-2">
+                    <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10) { ?>
+                        <div class="col-12 col-md-12 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <a href="index.php?controller=Estadisticas&action=estadisticas">
+                                        <b>Inventario</b>
+                                    </a>
+                                </h5>
+                                <div class="card-body">
+                                    <table id="example" class="table table-striped">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total en Stock</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="inventario">
+                                        <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
+                                            foreach ($estadisticas as $row => $registro) {
+                                                $elementArr = explode('(', $registro->elemento);
+                                                $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                ?>
+
+                                                <tr>
+                                                    <td><?= $row + 1; ?></td>
+                                                    <td><?= $registro->elemento; ?></td>
+                                                    <td><?= "$registro->totalStock $unidad_medida"; ?></td>
+                                                </tr>
+                                            <? }
+                                        } else { ?>
+                                            <tr class="odd">
+                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                    disponible en esta tabla
+                                                </td>
+                                            </tr>
+                                        <? } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 mb-5">
+                            <div class="card">
+                                <h5 class="card-header">
+                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                </h5>
+                                <div class="card-body">
+                                    <table id="example" class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance</th>
+                                            <th>Tramo A</th>
+                                            <th>Tramo B</th>
+                                            <th>Tramo C</th>
+                                            <th>Tramo D</th>
+                                            <th>Tramo E</th>
+                                            <th>Tramo F</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="fogeneral">
+                                        <?
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFOG as $avance) { ?>
+                                            <tr>
+                                                <td> <?= $contador; ?> </td>
+                                                <td> <?= $avance->nombre; ?> </td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorA; ?> metros</td>
+                                                <td> <?= $avance->valorB; ?> metros</td>
+                                                <td> <?= $avance->valorC; ?> metros</td>
+                                                <td> <?= $avance->valorD; ?> metros</td>
+                                                <td> <?= $avance->valorE; ?> metros</td>
+                                                <td> <?= $avance->valorF; ?> metros</td>
+                                            </tr>
+                                            <?
+                                            $contador++;
+                                        } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <? } ?>
+                </div>
+
+
+
+                <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
+                    <div class="col-sm-12 d-flex align-items-center">
+                        <h4 class="text-white m-0 py-2">
+                            <i class='fa fa-bar-chart' aria-hidden='true'></i>
+                            Estadísticas
+                        </h4>
+                    </div>
+                </div>
+
+
+
                 <div class="row">
                     <div class="col-12">
 
@@ -282,135 +469,7 @@
                             </div>
                         </div>
 
-                        <div class="row m-2">
 
-
-
-                            <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
-                                <div class="col-sm-12 d-flex align-items-center">
-                                    <h4 class="text-white m-0 py-2">
-                                        <i class='fa fa-bar-chart' aria-hidden='true'></i>
-                                        Dashboard
-                                    </h4>
-                                </div>
-                            </div>
-                            <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
-                            <div class="col-12 col-md-6 mb-5">
-                                <div class="card">
-                                    <h5 class="card-header">
-
-                                        <a href="index.php?controller=Estadisticas&action=estadisticas">
-                                            <b>Inventario</b>
-                                        </a>
-
-                                    </h5>
-                                    <div class="card-body">
-                                        <table id="example" class="table table-striped">
-                                            <thead class="bg-primary text-light">
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Material</th>
-                                                <th>Total en Stock</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody id="inventario">
-                                            <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
-                                                foreach ($estadisticas as $row => $registro) {
-                                                    $elementArr = explode('(', $registro->elemento);
-                                                    $unidad_medida = str_replace(')', '', $elementArr[1]);
-                                                    //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
-                                                    ?>
-
-                                                    <tr>
-                                                        <td><?= $row + 1; ?></td>
-                                                        <td><?= $registro->elemento; ?></td>
-                                                        <td><?= "$registro->totalStock $unidad_medida"; ?></td>
-                                                    </tr>
-                                                <? }
-                                            } else { ?>
-                                                <tr class="odd">
-                                                    <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                        disponible en esta tabla
-                                                    </td>
-                                                </tr>
-                                            <? } ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6 mb-5">
-                                <div class="card">
-                                    <h5 class="card-header">
-                                        <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
-                                    </h5>
-                                    <div class="card-body">
-                                        <table class="table table-striped p-3">
-                                            <thead class="bg-primary text-light">
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Material</th>
-                                                <th>Total Avance</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody id="tramoFO">
-                                            <?
-                                            $contador = 1;
-                                            foreach ($arrayAvancesFO as $avance) { ?>
-                                                <tr>
-                                                    <td> <?= $contador; ?> </td>
-                                                    <td> <?= $avance->nombre; ?> </td>
-                                                    <td> <?= $avance->valor; ?> metros</td>
-                                                </tr>
-
-                                                <?
-                                                $contador++;
-                                            } ?>
-
-                                            </tbody>
-                                        </table>
-
-                                     <!-- <table id="example" class="table table-striped p-3">
-                                            <thead class="bg-primary text-light">
-                                            <tr style="background-color: #0C3E6D;"><th colspan="9">Comparativa Mensual</th></tr>
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Material</th>
-                                                <th>Total Avance</th>
-                                                <th>Mes Actual</th>
-                                                <th>Mes -1</th>
-                                                <th>Mes -2</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-
-                                            <?/*
-                                            $contador = 1;
-                                            foreach ($arrayAvancesFO as $avance) { */?>
-                                                <tr>
-                                                    <td> <?/*= $contador; */?> </td>
-                                                    <td> <?/*= $avance->nombre; */?> </td>
-                                                    <td> <?/*= $avance->valor; */?> metros</td>
-                                                    <td> <?/*= $avance->valor; */?> metros</td>
-                                                    <td> <?/*= $avance->valor; */?> metros</td>
-                                                    <td> <?/*= $avance->valor; */?> metros</td>
-                                                </tr>
-
-                                                <?/*
-                                                $contador++;
-                                            } */?>
-
-                                            </tbody>
-                                        </table>-->
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <? } ?>
-
-                        </div>
 
 
 
@@ -434,126 +493,7 @@
                         <? } ?>
 
                         <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10) { ?>
-                        <div class="col-12 col-md-12 mb-5">
-                            <div class="card">
-                                <h5 class="card-header">
-
-                                    <a href="index.php?controller=Estadisticas&action=estadisticas">
-                                        <b>Inventario</b>
-                                    </a>
-
-                                </h5>
-                                <div class="card-body">
-                                    <table id="example" class="table table-striped">
-                                        <thead class="bg-primary text-light">
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Material</th>
-                                            <th>Total en Stock</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="inventario">
-                                        <? if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) {
-                                            foreach ($estadisticas as $row => $registro) {
-                                                $elementArr = explode('(', $registro->elemento);
-                                                $unidad_medida = str_replace(')', '', $elementArr[1]);
-                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
-                                                ?>
-
-                                                <tr>
-                                                    <td><?= $row + 1; ?></td>
-                                                    <td><?= $registro->elemento; ?></td>
-                                                    <td><?= "$registro->totalStock $unidad_medida"; ?></td>
-                                                </tr>
-                                            <? }
-                                        } else { ?>
-                                            <tr class="odd">
-                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                    disponible en esta tabla
-                                                </td>
-                                            </tr>
-                                        <? } ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-12 mb-5">
-                            <div class="card ">
-                                <h5 class="card-header ">
-                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
-                                </h5>
-                                <div class="card-body col-md-12">
-                                    <table id="example" class="table table-striped p-3">
-                                        <thead class="bg-primary text-light">
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Material</th>
-                                            <th>Total Avance</th>
-                                            <th>Tramo A</th>
-                                            <th>Tramo B</th>
-                                            <th>Tramo C</th>
-                                            <th>Tramo D</th>
-                                            <th>Tramo E</th>
-                                            <th>Tramo F</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="fogeneral">
-                                        <?
-                                        $contador = 1;
-                                        foreach ($arrayAvancesFOG as $avance) { ?>
-                                            <tr>
-                                                <td> <?= $contador; ?> </td>
-                                                <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorA; ?> metros</td>
-                                                <td> <?= $avance->valorB; ?> metros</td>
-                                                <td> <?= $avance->valorC; ?> metros</td>
-                                                <td> <?= $avance->valorD; ?> metros</td>
-                                                <td> <?= $avance->valorE; ?> metros</td>
-                                                <td> <?= $avance->valorF; ?> metros</td>
-                                            </tr>
-                                            <?
-                                            $contador++;
-                                        } ?>
-                                        </tbody>
-                                    </table>
-                                  <!--  <table id="example" class="table table-striped p-3">
-                                        <thead class="bg-primary text-light">
-                                        <tr style="background-color: #0C3E6D;"><th colspan="9">Comparativa Mensual</th></tr>
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Material</th>
-                                            <th>Total Avance</th>
-                                            <th>Tramo A</th>
-                                            <th>Tramo B</th>
-                                            <th>Tramo C</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?/*
-                                        $contador = 1;
-                                        foreach ($arrayAvancesFOG as $avance) { */?>
-                                            <tr>
-                                                <td> <?/*= $contador; */?> </td>
-                                                <td> <?/*= $avance->nombre; */?> </td>
-                                                <td> <?/*= $avance->valor; */?> metros</td>
-                                                <td> <?/*= $avance->valorA; */?> metros</td>
-                                                <td> <?/*= $avance->valorB; */?> metros</td>
-                                                <td> <?/*= $avance->valorC; */?> metros</td>
-                                            </tr>
-                                            <?/*
-                                            $contador++;
-                                        } */?>
-                                        </tbody>
-                                    </table>-->
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-
                         <? } ?>
 
                     </div>
@@ -1524,7 +1464,6 @@ if ($action == "diagrama") { ?>
             $('#tramoFO').html(tramoFO);
             $('#fogeneral').html(fogeneral);
             $('#inventario').html(inventario);
-
 
             }).fail(function (jqXHR, textStatus, errorThrown){ // Función que se ejecuta si algo ha ido mal
             // Mostramos en consola el mensaje con el error que se ha producido
