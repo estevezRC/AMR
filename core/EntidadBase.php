@@ -226,10 +226,10 @@ class EntidadBase
     public function gettipotranscurridoproyecto($fecha)
     {
         $resultSet = array();
-        $query = $this->db->query("
-        SELECT TIMESTAMPDIFF(DAY,'$fecha','2020-10-19') AS dias_transcurridos,
-        TIMESTAMPDIFF(MONTH,'$fecha', '2020-10-19') AS meses_transcurridos,
-        TIMESTAMPDIFF(WEEK,'$fecha', '2020-10-19') AS semanas_transcurridos,
+        $query = $this->db->query("  
+        SELECT TIMESTAMPDIFF(DAY,'2020-10-19','$fecha') AS dias_transcurridos,
+        TIMESTAMPDIFF(MONTH,'2020-10-19','$fecha') AS meses_transcurridos,
+        TIMESTAMPDIFF(WEEK,'2020-10-19','$fecha') AS semanas_transcurridos,
         TIMESTAMPDIFF(DAY,'$fecha','2021-04-30') AS dias_restantes;
         ");
         while ($row = $query->fetch_object()) {
@@ -263,24 +263,23 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
         $query->close();
         return $resultSet;
     }
-    public function gettipoincidenciatotal($id_Proyecto,$fecha)
+    public function gettipoincidenciatotal($idReporte,$fecha)
     {
         $resultSet = array();
-        $query = $this->db->query("SELECT  
-        sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)) as accidente,
-        sum(if(vrc.valor_Texto_Reporte = 'Bloqueo Carretero',1,0)) as bloqueo,
-        sum(if(vrc.valor_Texto_Reporte = 'Ejecución',1,0)) as ejecucion,
-        sum(if(vrc.valor_Texto_Reporte = 'Equipamiento',1,0)) as equipamiento,
-        sum(if(vrc.valor_Texto_Reporte = 'Señalización',1,0)) as señalizacion,
-        sum(if(vrc.valor_Texto_Reporte = 'Vandalismo',1,0)) as vandalismo,
-        sum(if(vrc.valor_Texto_Reporte = 'Otro',1,0)) as otro,
-        sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)) as meteorologico
-        FROM Reportes_Llenados rl
-        LEFT JOIN Valores_Reportes_Campos vrc ON vrc.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
-        WHERE rl.id_Status_Elemento = 1 AND rl.clas_Reporte = 1 -- AND id_Etapa = 2
-        AND rl.id_Reporte IN ($id_Proyecto)
-        $fecha
-        ");
+        $query1 = "SELECT  
+            if(sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)),0) as accidente,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Bloqueo Carretero',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Bloqueo Carretero',1,0)),0) as bloqueo,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Ejecución',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Ejecución',1,0)),0) as ejecucion,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Equipamiento',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Equipamiento',1,0)),0) as equipamiento,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Señalización',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Señalización',1,0)),0) as señalizacion,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Vandalismo',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Vandalismo',1,0)),0) as vandalismo,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Otro',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Otro',1,0)),0) as otro,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)),0) as meteorologico
+            FROM Reportes_Llenados rl
+                LEFT JOIN Valores_Reportes_Campos vrc ON vrc.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+            WHERE rl.id_Status_Elemento = 1 AND rl.clas_Reporte = 1 -- AND id_Etapa = 2
+            AND rl.id_Reporte IN ($idReporte) $fecha";
+        $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }

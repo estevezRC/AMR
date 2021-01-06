@@ -35,12 +35,11 @@
                                     <div class="row">
                                         <div class="col-lg-6 " >
                                             <h6 class="control-label"><b>Fecha incio:</b></h6>
-                                            <input id="fechainicio1" type="date"  name="fechainicio1" class="form-control"/>
+                                            <input id="fechainicio1" type="date"  name="fechainicio1"  class="form-control"/>
                                         </div>
                                         <div class="col-lg-6">
                                             <h6 class="control-label"><b>Fecha fin:</b></h6>
                                             <input id="fechafin1" type="date" name="fechafin1" class="form-control"/>
-
                                         </div>
                                     </div>
                                     <input name="idReporteInc" id="idReporteInc" type="hidden" value="<?= $idReporteInc;?> " class="form-control">
@@ -233,8 +232,6 @@
                     <? } ?>
                 </div>
 
-
-
                 <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
                     <div class="col-sm-12 d-flex align-items-center">
                         <h4 class="text-white m-0 py-2">
@@ -243,8 +240,6 @@
                         </h4>
                     </div>
                 </div>
-
-
 
                 <div class="row">
                     <div class="col-12">
@@ -468,10 +463,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-
-
 
                         <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
                             <div class="row mt-2">
@@ -1321,43 +1312,60 @@ if ($action == "diagrama") { ?>
 
 <script>
     function filtrarporfecha(){
+        var fechainicio = $('#fechainicio1').val();
+        var fechafin = $('#fechafin1').val();
+        var idReporteInc = $('#idReporteInc').val();
 
-    var fechainicio = $('#fechainicio1').val();
-    var fechafin = $('#fechafin1').val();
-    var idReporteInc = $('#idReporteInc').val();
 
-    var datos = "fechainicio="+fechainicio+"&fechafin="+fechafin+"&idReporteInc="+idReporteInc;
+        if (fechainicio <= '2020-10-19'){
+             alertify.notify('La Fecha Inicio debe ser mayor o igual a la fecha de inicio del proyecto','error',10, null);
+        }else if(fechafin > '2021-04-30'){
+            alertify.notify('La Fecha Fin debe ser mayor o igual a la fecha fin del proyecto','error',10, null);
+        }else if (fechainicio > fechafin){
+            alertify.notify('La Fecha Inicio Debe ser Menor a la Fecha Fin ','error',3, null);
+        }else {
+            var fechainicio = $('#fechainicio1').val();
+            var fechafin = $('#fechafin1').val();
+            var idReporteInc = $('#idReporteInc').val();
 
-        $.ajax({
-            type: 'POST',  // Envío con método POST
-            //url: './consulta.php',  // Fichero destino (el PHP que trata los datos)
-            url: "./index.php?controller=Graficas&action=inventarioporfecha",
-            data: datos, // Datos que se envían
-            //dataType: 'json'
-        }).done(function( msg ) {  // Función que se ejecuta si todo ha ido bien
-            //console.log(msg);
-            $("#consola").html(msg);  // Escribimos en el div consola el mensaje devuelto
-            var json = JSON.parse(msg);
-            var resultado = json.resultado;
-            console.log(json);
+            // var datos = "fechainicio="+fechainicio+"&fechafin="+fechafin+"&idReporteInc="+idReporteInc;
+            let datos = {
+                fechainicio: fechainicio,
+                fechafin: fechafin,
+                idReporteInc: idReporteInc,
+                bandera: true
+            }
 
-            var tiempoproyecto = `  <tr>
+            $.ajax({
+                type: 'POST',  // Envío con método POST
+                //url: './consulta.php',  // Fichero destino (el PHP que trata los datos)
+                url: "./index.php?controller=Graficas&action=index",
+                data: datos, // Datos que se envían
+                //dataType: 'json'
+            }).done(function( msg ) {  // Función que se ejecuta si todo ha ido bien
+                //console.log(msg);
+                $("#consola").html(msg);  // Escribimos en el div consola el mensaje devuelto
+                var json = JSON.parse(msg);
+                var resultado = json;
+                console.log(json);
+
+                var tiempoproyecto = `  <tr>
                                     <td class="text-center"> `+resultado.tiempoproyecto.dias_transcurridos+`</td>
                                     <td class="text-center">`+resultado.tiempoproyecto.semanas_transcurridos+`</td>
                                     <td class="text-center"> `+resultado.tiempoproyecto.meses_transcurridos+` </td>
                                     </tr>`;
-            var tiempoproyecto = `  <tr>
+                var tiempoproyecto = `  <tr>
                                     <td class="text-center"> `+resultado.tiempoproyecto.dias_transcurridos+`</td>
                                     <td class="text-center">`+resultado.tiempoproyecto.semanas_transcurridos+`</td>
                                     <td class="text-center"> `+resultado.tiempoproyecto.meses_transcurridos+` </td>
                                     </tr>`;
-            var tiemporesta = `<h5 class="text-center"><b>`+resultado.tiempoproyecto.dias_restantes+` </b></h5>`;
-            var totalincidentes = ` <tr>
+                var tiemporesta = `<h5 class="text-center"><b>`+resultado.tiempoproyecto.dias_restantes+` </b></h5>`;
+                var totalincidentes = ` <tr>
                                     <td class="text-center">`+resultado.totalabierto.abierto+`</td>
                                     <td class="text-center">`+resultado.totalcerrado.cerrado+`</td>
                                     <td class="text-center"> `+resultado.totalincidentes+` </td>
                                     </tr>`;
-            var inidentesregistrados = `
+                var inidentesregistrados = `
                                     <tr>
                                     <td class="text-center">Accidente</td>
                                     <td id="" class="text-center">
@@ -1407,32 +1415,32 @@ if ($action == "diagrama") { ?>
                                     </td>
                                     </tr>
             `;
-            var totalregistros = `  <tr>
+                var totalregistros = `  <tr>
                                     <td class="text-center"> `+resultado.resgistropormes.totalregistro+`</td>
                                     </tr>`;
 
-            var distribucionusuario = resultado.resgistroporusuario.map((registro) => {
-                return `<tr>
+                var distribucionusuario = resultado.resgistroporusuario.map((registro) => {
+                    return `<tr>
                     <td class="text-center">${registro.nombre} ${registro.apellido_paterno} ${registro.apellido_materno}</td>
                     <td class="text-center">${registro.total}</td>
                 </tr>`
-            }).join('');
+                }).join('');
 
-            var fechainicio = `<h6><strong>Fecha Inicio:</strong> `+resultado.fechaInicio+` </h6>`;
+                var fechainicio = `<h6><strong>Fecha Inicio:</strong> `+resultado.fechaactuali+` </h6>`;
 
-            var fechafin = `<h6><strong>Fecha Inicio:</strong> `+resultado.fechaFinal+` </h6>`;
+                var fechafin = `<h6><strong>Fecha Fin:</strong> `+resultado.fechaactualf+` </h6>`;
 
-           //console.log(Object.values(resultado.arrayAvancesFO));
-           var tramoFO = Object.values(resultado.arrayAvancesFO).map((registro, index) => {
-                return `<tr>
+                //console.log(Object.values(resultado.arrayAvancesFO));
+                var tramoFO = Object.values(resultado.arrayAvancesFO).map((registro, index) => {
+                    return `<tr>
                     <td class="text-center">${index + 1}</td>
                     <td class="text-center">${registro.nombre}</td>
                     <td class="text-center">${registro.valor} metros</td>
                 </tr>`
-            }).join('');
+                }).join('');
 
-            var fogeneral = Object.values(resultado.arrayAvancesFOG).map((registro, index) => {
-                return `<tr>
+                var fogeneral = Object.values(resultado.arrayAvancesFOG).map((registro, index) => {
+                    return `<tr>
                 <td class="text-center">${index + 1}</td>
                 <td class="text-center">${registro.nombre} </td>
                 <td class="text-center"> ${registro.valor} metros</td>
@@ -1443,32 +1451,33 @@ if ($action == "diagrama") { ?>
                 <td class="text-center"> ${registro.valorE}  metros</td>
                 <td class="text-center"> ${registro.valorF}  metros</td>
                 </tr>`
-            }).join('');
+                }).join('');
 
-            var inventario = resultado.estadisticas.map((registro, index) => {
-                return `<tr>
+                var inventario = resultado.estadisticas.map((registro, index) => {
+                    return `<tr>
                     <td class="text-center">${index + 1}</td>
                     <td class="text-center">${registro.elemento} </td>
                     <td class="text-center">${registro.totalStock}</td>
                     </tr>`
-            }).join('');
+                }).join('');
 
-            $('#tiempoproyecto').html(tiempoproyecto);
-            $('#tiemporesta').html(tiemporesta);
-            $('#totalincidentes').html(totalincidentes);
-            $('#inidentesregistrados').html(inidentesregistrados);
-            $('#totalregistros').html(totalregistros);
-            $('#distribucionusuario').html(distribucionusuario);
-            $('#fechainicio').html(fechainicio);
-            $('#fechafin').html(fechafin);
-            $('#tramoFO').html(tramoFO);
-            $('#fogeneral').html(fogeneral);
-            $('#inventario').html(inventario);
+                $('#tiempoproyecto').html(tiempoproyecto);
+                $('#tiemporesta').html(tiemporesta);
+                $('#totalincidentes').html(totalincidentes);
+                $('#inidentesregistrados').html(inidentesregistrados);
+                $('#totalregistros').html(totalregistros);
+                $('#distribucionusuario').html(distribucionusuario);
+                $('#fechainicio').html(fechainicio);
+                $('#fechafin').html(fechafin);
+                $('#tramoFO').html(tramoFO);
+                $('#fogeneral').html(fogeneral);
+                $('#inventario').html(inventario);
 
             }).fail(function (jqXHR, textStatus, errorThrown){ // Función que se ejecuta si algo ha ido mal
-            // Mostramos en consola el mensaje con el error que se ha producido
-            $("#consola").html("The following error occured: "+ textStatus +" "+ errorThrown);
-        });
+                // Mostramos en consola el mensaje con el error que se ha producido
+                $("#consola").html("The following error occured: "+ textStatus +" "+ errorThrown);
+            });
+        }
 
     }
 
