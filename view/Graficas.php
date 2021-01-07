@@ -35,12 +35,11 @@
                                     <div class="row">
                                         <div class="col-lg-6 " >
                                             <h6 class="control-label"><b>Fecha incio:</b></h6>
-                                            <input id="fechainicio1" type="date"  name="fechainicio1"  class="form-control"/>
+                                            <input id="fechainicio1" type="date"  name="fechainicio1" value="<?php echo date("Y-m-01");?>" class="form-control"/>
                                         </div>
                                         <div class="col-lg-6">
                                             <h6 class="control-label"><b>Fecha fin:</b></h6>
-                                            <input id="fechafin1" type="date" name="fechafin1" class="form-control"/>
-                                        </div>
+                                            <input id="fechafin1" type="date" name="fechafin1" value="<?php echo date("Y-m-d");?>" class="form-control"/>                                        </div>
                                     </div>
                                     <input name="idReporteInc" id="idReporteInc" type="hidden" value="<?= $idReporteInc;?> " class="form-control">
                                     <br>
@@ -422,14 +421,18 @@
                                             </tr>
                                             </thead>
                                             <tbody id="totalregistros">
+                                          <?php
+                                           if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) { ?>
                                             <tr>
-                                                <td class="text-center"><?= $resgistropormes->totalregistro; ?></td>
+                                                <td class="text-center"><?= $resgistropormes; ?></td>
                                             </tr>
-                                            <tr class="odd">
-                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                    disponible en esta tabla
-                                                </td>
-                                            </tr>
+                                        <? } else { ?>
+                                          <tr class="odd">
+                                              <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                  disponible en esta tabla
+                                              </td>
+                                          </tr>
+                                          <? } ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -446,17 +449,22 @@
                                             </tr>
                                             </thead>
                                             <tbody id="distribucionusuario">
-                                            <?php foreach ($resgistroporusuario as $dato) { ?>
+
+                                            <?php
+                                            if ($resgistroporusuario){
+                                            foreach ($resgistroporusuario as $dato) { ?>
                                             <tr>
                                                 <td class="text-center"><?= $dato->nombre .' '. $dato->apellido_paterno.' '.$dato->apellido_materno; ?></td>
                                                 <td class="text-center"><?= $dato->total; ?></td>
                                             </tr>
-                                            <?php } ?>
-                                            <tr class="odd">
-                                                <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                    disponible en esta tabla
-                                                </td>
-                                            </tr>
+                                            <? }} else { ?>
+                                          <tr class="odd">
+                                              <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                  disponible en esta tabla
+                                              </td>
+                                          </tr>
+                                          <? } ?>
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -1316,7 +1324,6 @@ if ($action == "diagrama") { ?>
         var fechafin = $('#fechafin1').val();
         var idReporteInc = $('#idReporteInc').val();
 
-
         if (fechainicio <= '2020-10-19'){
              alertify.notify('La Fecha Inicio debe ser mayor o igual a la fecha de inicio del proyecto','error',10, null);
         }else if(fechafin > '2021-04-30'){
@@ -1416,7 +1423,7 @@ if ($action == "diagrama") { ?>
                                     </tr>
             `;
                 var totalregistros = `  <tr>
-                                    <td class="text-center"> `+resultado.resgistropormes.totalregistro+`</td>
+                                    <td class="text-center"> `+resultado.resgistropormes+`</td>
                                     </tr>`;
 
                 var distribucionusuario = resultado.resgistroporusuario.map((registro) => {

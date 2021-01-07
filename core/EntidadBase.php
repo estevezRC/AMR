@@ -172,34 +172,19 @@ class EntidadBase
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::GRAFICA incidencia:::::::::::::::::::::::::::::::::::::::::::::::::*/
 
-    public function getregistrosporfechas($id_Proyecto,$fecha)
-    {
-        $resultSet = array();
-        $query = $this->db->query("
-        SELECT 
-        sum(id_Status_Elemento) as totalregistro 
-        FROM Reportes_Llenados  
-        where id_Status_Elemento=1 
-        $fecha
-        AND id_Reporte IN ($id_Proyecto)");
-        while ($row = $query->fetch_object()) {
-            $resultSet[] = $row;
-        }
-        $query->close();
-        return $resultSet;
-    }
+
     public function getregistrosporusuarios($id_Proyecto,$fecha)
     {
         $resultSet = array();
         $query = $this->db->query("
-        SELECT 
+
+        SELECT
         count(id_Status_Elemento) as total , nombre, apellido_paterno, apellido_materno
-        FROM Reportes_Llenados rl  
-        LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
-        LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
-        where rl.id_Status_Elemento=1 
+        FROM Reportes_Llenados rl
+        LEFT JOIN empleados_usuarios eu ON eu.id_Usuario = rl.id_Usuario
+        WHERE rl.id_Reporte IN ($id_Proyecto) AND id_Status_Elemento=1 
         $fecha
-        AND id_Reporte IN ($id_Proyecto) group by eu.id_usuario ");
+        group by eu.id_usuario ");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }
@@ -293,6 +278,34 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
         $query = $this->db->query("SELECT count(id_Gpo_Valores_Reporte) as total_registros FROM Reportes_Llenados
         WHERE id_Status_Elemento = 1 AND clas_Reporte = 1 AND id_Etapa = 2
         AND id_Reporte IN ($id_Proyecto)");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+    public function getidsreporte($id_Proyecto)
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT rl.id_Reporte
+        FROM Reportes_Llenados rl
+        LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+        WHERE cr.id_Proyecto in($id_Proyecto) AND id_Status_Elemento=1 AND tipo_Reporte in(0,1)
+        group by cr.id_Reporte");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getregistros($ids,$fecha)
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT * FROM Reportes_Llenados rl
+        LEFT JOIN empleados_usuarios eu ON eu.id_Usuario = rl.id_Usuario
+        WHERE rl.id_Reporte IN ($ids) AND id_Status_Elemento=1 
+        $fecha");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }
