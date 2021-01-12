@@ -3657,7 +3657,8 @@ GROUP BY V.id_Gpo_Valores_Reporte";
     {
         $resultSet = array();
         $query1 = "
-SELECT V.id_Gpo_Valores_Reporte, V.id_Reporte, V.id_Status_Elemento,
+SELECT * FROM (
+		SELECT V.id_Gpo_Valores_Reporte, V.id_Reporte, V.id_Status_Elemento,
             group_concat(if((V.id_Campo_Reporte = 1),V.valor_Texto_Reporte,NULL) separator ',') AS fecha,
             group_concat(if((V.id_Campo_Reporte = 2),V.valor_Texto_Reporte,NULL) separator ',') AS hora,
             group_concat(if((V.id_Campo_Reporte = 18),V.valor_Texto_Reporte,NULL) separator ',') AS observaciones,
@@ -3666,8 +3667,36 @@ SELECT V.id_Gpo_Valores_Reporte, V.id_Reporte, V.id_Status_Elemento,
             group_concat(if((V.id_Campo_Reporte = 38),V.valor_Texto_Reporte,NULL) separator ',') AS frente 
             FROM (SELECT * FROM VW_getAllValoresReportes vr) V 
             WHERE V.id_Reporte IN ($idReporte) AND V.id_Status_Elemento = 1 
-            $fecha
-            GROUP BY V.id_Gpo_Valores_Reporte";
+            GROUP BY V.id_Gpo_Valores_Reporte
+            )R1
+            WHERE $fecha";
+
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getJsonAvancesMensual($idReporte,$a,$m)
+    {
+        $resultSet = array();
+        $query1 = "
+          
+SELECT * FROM (
+      SELECT V.id_Gpo_Valores_Reporte, V.id_Reporte, V.id_Status_Elemento,
+            group_concat(if((V.id_Campo_Reporte = 1),V.valor_Texto_Reporte,NULL) separator ',') AS fecha,
+            group_concat(if((V.id_Campo_Reporte = 2),V.valor_Texto_Reporte,NULL) separator ',') AS hora,
+            group_concat(if((V.id_Campo_Reporte = 18),V.valor_Texto_Reporte,NULL) separator ',') AS observaciones,
+            group_concat(if((V.id_Campo_Reporte = 3),V.valor_Texto_Reporte,NULL) separator ',') AS descripción,
+            group_concat(if((V.id_Campo_Reporte = 37),V.valor_Texto_Reporte,NULL) separator ',') AS actividad,
+            group_concat(if((V.id_Campo_Reporte = 38),V.valor_Texto_Reporte,NULL) separator ',') AS frente 
+            FROM (SELECT * FROM VW_getAllValoresReportes vr) V 
+            WHERE V.id_Reporte IN ($idReporte) AND V.id_Status_Elemento = 1 
+			 AND YEAR(fecha_registro)=2020 AND MONTH(fecha_registro)=12
+            GROUP BY V.id_Gpo_Valores_Reporte
+            )M1 WHERE YEAR(fecha)=$a AND MONTH(fecha)=$m";
 
         $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
