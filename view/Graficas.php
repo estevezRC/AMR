@@ -63,7 +63,7 @@
 
                 <div class="row m-2">
                     <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
-                        <div class="col-12 col-md-6 mb-5">
+                        <div class="col-12 col-md-12 mb-5">
                             <div class="card">
                                 <h5 class="card-header">
                                     <a href="index.php?controller=Estadisticas&action=estadisticas">
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 mb-5">
+                        <div class="col-12 col-md-12 mb-5">
                             <div class="card">
                                 <h5 class="card-header">
                                     <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
@@ -133,6 +133,36 @@
                                             $contador++;
                                         } ?>
 
+                                        </tbody>
+                                    </table>
+
+                                    <table id="example" class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr style="background-color: #0C3E6D;"><th colspan="6">Comparativa Mensual</th></tr>
+                                        <tr >
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance </th>
+                                            <th id="mesactual" > <?= $m.' '.$a; ?></th>
+                                            <th id="mesuno" > <?= $m1.' '.$a1; ?></th>
+                                            <th id="mesdos" ><?= $m2.' '.$a2; ?></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="fomeses">
+                                        <?
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFOM as $avance) { ?>
+                                            <tr>
+                                                <td> <?= $contador; ?> </td>
+                                                <td> <?= $avance->nombre; ?> </td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorM; ?> metros</td>
+                                                <td> <?= $avance->valorM1; ?> metros</td>
+                                                <td> <?= $avance->valorM2; ?> metros</td>
+                                            </tr>
+                                            <?
+                                            $contador++;
+                                        } ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -185,6 +215,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-12 col-md-12 mb-5">
                             <div class="card">
                                 <h5 class="card-header">
@@ -225,9 +256,71 @@
                                         } ?>
                                         </tbody>
                                     </table>
-                                </div>
+
+                                    <table id="example" class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr style="background-color: #0C3E6D;"><th colspan="6">Comparativa Mensual</th></tr>
+                                        <tr >
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance </th>
+                                            <th id="mesactual" > <?= $m.' '.$a; ?></th>
+                                            <th id="mesuno" > <?= $m1.' '.$a1; ?></th>
+                                            <th id="mesdos" ><?= $m2.' '.$a2; ?></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="fomeses">
+                                        <?
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFOM as $avance) { ?>
+                                            <tr>
+                                                <td> <?= $contador; ?> </td>
+                                                <td> <?= $avance->nombre; ?> </td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorM; ?> metros</td>
+                                                <td> <?= $avance->valorM1; ?> metros</td>
+                                                <td> <?= $avance->valorM2; ?> metros</td>
+                                            </tr>
+                                            <?
+                                            $contador++;
+                                        } ?>
+                                        </tbody>
+                                    </table>
+
+<!--                                    <table id="example" class="table table-striped p-3">
+                                        <thead class="bg-primary text-light">
+                                        <tr style="background-color: #0C3E6D;"><th colspan="6">Comparativa Mensual</th></tr>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Material</th>
+                                            <th>Total Avance</th>
+                                            <th>Mes Actual</th>
+                                            <th>Mes -1</th>
+                                            <th>Mes -2</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="fomeses">
+                                        <?/*
+                                        $contador = 1;
+                                        foreach ($arrayAvancesFOM as $avance) { */?>
+                                            <tr>
+                                                <td> <?/*= $contador; */?> </td>
+                                                <td> <?/*= $avance->nombre; */?> </td>
+                                                <td> <?/*= $avance->valor; */?> metros</td>
+                                                <td> <?/*= $avance->valorM; */?> metros</td>
+                                                <td> <?/*= $avance->valorM1; */?> metros</td>
+                                                <td> <?/*= $avance->valorM2; */?> metros</td>
+                                            </tr>
+                                            <?/*
+                                            $contador++;
+                                        } */?>
+                                        </tbody>
+                                    </table>
+-->                                </div>
                             </div>
                         </div>
+
+
                     <? } ?>
                 </div>
 
@@ -1323,8 +1416,10 @@ if ($action == "diagrama") { ?>
         var fechainicio = $('#fechainicio1').val();
         var fechafin = $('#fechafin1').val();
         var idReporteInc = $('#idReporteInc').val();
+        // fecha inicio del proyecto : 2020-10-19
+        // fecha fin del proyecto: 2021-04-30
 
-        if (fechainicio <= '2020-10-19'){
+        if (fechainicio < '2020-10-19'){
              alertify.notify('La Fecha Inicio debe ser mayor o igual a la fecha de inicio del proyecto','error',10, null);
         }else if(fechafin > '2021-04-30'){
             alertify.notify('La Fecha Fin debe ser mayor o igual a la fecha fin del proyecto','error',10, null);
@@ -1468,6 +1563,31 @@ if ($action == "diagrama") { ?>
                     </tr>`
                 }).join('');
 
+
+                var fomeses = Object.values(resultado.arrayAvancesFOM).map((registro, index) => {
+                    return `<tr>
+                     <td class="text-center">${index + 1}</td>
+                    <td class="text-center">${registro.nombre} </td>
+                    <td class="text-center">${registro.valor} </td>
+                    <td class="text-center">${registro.valorM}</td>
+                    <td class="text-center">${registro.valorM1}</td>
+                    <td class="text-center">${registro.valorM2}</td>
+                </tr>`
+                }).join('');
+
+                var fechafin = `<h6><strong>Fecha Fin:</strong> `+resultado.fechaactualf+` </h6>`;
+
+                var mesactual = ` `+resultado.m+' '+resultado.a+` `;
+                var mesuno = ` `+resultado.m1+' '+resultado.a1+` `;
+                var mesdos = ` `+resultado.m2+' '+resultado.a2+` `;
+
+
+
+
+                $('#mesuno').html(mesuno);
+                $('#mesdos').html(mesdos);
+                $('#mesactual').html(mesactual);
+                $('#fomeses').html(fomeses);
                 $('#tiempoproyecto').html(tiempoproyecto);
                 $('#tiemporesta').html(tiemporesta);
                 $('#totalincidentes').html(totalincidentes);
