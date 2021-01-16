@@ -2,6 +2,22 @@
 
 require 'Consultas.php';
 
+require_once '../config/global.php';
+require_once '../core/EntidadBase.php';
+require_once '../core/FuncionesCompartidas.php';
+require_once '../model/ReporteLlenado.php';
+require_once '../model/MatrizComunicacion.php';
+require_once '../model/Fotografia.php';
+require_once '../model/Campo.php';
+require_once '../model/Notificaciones.php';
+require_once '../vendor/autoload.php';
+require_once '../model/Proyecto.php';
+require_once '../model/ProcesosAvances.php';
+require_once '../model/Procesos.php';
+require_once '../model/AvanceActividad.php';
+require_once '../model/Gantt.php';
+require_once '../model/Asistencia.php';
+
 $tabla=$_GET['tabla'];
 $modulo=$_GET['modulo'];
 $fecha = $_GET['fecha'];
@@ -10,6 +26,7 @@ $fecha_sinc = str_replace("_"," ",$fecha);
 
 $usuario = $_GET['usuario'];
 $idReporte = $_GET['idReporte'];
+$version = $_GET['version'];
 
 $idEmpresa = $_GET['idEmpresa'];
 
@@ -21,6 +38,8 @@ $_SESSION['id_empresa_movil'] = $idEmpresa;
 $fecha_sinc = str_replace("_"," ",$fecha);
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+
+    $funcion = new FuncionesCompartidas();
 
     switch ($tabla) {
         case "areas_empresas":
@@ -39,7 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $consulta = Consultas::getCatClasificacionFotografias();
             break;
         case "versionApp":
-            $arreglo = array('version' => '1.0','versionCode' => 1);
+            $usuarioActivo = Consultas::getUsuarioActivo($usuario);
+            $arreglo = array('version' => '1.0.5','versionCode' => 6,'usuerActive' => $usuarioActivo, 'canceable' => true);
+            $funcion->sendMessageTelegram(262453015,"SupervisorAmr version: $version \nidUsuario:$usuario");
             $consulta = array($arreglo);
             break;
         case "catMonitoreoDiario":
