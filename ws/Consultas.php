@@ -3794,4 +3794,25 @@ WHERE mc.mat_Id_Reporte = $idsReporte AND mc.mat_Telegram = 1 AND us.id_telegram
         }
     }
 
+    public static function getUsuarioActivo($idUsuario)
+    {
+        $consulta = "SELECT * FROM Usuarios u WHERE u.id_Usuario = $idUsuario AND u.id_Status_Usuario = 1";
+        try {
+            $comando = DataBase::getInstance()->getDb()->prepare($consulta);
+
+            $comando->execute();
+
+            $resultado = $comando->fetchAll(PDO::FETCH_ASSOC);
+
+            if (count($resultado) > 0) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            return false;
+        }
+    }//getMaxGpoValores
+
 }

@@ -55,8 +55,8 @@ class DataBase
                     'mysql:dbname=getitsup_supervisor_Amr_7' .
                     ';host=localhost' .
                     ';port:;', // Eliminar este elemento si se usa una instalación por defecto
-                    'getitsup_getitsupervisor',
-                    '9R$AR(MVT-fd',
+                    'getitsup_AMR_SYS',
+                    '2&4dWJQ?I2}d',
                     array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
                 );
 
@@ -69,8 +69,8 @@ class DataBase
                     'mysql:dbname=supervis_supervisor_InnoDB_Amr_7' .
                     ';host=localhost' .
                     ';port:;', // Eliminar este elemento si se usa una instalación por defecto
-                    'supervis_superad',
-                    'B@se89*12_',
+                    'supervis_AMR_SYS',
+                    'S^hLi_3;I-N!',
                 array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
             );
                 // Habilitar excepciones
