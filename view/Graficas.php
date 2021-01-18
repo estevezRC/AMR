@@ -564,10 +564,9 @@
                     url: "./index.php?controller=Graficas&action=index",
                     data: datos, // Datos que se envían
                 }).done(function (msg) {
-                    $("#consola").html(msg);  // Escribimos en el div consola el mensaje devuelto
                     var json = JSON.parse(msg);
                     var resultado = json;
-                    console.log(json);
+                    //console.log(json);
 
                     // ASIGNACION DE FECHAS
                     let fechainicio = `<h6><strong>Fecha Inicio:</strong> ` + resultado.fechaactuali + ` </h6>`;

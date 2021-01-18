@@ -19,7 +19,7 @@ class Estadisticas extends ControladorBase
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
     }
 
-    // OBTENER DIFERENCIA DE CADENAMIENTOS
+    // FUNCION PARA OBTENER LA DIFERENCIA ENTRE CADENAMIENTOS
     public function diffCadenamiento($valor)
     {
         for ($i = 0; $i < count($valor); $i++) {
@@ -146,6 +146,7 @@ class Estadisticas extends ControladorBase
 
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
                             $arrayAvancesFOG->registro->valor += $this->diffCadenamiento($valor->Valor);
+
                         }
                     }
                 }
@@ -357,7 +358,6 @@ class Estadisticas extends ControladorBase
     // FUNCION PARA PROCESAR JSON ESTADISTICAS TRIMESTAL
     public function procesarJsonMensual($avanceJsonMACTUAL, $avanceJsonM1, $avanceJsonM2)
     {
-
         $arrayAvancesFOM = (object)[
             'tritubo' => (object)[
                 'nombre' => 'Tritubo', 'valor' => 0, 'valorM' => 0, 'valorM1' => 0, 'valorM2' => 0
@@ -385,140 +385,43 @@ class Estadisticas extends ControladorBase
             ],
         ];
 
+
         foreach ($avanceJsonMACTUAL as $registro) {
             if (is_array($registro->Valores) || is_object($registro->Valores)) {
                 foreach ($registro->Valores as $valor) {
                     foreach ($valor->Valor as $opcionesCampos) {
                         if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->tritubo->valorM += $suma;
-                            $tritubo += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->pruebas->valorM += $suma;
-                            $pruebas += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->inmersionFO->valorM += $suma;
-                            $inmersionFO += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->reposicionAsfalto->valorM += $suma;
-                            $reposicionAsfalto += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->zanjado->valorM += $suma;
-                            $zanjado += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->rellenofluido->valorM += $suma;
-                            $rellenoFluido += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Cople') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->cople->valorM += $suma;
-                            $cople += $suma;
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->registro->valorM += $suma;
-                            $regis += $suma;
-                        }
+                            $arrayAvancesFOM->tritubo->valorM += $this->diffCadenamiento($valor->Valor);
+                            $tritubo += $this->diffCadenamiento($valor->Valor);
 
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas') {
+                            $arrayAvancesFOM->pruebas->valorM += $this->diffCadenamiento($valor->Valor);
+                            $pruebas += $this->diffCadenamiento($valor->Valor);
+
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO') {
+                            $arrayAvancesFOM->inmersionFO->valorM += $this->diffCadenamiento($valor->Valor);
+                            $inmersionFO += $this->diffCadenamiento($valor->Valor);
+
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
+                            $arrayAvancesFOM->reposicionAsfalto->valorM += $this->diffCadenamiento($valor->Valor);
+                            $reposicionAsfalto += $this->diffCadenamiento($valor->Valor);
+
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
+                            $arrayAvancesFOM->zanjado->valorM += $this->diffCadenamiento($valor->Valor);
+                            $zanjado += $this->diffCadenamiento($valor->Valor);
+
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
+                            $arrayAvancesFOM->rellenofluido->valorM += $this->diffCadenamiento($valor->Valor);
+                            $rellenoFluido += $this->diffCadenamiento($valor->Valor);
+
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Cople') {
+                            $arrayAvancesFOM->cople->valorM += $this->diffCadenamiento($valor->Valor);
+                            $cople += $this->diffCadenamiento($valor->Valor);
+
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
+                            $arrayAvancesFOM->registro->valorM += $this->diffCadenamiento($valor->Valor);
+                            $regis += $this->diffCadenamiento($valor->Valor);
+                        }
                     }
                 }
             }
@@ -529,133 +432,36 @@ class Estadisticas extends ControladorBase
                 foreach ($registro->Valores as $valor) {
                     foreach ($valor->Valor as $opcionesCampos) {
                         if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->tritubo->valorM1 += $suma;
-                            $tritubo1 += $suma;
+                            $arrayAvancesFOM->tritubo->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $tritubo1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->pruebas->valorM1 += $suma;
-                            $pruebas1 += $suma;
+                            $arrayAvancesFOM->pruebas->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $pruebas1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->inmersionFO->valorM1 += $suma;
-                            $inmersionFO1 += $suma;
+                            $arrayAvancesFOM->inmersionFO->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $inmersionFO1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->reposicionAsfalto->valorM1 += $suma;
-                            $reposicionAsfalto1 += $suma;
+                            $arrayAvancesFOM->reposicionAsfalto->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $reposicionAsfalto1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->zanjado->valorM1 += $suma;
-                            $zanjado1 += $suma;
+                            $arrayAvancesFOM->zanjado->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $zanjado1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->rellenofluido->valorM1 += $suma;
-                            $rellenoFluido1 += $suma;
+                            $arrayAvancesFOM->rellenofluido->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $rellenoFluido1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Cople') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->cople->valorM1 += $suma;
-                            $cople1 += $suma;
+                            $arrayAvancesFOM->cople->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $cople1 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->registro->valorM1 += $suma;
-                            $regis1 += $suma;
+                            $arrayAvancesFOM->registro->valorM1 += $this->diffCadenamiento($valor->Valor);
+                            $regis1 += $this->diffCadenamiento($valor->Valor);
                         }
                     }
                 }
@@ -667,133 +473,36 @@ class Estadisticas extends ControladorBase
                 foreach ($registro->Valores as $valor) {
                     foreach ($valor->Valor as $opcionesCampos) {
                         if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->tritubo->valorM2 += $suma;
-                            $tritubo2 += $suma;
+                            $arrayAvancesFOM->tritubo->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $tritubo2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->pruebas->valorM2 += $suma;
-                            $pruebas2 += $suma;
+                            $arrayAvancesFOM->pruebas->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $pruebas2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->inmersionFO->valorM2 += $suma;
-                            $inmersionFO2 += $suma;
+                            $arrayAvancesFOM->inmersionFO->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $inmersionFO2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->reposicionAsfalto->valorM2 += $suma;
-                            $reposicionAsfalto2 += $suma;
+                            $arrayAvancesFOM->reposicionAsfalto->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $reposicionAsfalto2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->zanjado->valorM2 += $suma;
-                            $zanjado2 += $suma;
+                            $arrayAvancesFOM->zanjado->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $zanjado2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->rellenofluido->valorM2 += $suma;
-                            $rellenoFluido2 += $suma;
+                            $arrayAvancesFOM->rellenofluido->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $rellenoFluido2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Cople') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->cople->valorM2 += $suma;
-                            $cople2 += $suma;
+                            $arrayAvancesFOM->cople->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $cople2 += $this->diffCadenamiento($valor->Valor);
+
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
-                            for ($i = 0; $i < count($valor->Valor); $i++) {
-                                if ($valor->Valor[$i]->idCampo == 67) {
-                                    $concat_final = $valor->Valor[$i]->valorCampo;
-                                }
-                                if ($valor->Valor[$i]->idCampo == 29) {
-                                    $concat_inicial = $valor->Valor[$i]->valorCampo;
-                                }
-                            }
-                            if ($concat_final > $concat_inicial) {
-                                $suma = $concat_final - $concat_inicial;
-                            } else {
-                                $suma = $concat_inicial - $concat_final;
-                            }
-                            $arrayAvancesFOM->registro->valorM2 += $suma;
-                            $regis2 += $suma;
+                            $arrayAvancesFOM->registro->valorM2 += $this->diffCadenamiento($valor->Valor);
+                            $regis2 += $this->diffCadenamiento($valor->Valor);
                         }
                     }
                 }
