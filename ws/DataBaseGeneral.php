@@ -52,8 +52,8 @@ class DataBaseGeneral
                     'mysql:dbname=supervis_supervisor_InnoDB_General' .
                     ';host=localhost' .
                     ';port:;', // Eliminar este elemento si se usa una instalación por defecto
-                    'supervis_superad',
-                    'B@se89*12_',
+                    'supervis_GENERAL_SYS',
+                    'y;g3z~^7IkPD',
                     array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
                 );
                 // Habilitar excepciones
@@ -65,11 +65,10 @@ class DataBaseGeneral
                     'mysql:dbname=getitsup_supervisor_General' .
                     ';host=localhost' .
                     ';port:;', // Eliminar este elemento si se usa una instalación por defecto
-                    'getitsup_getitsupervisor',
-                    '9R$AR(MVT-fd',
+                    'getitsup_supervisor_general_SYS',
+                    '+3h^(mR4he*?',
                     array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
                 );
-
                 // Habilitar excepciones
                 self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }

@@ -15,12 +15,12 @@ class Conectar
         $this->host = "localhost";
 
         if ($this->url == 'get-s.dev') {
-            $this->user = "getitsup_getitsupervisor";
-            $this->pass = "9R\$AR(MVT-fd";
+            $this->user = "getitsup_AMR_SYS";
+            $this->pass = "2&4dWJQ?I2}d";
             $this->database = 'getitsup_supervisor_Amr_7';
         } else {
-            $this->user = "supervis_superad";
-            $this->pass = "B@se89*12_";
+            $this->user = "supervis_AMR_SYS";
+            $this->pass = "S^hLi_3;I-N!";
             $this->database = 'supervis_supervisor_InnoDB_Amr_7';
         }
         $this->charset = "utf8";
