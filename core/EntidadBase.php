@@ -173,7 +173,7 @@ class EntidadBase
     /*:::::::::::::::::::::::::::::::::::::::::::::::GRAFICA incidencia:::::::::::::::::::::::::::::::::::::::::::::::::*/
 
 
-    public function getregistrosporusuarios($id_Proyecto,$fecha)
+    public function getregistrosporusuarios($id_Proyecto, $fecha)
     {
         $resultSet = array();
         $query = $this->db->query("
@@ -191,7 +191,8 @@ class EntidadBase
         $query->close();
         return $resultSet;
     }
-    public function gettipoincidencia($id_Proyecto,$fecha)
+
+    public function gettipoincidencia($id_Proyecto, $fecha)
     {
         $resultSet = array();
         $query = $this->db->query("
@@ -208,6 +209,107 @@ class EntidadBase
         $query->close();
         return $resultSet;
     }
+
+    public function gettipoincidente()
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT * FROM Cat_Campos_Reportes where nombre_Campo = 'Tipo de Incidente'");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getincidente($id_Proyecto, $fecha)
+    {
+        $resultSet = array();
+        $query = $this->db->query("SELECT  *
+            FROM Reportes_Llenados rl
+			LEFT JOIN Valores_Reportes_Campos vrc ON vrc.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+			LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte
+            WHERE rl.id_Status_Elemento = 1 AND rl.clas_Reporte = 1 
+            AND rl.id_Reporte IN ($id_Proyecto) 
+			AND crc.id_Campo_Reporte = '16'
+            $fecha");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getseguimientosincidente($id_Reporte, $fecha)
+    {
+        $resultSet = array();
+        $query = $this->db->query("	SELECT  rl.id_Gpo_Valores_Reporte,rl.id_Registro_Reporte,rl.titulo_Reporte,vrc.valor_Texto_Reporte,
+    concat(A.valor_Texto_Reporte,' ' , B.valor_Texto_Reporte )  AS Fecha_reporte
+ 
+		 FROM Reportes_Llenados rl
+		 LEFT JOIN Valores_Reportes_Campos vrc ON vrc.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+		 LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte
+    
+             LEFT JOIN (
+                    SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                        LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                    WHERE vacrc.nombre_Campo = 'Fecha'
+                ) A ON A.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+			
+            LEFT JOIN (
+                    SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                        LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                    WHERE vacrc.nombre_Campo = 'Hora'
+                ) B ON B.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+                
+		 WHERE rl.id_Status_Elemento = 1 AND rl.clas_Reporte = 1 
+		 AND rl.id_Reporte IN ($id_Reporte) AND id_Etapa = 5
+		 AND crc.id_Campo_Reporte = '16' 
+         $fecha ORDER BY id_Gpo_Padre asc");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getfechaSeguimiengo($ids_seguimiento)
+    {
+        $resultSet = array();
+        $query = $this->db->query("
+SELECT * FROM (
+SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
+            rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa, B.valor_Texto_Reporte AS Fecha2,
+             concat(B.valor_Texto_Reporte,' ' , D.valor_Texto_Reporte )  AS fecha_seguimiento,
+            E.valor_Texto_Reporte as campo_EstadoReporte,rl.id_Gpo_Padre
+            FROM Reportes_Llenados rl 
+                LEFT JOIN (
+                    SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                        LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                    WHERE vacrc.nombre_Campo = 'Fecha'
+                ) B ON B.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+              
+                LEFT JOIN (
+                    SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                        LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                    WHERE vacrc.nombre_Campo = 'Hora'
+                ) D ON D.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+                
+                LEFT JOIN (
+                    SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                        LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                    WHERE vacrc.tipo_Reactivo_Campo = 'select-status'
+                ) E ON E.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+                
+				WHERE rl.id_Status_Elemento = 1  AND rl.id_Gpo_Padre in ($ids_seguimiento)
+				 ORDER BY id_Gpo_Padre asc
+               )M1 WHERE campo_EstadoReporte = 'Validado'");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+        return $resultSet;
+    }
+
     public function gettipotranscurridoproyecto($fecha)
     {
         $resultSet = array();
@@ -224,46 +326,39 @@ class EntidadBase
         return $resultSet;
     }
 
-    public function getAllIncidenciaAbierto($id_Proyecto,$fecha)
-    {
+    // OBTENER CANTIDAD DE INCIDENTES POR CADA TIPO
+    public function getAllIncidentesByStatus($idReporte, $fecha, $status) {
         $resultSet = array();
-        $query = $this->db->query("SELECT count(id_Gpo_Valores_Reporte) as abierto FROM Reportes_Llenados
-WHERE id_Status_Elemento = 1 AND clas_Reporte = 1 AND id_Etapa = 2
-AND id_Reporte IN ($id_Proyecto) $fecha ");
+        $query = $this->db->query("SELECT count(id_Gpo_Valores_Reporte) as registro_incidentes FROM Reportes_Llenados
+            WHERE id_Status_Elemento = 1 AND clas_Reporte = 1 AND id_Etapa = $status
+            AND id_Reporte IN ($idReporte) $fecha ");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }
         $query->close();
         return $resultSet;
     }
-    public function getAllIncidenciacerrado($id_Proyecto,$fecha)
+
+    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    public function gettipoincidenciatotal($idReporte, $fecha)
     {
         $resultSet = array();
-        $query = $this->db->query("SELECT count(id_Gpo_Valores_Reporte) as cerrado FROM Reportes_Llenados
-        WHERE id_Status_Elemento = 1 AND clas_Reporte = 1 AND id_Etapa = 3
-        AND id_Reporte IN ($id_Proyecto) $fecha");
-        while ($row = $query->fetch_object()) {
-            $resultSet[] = $row;
-        }
-        $query->close();
-        return $resultSet;
-    }
-    public function gettipoincidenciatotal($idReporte,$fecha)
-    {
-        $resultSet = array();
-        $query1 = "SELECT  
-            if(sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)),0) as accidente,
+        $query1 = "
+            SELECT  if(sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Accidente',1,0)),0) as accidente,
             if(sum(if(vrc.valor_Texto_Reporte = 'Bloqueo Carretero',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Bloqueo Carretero',1,0)),0) as bloqueo,
             if(sum(if(vrc.valor_Texto_Reporte = 'Ejecución',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Ejecución',1,0)),0) as ejecucion,
             if(sum(if(vrc.valor_Texto_Reporte = 'Equipamiento',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Equipamiento',1,0)),0) as equipamiento,
             if(sum(if(vrc.valor_Texto_Reporte = 'Señalización',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Señalización',1,0)),0) as señalizacion,
             if(sum(if(vrc.valor_Texto_Reporte = 'Vandalismo',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Vandalismo',1,0)),0) as vandalismo,
             if(sum(if(vrc.valor_Texto_Reporte = 'Otro',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Otro',1,0)),0) as otro,
-            if(sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)),0) as meteorologico
+            if(sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Meteorológico',1,0)),0) as meteorologico,
+            if(sum(if(vrc.valor_Texto_Reporte = 'Día no laboral',1,0)),sum(if(vrc.valor_Texto_Reporte = 'Día no laboral',1,0)),0) as dia_no_laboral,
+            if(sum(if(vrc.valor_Texto_Reporte = 'No se presento a laborar personal operativo',1,0)),sum(if(vrc.valor_Texto_Reporte = 'No se presento a laborar personal operativo',1,0)),0) as personal_operativo
             FROM Reportes_Llenados rl
                 LEFT JOIN Valores_Reportes_Campos vrc ON vrc.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
-            WHERE rl.id_Status_Elemento = 1 AND rl.clas_Reporte = 1 -- AND id_Etapa = 2
-            AND rl.id_Reporte IN ($idReporte) $fecha";
+            WHERE rl.id_Status_Elemento = 1 AND rl.clas_Reporte = 1 
+            AND rl.id_Reporte IN ($idReporte) 
+            $fecha";
         $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
@@ -284,13 +379,14 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
         $query->close();
         return $resultSet;
     }
+
     public function getidsreporte($id_Proyecto)
     {
         $resultSet = array();
         $query = $this->db->query("SELECT rl.id_Reporte
         FROM Reportes_Llenados rl
         LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
-        WHERE cr.id_Proyecto in($id_Proyecto) AND id_Status_Elemento=1 AND tipo_Reporte in(0,1)
+        WHERE cr.id_Proyecto IN($id_Proyecto) AND id_Status_Elemento=1 AND tipo_Reporte in(0,1)
         group by cr.id_Reporte");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
@@ -299,7 +395,7 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
         return $resultSet;
     }
 
-    public function getregistros($ids,$fecha)
+    public function getregistros($ids, $fecha)
     {
         $resultSet = array();
         $query = $this->db->query("SELECT * FROM Reportes_Llenados rl
@@ -312,6 +408,7 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
         $query->close();
         return $resultSet;
     }
+
     /*:::::::::::::::::::::::::::::::::::::::::::::::GRAFICAS AVANCES:::::::::::::::::::::::::::::::::::::::::::::::::*/
 
     public function getAllUsuariosReportesTotal($id_Proyecto)
@@ -1548,6 +1645,41 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
         return $resultSet;
     }
 
+    public function getReporteLlenadoByIdNextReport($idProyecto, $id_Gpo_Valores_Reporte, $tipoReporte) {
+        $resultSet = array();
+        $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
+		(SELECT rl.id_Registro_Reporte
+			FROM Reportes_Llenados rl
+			LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+			WHERE rl.id_Registro_Reporte < $id_Gpo_Valores_Reporte AND cr.tipo_Reporte IN ($tipoReporte) AND cr.id_Proyecto = $idProyecto
+			AND rl.id_Status_Elemento = 1
+			ORDER BY rl.id_Registro_Reporte DESC
+			LIMIT 1) AS posterior, 
+		(SELECT rl.id_Registro_Reporte
+			FROM Reportes_Llenados rl
+			LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+			WHERE rl.id_Registro_Reporte > $id_Gpo_Valores_Reporte AND cr.tipo_Reporte IN ($tipoReporte) AND cr.id_Proyecto = $idProyecto
+			AND rl.id_Status_Elemento = 1
+			ORDER BY rl.id_Registro_Reporte ASC
+			LIMIT 1) AS anterior,
+            rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa,rl.fecha_registro AS Fecha2, 
+            cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte,u.correo_Usuario,
+            eu.nombre as nombre_Usuario, eu.apellido_paterno, eu.apellido_materno
+            FROM Reportes_Llenados rl
+                LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+                LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
+                LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
+            WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1  AND cr.id_Proyecto = $idProyecto ANd rl.id_Registro_Reporte = $id_Gpo_Valores_Reporte
+            AND cr.tipo_Reporte IN ($tipoReporte) 
+            ORDER BY Fecha2 DESC, Id_Reporte DESC");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+
+        return $resultSet;
+    }
+
 
     /*::::::::::::::::::::::::::::::::::::::::::::::::::: PROCESOS :::::::::::::::::::::::::::::::::::::::::::::::::::*/
     /*--- PROCESOS: CONSULTAR PROCESOS ---*/
@@ -2275,6 +2407,7 @@ AND id_Reporte IN ($id_Proyecto) $fecha ");
             $query->close();
         }
         return $resultSet;
+        //return $query;
     }
 
     public function getAllSeguimientoReporteIncidencia2($area, $proyecto, $tipo_Reporte)
@@ -3617,21 +3750,9 @@ GROUP BY V.id_Gpo_Valores_Reporte";
         return $resultSet;
     }
 
-    public function getConfiguracionReportes($idReporte)
-    {
-        $resultSet = array();
-        $query1 = "SELECT crc.id_Configuracion_Reporte,crc.nombre_Campo FROM VW_getAllConfReportesCampos crc 
-                        WHERE crc.id_Reporte = $idReporte ORDER BY crc.Secuencia";
 
-        $query = $this->db->query($query1);
-        while ($row = $query->fetch_object()) {
-            $resultSet[] = $row;
-        }
-        $query->close();
-        return $resultSet;
-    }
-
-    public function getEstadisticasReportes($id_Reportes,$fecha)
+    // FUNCION PARA OBTENER TODOS LOS REGISTROS DE INVENTRIO  (TABLA 1 EN ESTADISTICAS)
+    public function getEstadisticasReportes($id_Reportes, $fecha)
     {
         $resultSet = array();
         $query1 = "SELECT EI.elemento as elemento,
@@ -3653,7 +3774,8 @@ GROUP BY V.id_Gpo_Valores_Reporte";
     }
 
 
-    public function getJsonAvancesFO($idReporte,$fecha)
+
+    public function getJsonAvancesFO($idReporte, $fecha)
     {
         $resultSet = array();
         $query1 = "
@@ -3679,7 +3801,7 @@ SELECT * FROM (
         return $resultSet;
     }
 
-    public function getJsonAvancesMensual($idReporte,$a,$m)
+    public function getJsonAvancesMensual($idReporte, $a, $m)
     {
         $resultSet = array();
         $query1 = "
@@ -3694,7 +3816,6 @@ SELECT * FROM (
             group_concat(if((V.id_Campo_Reporte = 38),V.valor_Texto_Reporte,NULL) separator ',') AS frente 
             FROM (SELECT * FROM VW_getAllValoresReportes vr) V 
             WHERE V.id_Reporte IN ($idReporte) AND V.id_Status_Elemento = 1 
-			 AND YEAR(fecha_registro)=2020 AND MONTH(fecha_registro)=12
             GROUP BY V.id_Gpo_Valores_Reporte
             )M1 WHERE YEAR(fecha)=$a AND MONTH(fecha)=$m";
 
@@ -3707,6 +3828,67 @@ SELECT * FROM (
     }
 
     // *****************************************************************************************************************
-    // ********************************************* ESTADISTICAS INVENTARIO AMR ******************************************
+    // ********************************************* ESTADISTICAS INVENTARIO AMR ***************************************
     // *****************************************************************************************************************
+
+
+    // *****************************************************************************************************************
+    // **************** FUNCIONES DE PRUEBA PARA CALCULOS DE TIEMPO PROMEDIO DE ATENCION DE INCIDENTES *****************
+    // *****************************************************************************************************************
+
+
+    // FUNCIONES PARA EL TIEMPO PROMEDIO DE ATENCION A INCIDENTES
+    public function getTiposIncidentes() {
+        $resultado = [];
+        $query1 = "SELECT * FROM Cat_Campos_Reportes WHERE id_Campo_Reporte = 16";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultado[] = $row;
+        }
+        $query->close();
+        return $resultado;
+    }
+
+    public function getAllIncidentesByTipo($tipo, $idProyecto, $fechaIncidente) {
+        $resultado = [];
+        $query1 = "SELECT rl.*, vrc.*, CONCAT(A.valor_Texto_Reporte,' ', B.valor_Texto_Reporte) as fecha_reporte FROM Reportes_Llenados rl
+            LEFT JOIN Valores_Reportes_Campos vrc ON vrc.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+            LEFT JOIN (SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                         LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                        WHERE vacrc.nombre_Campo = 'Fecha'
+                        ) A ON A.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+            LEFT JOIN (SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                         LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                        WHERE vacrc.nombre_Campo = 'Hora'
+                        ) B ON B.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+            WHERE rl.id_Etapa = 5 AND vrc.valor_Texto_Reporte = '$tipo' AND id_Proyecto IN($idProyecto) $fechaIncidente";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultado[] = $row;
+        }
+        $query->close();
+        return $resultado;
+    }
+
+    public function getSeguimientoValidadoByIncidente($idGpoValores) {
+        $resultado = [];
+        $query1 = "SELECT rl.*, CONCAT(A.valor_Texto_Reporte,' ', B.valor_Texto_Reporte) as fecha_reporte_seguimiento FROM Reportes_Llenados rl
+            LEFT JOIN (SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                         LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                        WHERE vacrc.nombre_Campo = 'Fecha'
+                        ) A ON A.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+            LEFT JOIN (SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
+                         LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
+                        WHERE vacrc.nombre_Campo = 'Hora'
+                        ) B ON B.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+            WHERE rl.id_Gpo_Padre = $idGpoValores ORDER BY rl.id_Gpo_Valores_Reporte DESC";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultado[] = $row;
+        }
+        $query->close();
+        return $resultado;
+    }
+
+    // END FUNCIONES PARA EL TIEMPO PROMEDIO DE ATENCION A INCIDENTES
 }

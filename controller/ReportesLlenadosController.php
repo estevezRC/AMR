@@ -338,6 +338,26 @@ class ReportesLlenadosController extends ControladorBase
             $logos = NULL;
         }
 
+        switch ($tipo_Reporte) {
+            case '0':
+                $tipo_Reporte1 = '0,6,7,9';
+                break;
+            case '2':
+                $tipo_Reporte1 = '2';
+                break;
+            case '3':
+                $tipo_Reporte1 = '3';
+                break;
+            case '1':
+                $tipo_Reporte1 = '1';
+                break;
+            case '5':
+                $tipo_Reporte1 = '5';
+                break;
+        }
+        $reporteSiguiente = $llenadoreporte->getReporteLlenadoByIdNextReport($this->id_Proyecto_constant, $id, $tipo_Reporte1);
+        $nextPage = $reporteSiguiente[0]->posterior;
+        $previousPage = $reporteSiguiente[0]->anterior;
 
         // /*
         $this->view("index", array(
@@ -348,7 +368,8 @@ class ReportesLlenadosController extends ControladorBase
             "allSeguimientosReportesIncidentes" => $allSeguimientosReportesIncidentes, "id_Padre" => $id_Padre,
             "logos" => $logos, "porcentajeReporte" => $porcentaje, "id_Reporte_Seguimiento" => $id_Reporte_Seguimiento,
             "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas,
-            "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas, "subCamposMultiple" => $subcampos
+            "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas, "subCamposMultiple" => $subcampos, "id_Reporte" => $id_Reporte,
+            "anteriorPagina" => $previousPage, "siguientePagina" =>$nextPage
         ));
         // */
 
