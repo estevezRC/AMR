@@ -20,46 +20,47 @@
                 <div class="row m-2">
                     <div class="col-12 col-md-6 mb-5">
 
-                            <div class="alert alert-warning alert-dismissable">
-                                <h5 class="text-center">
-                                    <strong>Fechas consultadas</strong><br>
-                                </h5>
-                                <hr>
-                                <h6  id="fechainicio"><strong>Fecha Inicio:</strong> <?= $fechaactuali; ?></h6>
-                                <h6  id="fechafin"> <strong>Fecha Fin:</strong> <?= $fechaactualf; ?></h6>
-                            </div>
+                        <div class="alert alert-warning alert-dismissable">
+                            <h5 class="text-center">
+                                <strong>Fechas consultadas</strong><br>
+                            </h5>
+                            <hr>
+                            <h6 id="fechainicio"><strong>Fecha Inicio:</strong> <?= $fechaactuali; ?></h6>
+                            <h6 id="fechafin"><strong>Fecha Fin:</strong> <?= $fechaactualf; ?></h6>
+                        </div>
                     </div>
                     <div class="col-12 col-md-6 mb-5">
-                            <div class="col-lg-12">
-                                <form class="form-horizontal">
-                                    <div class="row">
-                                        <div class="col-lg-6 " >
-                                            <h6 class="control-label"><b>Fecha incio:</b></h6>
-                                            <input id="fechainicio1" type="date"  name="fechainicio1" value="<?php echo date("Y-m-01");?>" class="form-control"/>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <h6 class="control-label"><b>Fecha fin:</b></h6>
-                                            <input id="fechafin1" type="date" name="fechafin1" value="<?php echo date("Y-m-d");?>" class="form-control"/>                                        </div>
+                        <div class="col-lg-12">
+                            <form class="form-horizontal">
+                                <div class="row">
+                                    <div class="col-lg-6 ">
+                                        <h6 class="control-label"><b>Fecha inicio:</b></h6>
+                                        <input id="fechainicio1" type="date" name="fechainicio1"
+                                               value="2020-10-19" class="form-control"/>
                                     </div>
-                                    <input name="idReporteInc" id="idReporteInc" type="hidden" value="<?= $idReporteInc;?> " class="form-control">
-                                    <br>
-                                    <div class="row ">
-                                        <div class="col-lg-4 text-center"></div>
-                                        <div class="col-lg-4 text-center">
-                                            <button type="button" class="btn btn-w-m btn-primary btn-block center"
-                                                    id="btnfiltar" onclick="filtrarporfecha();">
-                                                Filtrar
-                                            </button>
-                                        </div>
+                                    <div class="col-lg-6">
+                                        <h6 class="control-label"><b>Fecha fin:</b></h6>
+                                        <input id="fechafin1" type="date" name="fechafin1"
+                                               value="<?= date("Y-m-d"); ?>" class="form-control"/>
                                     </div>
-                                </form> <br>
-                            </div>
+                                </div>
+                                <input name="idReporteInc" id="idReporteInc" type="hidden"
+                                       value="<?= $idReporteInc; ?> " class="form-control">
+                                <br>
+                                <div class="row ">
+                                    <div class="col-lg-4 text-center"></div>
+                                    <div class="col-lg-4 text-center">
+                                        <button type="button" class="btn btn-w-m btn-primary btn-block center"
+                                                id="btnfiltar" onclick="filtrarporfecha()">
+                                            Filtrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <br>
+                        </div>
                     </div>
                 </div>
-
-
-
-
 
                 <div class="row m-2">
                     <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] != 10) { ?>
@@ -126,7 +127,9 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td>
+                                                    <?= str_replace('.', ',', $avance->valor); ?> metros
+                                                </td>
                                             </tr>
 
                                             <?
@@ -138,14 +141,16 @@
 
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
-                                        <tr style="background-color: #0C3E6D;"><th colspan="6">Comparativa Mensual</th></tr>
-                                        <tr >
+                                        <tr style="background-color: #0C3E6D;">
+                                            <th colspan="6">Comparativa Mensual</th>
+                                        </tr>
+                                        <tr>
                                             <th>No.</th>
                                             <th>Material</th>
-                                            <th>Total Avance </th>
-                                            <th id="mesactual" > <?= $m.' '.$a; ?></th>
-                                            <th id="mesuno" > <?= $m1.' '.$a1; ?></th>
-                                            <th id="mesdos" ><?= $m2.' '.$a2; ?></th>
+                                            <th>Total Avance</th>
+                                            <th id="mesactual"> <?= $m . ' ' . $a; ?></th>
+                                            <th id="mesuno"> <?= $m1 . ' ' . $a1; ?></th>
+                                            <th id="mesdos"><?= $m2 . ' ' . $a2; ?></th>
                                         </tr>
                                         </thead>
                                         <tbody id="fomeses">
@@ -155,10 +160,10 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorM; ?> metros</td>
-                                                <td> <?= $avance->valorM1; ?> metros</td>
-                                                <td> <?= $avance->valorM2; ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valor); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorM); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorM1); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorM2); ?> metros</td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -243,13 +248,13 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorA; ?> metros</td>
-                                                <td> <?= $avance->valorB; ?> metros</td>
-                                                <td> <?= $avance->valorC; ?> metros</td>
-                                                <td> <?= $avance->valorD; ?> metros</td>
-                                                <td> <?= $avance->valorE; ?> metros</td>
-                                                <td> <?= $avance->valorF; ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valor); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorA); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorB); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorC); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorD); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorE); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorF); ?> metros</td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -259,14 +264,16 @@
 
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
-                                        <tr style="background-color: #0C3E6D;"><th colspan="6">Comparativa Mensual</th></tr>
-                                        <tr >
+                                        <tr style="background-color: #0C3E6D;">
+                                            <th colspan="6">Comparativa Mensual</th>
+                                        </tr>
+                                        <tr>
                                             <th>No.</th>
                                             <th>Material</th>
-                                            <th>Total Avance </th>
-                                            <th id="mesactual" > <?= $m.' '.$a; ?></th>
-                                            <th id="mesuno" > <?= $m1.' '.$a1; ?></th>
-                                            <th id="mesdos" ><?= $m2.' '.$a2; ?></th>
+                                            <th>Total Avance</th>
+                                            <th id="mesactual"> <?= $m . ' ' . $a; ?></th>
+                                            <th id="mesuno"> <?= $m1 . ' ' . $a1; ?></th>
+                                            <th id="mesdos"><?= $m2 . ' ' . $a2; ?></th>
                                         </tr>
                                         </thead>
                                         <tbody id="fomeses">
@@ -276,47 +283,17 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorM; ?> metros</td>
-                                                <td> <?= $avance->valorM1; ?> metros</td>
-                                                <td> <?= $avance->valorM2; ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valor); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorM); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorM1); ?> metros</td>
+                                                <td> <?= str_replace('.', ',', $avance->valorM2); ?> metros</td>
                                             </tr>
                                             <?
                                             $contador++;
                                         } ?>
                                         </tbody>
                                     </table>
-
-<!--                                    <table id="example" class="table table-striped p-3">
-                                        <thead class="bg-primary text-light">
-                                        <tr style="background-color: #0C3E6D;"><th colspan="6">Comparativa Mensual</th></tr>
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Material</th>
-                                            <th>Total Avance</th>
-                                            <th>Mes Actual</th>
-                                            <th>Mes -1</th>
-                                            <th>Mes -2</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="fomeses">
-                                        <?/*
-                                        $contador = 1;
-                                        foreach ($arrayAvancesFOM as $avance) { */?>
-                                            <tr>
-                                                <td> <?/*= $contador; */?> </td>
-                                                <td> <?/*= $avance->nombre; */?> </td>
-                                                <td> <?/*= $avance->valor; */?> metros</td>
-                                                <td> <?/*= $avance->valorM; */?> metros</td>
-                                                <td> <?/*= $avance->valorM1; */?> metros</td>
-                                                <td> <?/*= $avance->valorM2; */?> metros</td>
-                                            </tr>
-                                            <?/*
-                                            $contador++;
-                                        } */?>
-                                        </tbody>
-                                    </table>
--->                                </div>
+                                </div>
                             </div>
                         </div>
 
@@ -343,11 +320,15 @@
                                 </h5>
                                 <div class="row">
                                     <div class="card-body col-md-12">
-                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                        <table id="example" class="table table-striped p-3 table-bordered">
                                             <thead class="bg-primary text-light">
                                             <tr style="background-color: #0C3E6D;">
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Día</th>
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Semana</th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Día
+                                                </th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Semana
+                                                </th>
                                                 <th style="color: white !important;" class="text-center"> Mes</th>
                                             </tr>
                                             </thead>
@@ -360,7 +341,8 @@
                                             </tbody>
                                         </table>
                                         <h5 class="text-center"><b>Días Restantes</b></h5>
-                                        <h5 class="text-center" id="tiemporesta"><b><?= $tiempoproyecto->dias_restantes; ?> </b></h5>
+                                        <h5 class="text-center" id="tiemporesta">
+                                            <b><?= $tiempoproyecto->dias_restantes; ?> </b></h5>
                                     </div>
                                 </div>
                             </div>
@@ -371,128 +353,77 @@
                                 <h5 class="card-header">
                                     <b>Incidentes</b>
                                 </h5>
+
                                 <div class="row">
-                                    <div class="card-body col-md-6">
-                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                    <div class="card-body col-md-12">
+                                        <table id="example" class="table table-striped p-3 table-bordered">
                                             <thead class="bg-primary text-light">
-                                            <tr style="background-color: #0C3E6D;"><th colspan="3">Total de incidentes, Abierto / Cerrado</th></tr>
                                             <tr style="background-color: #0C3E6D;">
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">
-                                                    Abiertos</th>
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">
-                                                    Cerrados</th>
+                                                <th colspan="3">Total de incidentes, Abierto / Cerrado</th>
+                                            </tr>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">
+                                                    Abiertos
+                                                </th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">
+                                                    Cerrados
+                                                </th>
                                                 <th style="color: white !important;" class="text-center"> Total</th>
                                             </tr>
                                             </thead>
 
                                             <tbody id="totalincidentes">
                                             <tr>
-                                                <td class="text-center"><?= $totalabierto->abierto; ?></td>
-                                                <td class="text-center"><?= $totalcerrado->cerrado; ?></td>
+                                                <td class="text-center"><?= $totalabierto->registro_incidentes; ?></td>
+                                                <td class="text-center"><?= $totalcerrado->registro_incidentes; ?></td>
                                                 <td class="text-center"> <?= $totalincidentes; ?> </td>
                                             </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="card-body col-md-6">
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="card-body col-md-12">
                                         <table id="example" class="table table-striped p-3 table-bordered">
                                             <thead class="bg-primary text-light">
-                                            <tr style="background-color: #0C3E6D;"><th colspan="2">Incidentes Registrados</th></tr>
                                             <tr style="background-color: #0C3E6D;">
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Tipo de incidentes</th>
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Total</th>
+                                                <th colspan="3">Total y Tiempo promedio de Atención de Incidentes</th>
+                                            </tr>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Tipo de incidentes
+                                                </th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Total
+                                                </th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Promedio
+                                                </th>
                                             </tr>
                                             </thead>
 
-                                            <tbody id="inidentesregistrados">
-                                            <tr>
-                                                <td class="text-center">Accidente</td>
-                                                <td id="" class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->accidente)){
-                                                        $tipoincidencia->accidente=0;
-                                                    }
-                                                    echo $tipoincidencia->accidente;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Bloqueo Carretero</td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->bloqueo)){
-                                                        $tipoincidencia->bloqueo=0;
-                                                    }
-                                                    echo $tipoincidencia->bloqueo;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Ejecución</td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->ejecucion)){
-                                                        $tipoincidencia->ejecucion=0;
-                                                    }
-                                                    echo $tipoincidencia->ejecucion;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Equipamiento</td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->equipamiento)){
-                                                        $tipoincidencia->equipamiento=0;
-                                                    }
-                                                    echo $tipoincidencia->equipamiento;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Señalización</td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->señalizacion)){
-                                                        $tipoincidencia->señalizacion=0;
-                                                    }
-                                                    echo $tipoincidencia->señalizacion;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Vandalismo </td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->vandalismo)){
-                                                        $tipoincidencia->vandalismo=0;
-                                                    }
-                                                    echo $tipoincidencia->vandalismo;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Meteorológico</td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->meteorologico)){
-                                                        $tipoincidencia->meteorologico=0;
-                                                    }
-                                                    echo $tipoincidencia->meteorologico;
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Otro </td>
-                                                <td class="text-center">
-                                                    <?php
-                                                    if (empty($tipoincidencia->otro)){
-                                                        $tipoincidencia->otro=0;
-                                                    }
-                                                    echo $tipoincidencia->otro;
-                                                    ?>
-                                                </td>
-                                            </tr>
+                                            <tbody id="promedio">
+                                            <?php
+                                            if ($tiempoPromedioIncidencia) {
+                                                foreach ($tiempoPromedioIncidencia as $dato) {?>
+                                                    <tr>
+                                                        <td class="text-center"><?= $dato->incidente; ?></td>
+                                                        <td class="text-center"><?= $dato->total; ?></td>
+                                                        <td class="text-center"><?= $dato->tiempo_promedio_atencion; ?></td>
+                                                    </tr>
+                                                <? }
+                                            } else { ?>
+                                                <tr class="odd">
+                                                    <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                        disponible en esta tabla
+                                                    </td>
+                                                </tr>
+                                            <? } ?>
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -507,25 +438,27 @@
                                 </h5>
                                 <div class="row">
                                     <div class="card-body col-md-4">
-                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                        <table id="example" class="table table-striped p-3 table-bordered">
                                             <thead class="bg-primary text-light">
                                             <tr style="background-color: #0C3E6D;">
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Total Registros</th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Total Registros
+                                                </th>
                                             </tr>
                                             </thead>
                                             <tbody id="totalregistros">
-                                          <?php
-                                           if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) { ?>
-                                            <tr>
-                                                <td class="text-center"><?= $resgistropormes; ?></td>
-                                            </tr>
-                                        <? } else { ?>
-                                          <tr class="odd">
-                                              <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                  disponible en esta tabla
-                                              </td>
-                                          </tr>
-                                          <? } ?>
+                                            <?php
+                                            if ((is_array($estadisticas) || is_object($estadisticas)) && $estadisticas) { ?>
+                                                <tr>
+                                                    <td class="text-center"><?= $resgistropormes; ?></td>
+                                                </tr>
+                                            <? } else { ?>
+                                                <tr class="odd">
+                                                    <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                        disponible en esta tabla
+                                                    </td>
+                                                </tr>
+                                            <? } ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -533,30 +466,37 @@
 
                                 <div class="row">
                                     <div class="card-body col-md-12">
-                                        <table  id="example" class="table table-striped p-3 table-bordered" >
+                                        <table id="example" class="table table-striped p-3 table-bordered">
                                             <thead class="bg-primary text-light">
-                                            <tr style="background-color: #0C3E6D;"><th colspan="4">Distribución de registro por usuario</th></tr>
                                             <tr style="background-color: #0C3E6D;">
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Usuario</th>
-                                                <th style="color: white !important; vertical-align: middle" class="text-center">Total</th>
+                                                <th colspan="4">Distribución de registro por usuario</th>
+                                            </tr>
+                                            <tr style="background-color: #0C3E6D;">
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Usuario
+                                                </th>
+                                                <th style="color: white !important; vertical-align: middle"
+                                                    class="text-center">Total
+                                                </th>
                                             </tr>
                                             </thead>
                                             <tbody id="distribucionusuario">
 
                                             <?php
-                                            if ($resgistroporusuario){
-                                            foreach ($resgistroporusuario as $dato) { ?>
-                                            <tr>
-                                                <td class="text-center"><?= $dato->nombre .' '. $dato->apellido_paterno.' '.$dato->apellido_materno; ?></td>
-                                                <td class="text-center"><?= $dato->total; ?></td>
-                                            </tr>
-                                            <? }} else { ?>
-                                          <tr class="odd">
-                                              <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
-                                                  disponible en esta tabla
-                                              </td>
-                                          </tr>
-                                          <? } ?>
+                                            if ($resgistroporusuario) {
+                                                foreach ($resgistroporusuario as $dato) { ?>
+                                                    <tr>
+                                                        <td class="text-center"><?= $dato->nombre . ' ' . $dato->apellido_paterno . ' ' . $dato->apellido_materno; ?></td>
+                                                        <td class="text-center"><?= $dato->total; ?></td>
+                                                    </tr>
+                                                <? }
+                                            } else { ?>
+                                                <tr class="odd">
+                                                    <td valign="top" colspan="3" class="dataTables_empty">Ningún dato
+                                                        disponible en esta tabla
+                                                    </td>
+                                                </tr>
+                                            <? } ?>
 
                                             </tbody>
                                         </table>
@@ -586,13 +526,160 @@
 
                         <? if ($_SESSION[ID_PROYECTO_SUPERVISOR] == 10) { ?>
                     </div>
-                        <? } ?>
+                    <? } ?>
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+
+
+    <script>
+        function filtrarporfecha() {
+            var fechainicio = $('#fechainicio1').val();
+            var fechafin = $('#fechafin1').val();
+            var idReporteInc = $('#idReporteInc').val();
+
+            if (fechainicio < '2020-10-19') {
+                alertify.notify('La Fecha Inicio debe ser mayor o igual a la fecha de inicio del proyecto', 'error', 10, null);
+            } else if (fechafin > '2021-04-30') {
+                alertify.notify('La Fecha Fin debe ser mayor o igual a la fecha fin del proyecto', 'error', 10, null);
+            } else if (fechainicio > fechafin) {
+                alertify.notify('La Fecha Inicio Debe ser Menor a la Fecha Fin ', 'error', 3, null);
+            } else {
+                var fechainicio = $('#fechainicio1').val();
+                var fechafin = $('#fechafin1').val();
+                var idReporteInc = $('#idReporteInc').val();
+
+                let datos = {
+                    fechainicio: fechainicio,
+                    fechafin: fechafin,
+                    idReporteInc: idReporteInc,
+                    bandera: true
+                }
+
+                $.ajax({
+                    type: 'POST',  // Envío con método POST
+                    url: "./index.php?controller=Graficas&action=index",
+                    data: datos, // Datos que se envían
+                }).done(function (msg) {
+                    var json = JSON.parse(msg);
+                    var resultado = json;
+                    //console.log(json);
+
+                    // ASIGNACION DE FECHAS
+                    let fechainicio = `<h6><strong>Fecha Inicio:</strong> ` + resultado.fechaactuali + ` </h6>`;
+                    let fechafin = `<h6><strong>Fecha Fin:</strong> ` + resultado.fechaactualf + ` </h6>`;
+
+
+                    // CAMBIAR DATOS DE TABLA DE AVANCES DE FO POR PROYECTO
+                    let tramoFO = Object.values(resultado.arrayAvancesFO).map((registro, index) => {
+                        return `<tr>
+                                    <td class="text-center">${index + 1}</td>
+                                    <td class="text-center">${registro.nombre}</td>
+                                    <td class="text-center">${registro.valor} metros</td>
+                                </tr>`
+                    }).join('');
+
+
+                    var tiempoproyecto = `  <tr>
+                                    <td class="text-center">  ${resultado.tiempoproyecto.dias_transcurridos} </td>
+                                    <td class="text-center"> ${resultado.tiempoproyecto.semanas_transcurridos} </td>
+                                    <td class="text-center">  ${resultado.tiempoproyecto.meses_transcurridos} </td>
+                                    </tr>`;
+
+                    var tiemporesta = `<h5 class="text-center"><b> ${resultado.tiempoproyecto.dias_restantes} </b></h5>`;
+
+                    var totalincidentes = ` <tr>
+                                    <td class="text-center"> ${resultado.totalabierto.registro_incidentes} </td>
+                                    <td class="text-center"> ${resultado.totalcerrado.registro_incidentes} </td>
+                                    <td class="text-center"> ${resultado.totalincidentes} </td>
+                                    </tr>`;
+
+                    var totalregistros = `  <tr> <td class="text-center"> ${resultado.resgistropormes} </td> </tr>`;
+
+                    var distribucionusuario = resultado.resgistroporusuario.map((registro) => {
+                        return `<tr>
+                    <td class="text-center">${registro.nombre} ${registro.apellido_paterno} ${registro.apellido_materno}</td>
+                    <td class="text-center">${registro.total}</td>
+                </tr>`
+                    }).join('');
+
+
+                    var fogeneral = Object.values(resultado.arrayAvancesFOG).map((registro, index) => {
+                        return `<tr>
+                <td class="text-center">${index + 1}</td>
+                <td class="text-center">${registro.nombre} </td>
+                <td class="text-center"> ${registro.valor} metros</td>
+                <td class="text-center"> ${registro.valorA}  metros</td>
+                <td class="text-center"> ${registro.valorB}  metros</td>
+                <td class="text-center"> ${registro.valorC}  metros</td>
+                <td class="text-center"> ${registro.valorD}  metros</td>
+                <td class="text-center"> ${registro.valorE}  metros</td>
+                <td class="text-center"> ${registro.valorF}  metros</td>
+                </tr>`
+                    }).join('');
+
+                    var inventario = resultado.estadisticas.map((registro, index) => {
+                        return `<tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td class="text-center">${registro.elemento} </td>
+                    <td class="text-center">${registro.totalStock}</td>
+                    </tr>`
+                    }).join('');
+
+
+                    var fomeses = Object.values(resultado.arrayAvancesFOM).map((registro, index) => {
+                        return `<tr>
+                     <td class="text-center">${index + 1}</td>
+                    <td class="text-center">${registro.nombre} </td>
+                    <td class="text-center">${registro.valor} </td>
+                    <td class="text-center">${registro.valorM}</td>
+                    <td class="text-center">${registro.valorM1}</td>
+                    <td class="text-center">${registro.valorM2}</td>
+                </tr>`
+                    }).join('');
+
+                    var mesactual = ` ` + resultado.m + ' ' + resultado.a + ` `;
+                    var mesuno = ` ` + resultado.m1 + ' ' + resultado.a1 + ` `;
+                    var mesdos = ` ` + resultado.m2 + ' ' + resultado.a2 + ` `;
+
+
+                    var promedio = resultado.tiempoPromedioIncidencia.map((registro) => {
+                        return `<tr>
+                    <td class="text-center">${registro.incidente} </td>
+                    <td class="text-center">${registro.total}</td>
+                    <td class="text-center">${registro.tiempo_promedio_atencion}</td>
+                    </tr>`
+                    }).join('');
+
+                    $('#promedio').html(promedio);
+                    $('#mesuno').html(mesuno);
+                    $('#mesdos').html(mesdos);
+                    $('#mesactual').html(mesactual);
+                    $('#fomeses').html(fomeses);
+                    $('#tiempoproyecto').html(tiempoproyecto);
+                    $('#tiemporesta').html(tiemporesta);
+                    $('#totalincidentes').html(totalincidentes);
+                    $('#totalregistros').html(totalregistros);
+                    $('#distribucionusuario').html(distribucionusuario);
+                    $('#fechainicio').html(fechainicio);
+                    $('#fechafin').html(fechafin);
+                    $('#tramoFO').html(tramoFO);
+                    $('#fogeneral').html(fogeneral);
+                    $('#inventario').html(inventario);
+
+                }).fail(function (jqXHR, textStatus, errorThrown) { // Función que se ejecuta si algo ha ido mal
+                    $("#consola").html("The following error occured: " + textStatus + " " + errorThrown);
+                });
+            }
+
+        }
+
+    </script>
+
+
 <?php }
 
 if ($action == "avances") { ?>
@@ -1409,203 +1496,3 @@ if ($action == "diagrama") { ?>
         </div>
     </div>
 <?php } ?>
-
-
-<script>
-    function filtrarporfecha(){
-        var fechainicio = $('#fechainicio1').val();
-        var fechafin = $('#fechafin1').val();
-        var idReporteInc = $('#idReporteInc').val();
-        // fecha inicio del proyecto : 2020-10-19
-        // fecha fin del proyecto: 2021-04-30
-
-        if (fechainicio < '2020-10-19'){
-             alertify.notify('La Fecha Inicio debe ser mayor o igual a la fecha de inicio del proyecto','error',10, null);
-        }else if(fechafin > '2021-04-30'){
-            alertify.notify('La Fecha Fin debe ser mayor o igual a la fecha fin del proyecto','error',10, null);
-        }else if (fechainicio > fechafin){
-            alertify.notify('La Fecha Inicio Debe ser Menor a la Fecha Fin ','error',3, null);
-        }else {
-            var fechainicio = $('#fechainicio1').val();
-            var fechafin = $('#fechafin1').val();
-            var idReporteInc = $('#idReporteInc').val();
-
-            // var datos = "fechainicio="+fechainicio+"&fechafin="+fechafin+"&idReporteInc="+idReporteInc;
-            let datos = {
-                fechainicio: fechainicio,
-                fechafin: fechafin,
-                idReporteInc: idReporteInc,
-                bandera: true
-            }
-
-            $.ajax({
-                type: 'POST',  // Envío con método POST
-                //url: './consulta.php',  // Fichero destino (el PHP que trata los datos)
-                url: "./index.php?controller=Graficas&action=index",
-                data: datos, // Datos que se envían
-                //dataType: 'json'
-            }).done(function( msg ) {  // Función que se ejecuta si todo ha ido bien
-                //console.log(msg);
-                $("#consola").html(msg);  // Escribimos en el div consola el mensaje devuelto
-                var json = JSON.parse(msg);
-                var resultado = json;
-                console.log(json);
-
-                var tiempoproyecto = `  <tr>
-                                    <td class="text-center"> `+resultado.tiempoproyecto.dias_transcurridos+`</td>
-                                    <td class="text-center">`+resultado.tiempoproyecto.semanas_transcurridos+`</td>
-                                    <td class="text-center"> `+resultado.tiempoproyecto.meses_transcurridos+` </td>
-                                    </tr>`;
-                var tiempoproyecto = `  <tr>
-                                    <td class="text-center"> `+resultado.tiempoproyecto.dias_transcurridos+`</td>
-                                    <td class="text-center">`+resultado.tiempoproyecto.semanas_transcurridos+`</td>
-                                    <td class="text-center"> `+resultado.tiempoproyecto.meses_transcurridos+` </td>
-                                    </tr>`;
-                var tiemporesta = `<h5 class="text-center"><b>`+resultado.tiempoproyecto.dias_restantes+` </b></h5>`;
-                var totalincidentes = ` <tr>
-                                    <td class="text-center">`+resultado.totalabierto.abierto+`</td>
-                                    <td class="text-center">`+resultado.totalcerrado.cerrado+`</td>
-                                    <td class="text-center"> `+resultado.totalincidentes+` </td>
-                                    </tr>`;
-                var inidentesregistrados = `
-                                    <tr>
-                                    <td class="text-center">Accidente</td>
-                                    <td id="" class="text-center">
-                                    `+resultado.tipoincidencia.accidente+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td class="text-center">Bloqueo Carretero</td>
-                                    <td class="text-center">
-                                     `+resultado.tipoincidencia.bloqueo+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td class="text-center">Ejecución</td>
-                                    <td class="text-center">
-                                   `+resultado.tipoincidencia.ejecucion+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td class="text-center">Equipamiento</td>
-                                    <td class="text-center">
-                                     `+resultado.tipoincidencia.equipamiento+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td class="text-center">Señalización</td>
-                                    <td class="text-center">
-                                   `+resultado.tipoincidencia.señalizacion+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                     <td class="text-center">Vandalismo </td>
-                                     <td class="text-center">
-                                     `+resultado.tipoincidencia.vandalismo+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td class="text-center">Meteorológico</td>
-                                    <td class="text-center">
-                                     `+resultado.tipoincidencia.meteorologico+`
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td class="text-center">Otro </td>
-                                    <td class="text-center">
-                                     `+resultado.tipoincidencia.otro+`
-                                    </td>
-                                    </tr>
-            `;
-                var totalregistros = `  <tr>
-                                    <td class="text-center"> `+resultado.resgistropormes+`</td>
-                                    </tr>`;
-
-                var distribucionusuario = resultado.resgistroporusuario.map((registro) => {
-                    return `<tr>
-                    <td class="text-center">${registro.nombre} ${registro.apellido_paterno} ${registro.apellido_materno}</td>
-                    <td class="text-center">${registro.total}</td>
-                </tr>`
-                }).join('');
-
-                var fechainicio = `<h6><strong>Fecha Inicio:</strong> `+resultado.fechaactuali+` </h6>`;
-
-                var fechafin = `<h6><strong>Fecha Fin:</strong> `+resultado.fechaactualf+` </h6>`;
-
-                //console.log(Object.values(resultado.arrayAvancesFO));
-                var tramoFO = Object.values(resultado.arrayAvancesFO).map((registro, index) => {
-                    return `<tr>
-                    <td class="text-center">${index + 1}</td>
-                    <td class="text-center">${registro.nombre}</td>
-                    <td class="text-center">${registro.valor} metros</td>
-                </tr>`
-                }).join('');
-
-                var fogeneral = Object.values(resultado.arrayAvancesFOG).map((registro, index) => {
-                    return `<tr>
-                <td class="text-center">${index + 1}</td>
-                <td class="text-center">${registro.nombre} </td>
-                <td class="text-center"> ${registro.valor} metros</td>
-                <td class="text-center"> ${registro.valorA}  metros</td>
-                <td class="text-center"> ${registro.valorB}  metros</td>
-                <td class="text-center"> ${registro.valorC}  metros</td>
-                <td class="text-center"> ${registro.valorD}  metros</td>
-                <td class="text-center"> ${registro.valorE}  metros</td>
-                <td class="text-center"> ${registro.valorF}  metros</td>
-                </tr>`
-                }).join('');
-
-                var inventario = resultado.estadisticas.map((registro, index) => {
-                    return `<tr>
-                    <td class="text-center">${index + 1}</td>
-                    <td class="text-center">${registro.elemento} </td>
-                    <td class="text-center">${registro.totalStock}</td>
-                    </tr>`
-                }).join('');
-
-
-                var fomeses = Object.values(resultado.arrayAvancesFOM).map((registro, index) => {
-                    return `<tr>
-                     <td class="text-center">${index + 1}</td>
-                    <td class="text-center">${registro.nombre} </td>
-                    <td class="text-center">${registro.valor} </td>
-                    <td class="text-center">${registro.valorM}</td>
-                    <td class="text-center">${registro.valorM1}</td>
-                    <td class="text-center">${registro.valorM2}</td>
-                </tr>`
-                }).join('');
-
-                var fechafin = `<h6><strong>Fecha Fin:</strong> `+resultado.fechaactualf+` </h6>`;
-
-                var mesactual = ` `+resultado.m+' '+resultado.a+` `;
-                var mesuno = ` `+resultado.m1+' '+resultado.a1+` `;
-                var mesdos = ` `+resultado.m2+' '+resultado.a2+` `;
-
-
-
-
-                $('#mesuno').html(mesuno);
-                $('#mesdos').html(mesdos);
-                $('#mesactual').html(mesactual);
-                $('#fomeses').html(fomeses);
-                $('#tiempoproyecto').html(tiempoproyecto);
-                $('#tiemporesta').html(tiemporesta);
-                $('#totalincidentes').html(totalincidentes);
-                $('#inidentesregistrados').html(inidentesregistrados);
-                $('#totalregistros').html(totalregistros);
-                $('#distribucionusuario').html(distribucionusuario);
-                $('#fechainicio').html(fechainicio);
-                $('#fechafin').html(fechafin);
-                $('#tramoFO').html(tramoFO);
-                $('#fogeneral').html(fogeneral);
-                $('#inventario').html(inventario);
-
-            }).fail(function (jqXHR, textStatus, errorThrown){ // Función que se ejecuta si algo ha ido mal
-                // Mostramos en consola el mensaje con el error que se ha producido
-                $("#consola").html("The following error occured: "+ textStatus +" "+ errorThrown);
-            });
-        }
-
-    }
-
-</script>
