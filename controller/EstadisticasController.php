@@ -68,7 +68,7 @@ class EstadisticasController extends ControladorBase
         elseif ($this->id_Proyecto_constant == 10) // PROYECTO Administración
             $id_Reportes = "41,68,78,84,90,96,57";
 
-        $estadisticas = $this->connectorDB->getEstadisticasReportes($id_Reportes);
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($id_Reportes, '');
 
         $this->view("index", array(
             'mensaje' => $mensaje, 'estadisticas' => $estadisticas
