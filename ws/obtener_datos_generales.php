@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             break;
         case "versionApp":
             $usuarioActivo = Consultas::getUsuarioActivo($usuario);
-            $arreglo = array('version' => '1.0.5','versionCode' => 6,'usuerActive' => $usuarioActivo, 'canceable' => true);
+            $arreglo = array('version' => '1.0.6','versionCode' => 7,'usuerActive' => $usuarioActivo, 'canceable' => false);
             $funcion->sendMessageTelegram(262453015,"SupervisorAmr version: $version \nidUsuario:$usuario");
             $consulta = array($arreglo);
             break;

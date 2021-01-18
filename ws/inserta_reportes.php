@@ -17,6 +17,7 @@ require_once '../model/Procesos.php';
 require_once '../model/AvanceActividad.php';
 require_once '../model/Gantt.php';
 require_once '../model/Asistencia.php';
+require_once '../model/Bitacora.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -404,6 +405,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         if($classReporte == "7"){
                             $funcion->updateAsistenciaHoraSalida($arrayIdsEmpleados, $fechaAsistencia, $horaAsistencia, $idPadreReporte);
                         }
+
+                        $funcion->guardarBitacora(1, $UsuerAndroid, $idGpo, 16, '', $idProyecto);
                     }
                 }else {
                     $funcion = new FuncionesCompartidas();
@@ -412,6 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $id_nodoAnterior = $funcion->obtenerIdNodoAnterior($idGpo, $idProyecto);
                     //echo $id_nodoAnterior;
                     $funcion->modificarGantt($idPadreReporte, $idGpo, $idReporte, $idProyecto, $id_nodoAnterior);
+                    $funcion->guardarBitacora(1, $UsuerAndroid, $idGpo, 17, '', $idProyecto);
                 }
             } else {
                 $statusReportesLlenados = false;
