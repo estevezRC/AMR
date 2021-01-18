@@ -1645,6 +1645,41 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
         return $resultSet;
     }
 
+    public function getReporteLlenadoByIdNextReport($idProyecto, $id_Gpo_Valores_Reporte, $tipoReporte) {
+        $resultSet = array();
+        $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
+		(SELECT rl.id_Registro_Reporte
+			FROM Reportes_Llenados rl
+			LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+			WHERE rl.id_Registro_Reporte < $id_Gpo_Valores_Reporte AND cr.tipo_Reporte IN ($tipoReporte) AND cr.id_Proyecto = $idProyecto
+			AND rl.id_Status_Elemento = 1
+			ORDER BY rl.id_Registro_Reporte DESC
+			LIMIT 1) AS posterior, 
+		(SELECT rl.id_Registro_Reporte
+			FROM Reportes_Llenados rl
+			LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+			WHERE rl.id_Registro_Reporte > $id_Gpo_Valores_Reporte AND cr.tipo_Reporte IN ($tipoReporte) AND cr.id_Proyecto = $idProyecto
+			AND rl.id_Status_Elemento = 1
+			ORDER BY rl.id_Registro_Reporte ASC
+			LIMIT 1) AS anterior,
+            rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa,rl.fecha_registro AS Fecha2, 
+            cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte,u.correo_Usuario,
+            eu.nombre as nombre_Usuario, eu.apellido_paterno, eu.apellido_materno
+            FROM Reportes_Llenados rl
+                LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+                LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
+                LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
+            WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1  AND cr.id_Proyecto = $idProyecto ANd rl.id_Registro_Reporte = $id_Gpo_Valores_Reporte
+            AND cr.tipo_Reporte IN ($tipoReporte) 
+            ORDER BY Fecha2 DESC, Id_Reporte DESC");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+        $query->close();
+
+        return $resultSet;
+    }
+
 
     /*::::::::::::::::::::::::::::::::::::::::::::::::::: PROCESOS :::::::::::::::::::::::::::::::::::::::::::::::::::*/
     /*--- PROCESOS: CONSULTAR PROCESOS ---*/

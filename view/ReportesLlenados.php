@@ -448,9 +448,39 @@
                                     <?php }
                                 } ?>
                             </div>
+
                         </div>
                     </div>
                     <div class="col-12 bg-white shadow">
+                        <div class="row">
+                            <div class="col-6 d-flex justify-content-start">
+                            <?php
+                            if($anteriorPagina != null OR $anteriorPagina != '') {
+                                ?>
+
+                                    <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $anteriorPagina; ?>&Id_Reporte=<?= $id_Reporte; ?>"
+                                       data-trigger="hover" data-content="Reporte Anterior"
+                                       data-toggle="popover" ><i class="fas fa-arrow-circle-left" style="font-size: 40px"></i></a>
+
+                                <?
+                            } ?>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
+                                <?php
+                                if($siguientePagina != null OR $siguientePagina != '') {
+                                    ?>
+                                    <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $siguientePagina; ?>&Id_Reporte=<?= $id_Reporte; ?>"
+                                       data-trigger="hover" data-content="Reporte Siguiente"
+                                       data-toggle="popover">
+                                        <i class="fas fa-arrow-circle-right" style="font-size: 40px"></i></a>
+                                    <?
+                                } ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 bg-white shadow">
+
                       <div class="row d-flex justify-content-center">
                             <div class="col-12">
                                  <div class="row justify-content-center">
