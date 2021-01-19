@@ -25,6 +25,7 @@ class SeguimientosReporteController extends ControladorBase
         $id_Reporte = $_GET['id_Reporte'];
 
         $logout = $_REQUEST['logout'];
+        $pageLoad = $_REQUEST['pageUrl'];
 
         //********************* QUITAR ERROR err_cache_miss "REENVIO DEL FORMULARIO" ***********************************
         header('Cache-Control: no-cache'); //no cache
@@ -42,6 +43,12 @@ class SeguimientosReporteController extends ControladorBase
             $_SESSION[ID_PROYECTO_SUPERVISOR] = $datosproyecto->id_Proyecto;
 
         }
+
+        if(!empty($pageLoad)) {
+            header('Location: '. $pageLoad);
+        }
+
+
 
         // PERFIL Y PERMISOS DEL USUARIO
         $id_Proyecto = $_SESSION[ID_PROYECTO_SUPERVISOR];
