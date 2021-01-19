@@ -18,6 +18,7 @@ if ((!isset($_SESSION[AUTENTICADO_SUPERVISOR])) && ($controller != "Principal") 
     require_once 'core/ControladorFrontal.func.php';
 
 
+
     if (isset($_GET["controller"])) {
         $controllerObj = cargarControlador($_GET["controller"]);
         lanzarAccion($controllerObj);

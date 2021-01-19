@@ -190,6 +190,8 @@
                     </div>
 
                     <input id="nombre_Proyecto_ActualModal" name="nombre_Proyecto_Actual" type="hidden"/>
+                    <?php $url = explode("/", $_SERVER["REQUEST_URI"]); ?>
+                    <input type="hidden" class="form-control" name="pageUrl" id="pageUrl" value="<?= $url[3] ?>">
 
                     <div class="form-group">
                         <button type="submit" value="submit" class="btn btn-w-m btn-danger btn-block"
