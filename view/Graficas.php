@@ -128,7 +128,7 @@
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
                                                 <td>
-                                                    <?= str_replace('.', ',', $avance->valor); ?> metros
+                                                    <?= $avance->valor; ?> metros
                                                 </td>
                                             </tr>
 
@@ -160,10 +160,10 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= str_replace('.', ',', $avance->valor); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorM); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorM1); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorM2); ?> metros</td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorM; ?> metros</td>
+                                                <td> <?= $avance->valorM1; ?> metros</td>
+                                                <td> <?= $avance->valorM2; ?> metros</td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -199,7 +199,6 @@
                                             foreach ($estadisticas as $row => $registro) {
                                                 $elementArr = explode('(', $registro->elemento);
                                                 $unidad_medida = str_replace(')', '', $elementArr[1]);
-                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
                                                 ?>
 
                                                 <tr>
@@ -248,13 +247,13 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= str_replace('.', ',', $avance->valor); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorA); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorB); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorC); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorD); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorE); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorF); ?> metros</td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorA; ?> metros</td>
+                                                <td> <?= $avance->valorB; ?> metros</td>
+                                                <td> <?= $avance->valorC; ?> metros</td>
+                                                <td> <?= $avance->valorD; ?> metros</td>
+                                                <td> <?= $avance->valorE; ?> metros</td>
+                                                <td> <?= $avance->valorF; ?> metros</td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -283,10 +282,10 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= str_replace('.', ',', $avance->valor); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorM); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorM1); ?> metros</td>
-                                                <td> <?= str_replace('.', ',', $avance->valorM2); ?> metros</td>
+                                                <td> <?= $avance->valor; ?> metros</td>
+                                                <td> <?= $avance->valorM; ?> metros</td>
+                                                <td> <?= $avance->valorM1; ?> metros</td>
+                                                <td> <?= $avance->valorM2; ?> metros</td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -409,7 +408,7 @@
                                             <tbody id="promedio">
                                             <?php
                                             if ($tiempoPromedioIncidencia) {
-                                                foreach ($tiempoPromedioIncidencia as $dato) {?>
+                                                foreach ($tiempoPromedioIncidencia as $dato) { ?>
                                                     <tr>
                                                         <td class="text-center"><?= $dato->incidente; ?></td>
                                                         <td class="text-center"><?= $dato->total; ?></td>

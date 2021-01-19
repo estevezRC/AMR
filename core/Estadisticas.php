@@ -24,10 +24,10 @@ class Estadisticas extends ControladorBase
     {
         for ($i = 0; $i < count($valor); $i++) {
             if ($valor[$i]->idCampo == 67)
-                $concat_final = (float)$valor[$i]->valorCampo;
+                $concat_final = (float)$valor[$i]->valorCampo * 1000;
 
             if ($valor[$i]->idCampo == 29)
-                $concat_inicial = (float)$valor[$i]->valorCampo;
+                $concat_inicial = (float)$valor[$i]->valorCampo * 1000;
         }
 
         if ($concat_final > $concat_inicial)
