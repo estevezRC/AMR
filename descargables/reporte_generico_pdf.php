@@ -16,6 +16,10 @@ $id_Empresa = $_SESSION[ID_EMPRE_GENERAL_SUPERVISOR];
 $id_Proyecto = $_SESSION[ID_PROYECTO_SUPERVISOR];
 $area = $_SESSION[ID_AREA_SUPERVISOR];
 
+$infoProyecto = $entidadBase->getProyectoById($id_Proyecto);
+
+
+
 $defaultConfig = (new Mpdf\Config\ConfigVariables())->getDefaults();
 $fontDirs = $defaultConfig['fontDir'];
 

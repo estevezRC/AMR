@@ -8,7 +8,7 @@
         let panel_title = document.getElementById('panel_title');
         let panel_resumen_content = document.getElementById('panel_resumen_content');
         let porcentajeAvance = document.getElementById('porcentajeAvance');
-
+        console.log( panel_resumen_content)
         let porcentaje = parseFloat(<?= $porcentajeReporte ?>);
 
         let http = new XMLHttpRequest();
@@ -110,7 +110,12 @@ if ($noarchivos > 0 || $noimg > 0) {
     <div class="<?php echo $col_detalles; ?> panel-resumen" id="panel_resumen"
          data-id="panel_resumen">
 
-        <div class="panel-resumen-content" id="panel_resumen_content" data-id="panel_resumen_content">
+        <div class="panel-resumen-content bg-light " id="panel_resumen_content" data-id="panel_resumen_content">
+
+            <div class="form-group" id="lbl_title" data-id="lbl_title">
+                <label class="font-weight-bold">Tramo:</label>
+                <label> <?php echo $allreportellenado[0]->nombre_Proyecto; ?></label>
+            </div>
 
             <div class="form-group" id="lbl_title" data-id="lbl_title">
                 <label class="font-weight-bold">Título:</label>
@@ -140,8 +145,11 @@ if ($noarchivos > 0 || $noimg > 0) {
                 </label>
             </div>
 
+
             <?php
+
             if (is_array($allreportellenado) || is_object($allreportellenado)) {
+
                 foreach ($allreportellenado as $reportellenado) {
                     if ($reportellenado->tipo_Reactivo_Campo == 'label') {
                         $valorClass = '';
@@ -427,7 +435,7 @@ if ($noarchivos > 0 || $noimg > 0) {
                             });
                         });
                     })();
-                    $(document).load(function () {
+                    $(document).on('load', function () {
                         $("#panel_photos > #layer").last().remove();
                         $("#layer").appendTo("#panel_photos");
                     });

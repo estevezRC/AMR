@@ -36,6 +36,8 @@ $id_gpo_Valores = $_GET['gpo'];
 $allreportellenado = $EntidadBase->getReporteLlenadoById($id_gpo_Valores);
 $campos = $funciones->obtenerValoresCampos($id_gpo_Valores);
 
+$infoProyecto = $EntidadBase->getProyectoById($id_Proyecto);
+
 $estructura = [];
 
 //**************************************** DATOS PARA ENLAZAR REPORTES ****************************************
@@ -299,7 +301,8 @@ $campoMultiple = function ($reporteval) {
                         $valores[] = new stdClass();
                         $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
                         $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
-                    } elseif ($subCampo->tipo_Reactivo_Campo === "text") {
+                    }
+                    elseif ($subCampo->tipo_Reactivo_Campo === "text") {
                         $valores[] = new stdClass();
                         $valores[count($valores) - 1]->nombre = $subCampo->nombre_Campo;
                         $valores[count($valores) - 1]->valor = $valorSubcampo->valorCampo;
@@ -313,6 +316,19 @@ $campoMultiple = function ($reporteval) {
     }
     return $actividades;
 };
+
+$tableCampos1 = $section->addTable('Colspan Rowspan');
+$row = $tableCampos1->addRow(400, array("exactHeight" => true));
+$row->addCell(12000, array('vMerge' => 'restart'))->addText("Tramo: ", $fontStyleb12);
+
+$tableCampos2 = $section->addTable('Colspan Rowspan');
+$row1 = $tableCampos2->addRow(400, array("exactHeight" => true));
+$row1->addCell(12000, array(
+    'vMerge' => 'restart',
+    'borderBottomColor' => 'FB6611',
+    'borderBottomSize' => 6,
+))->addText("  " . $infoProyecto->nombre_Proyecto , $fontStyleb11);
+$section->addTextBreak();
 
 foreach ($campos as $reporteVal) {
     if ($reporteVal['tipo'] !== "multiple") {
@@ -337,7 +353,7 @@ foreach ($campos as $reporteVal) {
         $celdaPrincipal->addText($reporteVal['nombre'], $fontStyleb11bold);
 
         foreach ($actividades as $key => $actividad) {
-            $contador = $key + 1;
+            $contador = $key +1;
             $row = $tableCampos1->addRow(400, array("exactHeight" => false));
             $celda = $row->addCell(12000, array('vMerge' => 'restart', 'align' => 'center'));
             $textrun = $celda->addTextRun();
