@@ -246,9 +246,9 @@ if (isset($logos) && ($logos['primary'] != '' || $logos['secondary'] != '')) {
     }
 }
 
-$section->addTextBreak();
+/*$section->addTextBreak();
 $section->addTextRun(array('align' => 'right'))->addText("Porcentaje de Avance: {$porcentaje}%", ['bold' => true, 'color' => '91231C', 'size' => 12]);
-$section->addTextBreak(2);
+$section->addTextBreak(2);*/
 /*----------------------------------Se define el estilo de la tabla y celdas ----------------------------------*/
 $tableStyle = array(
     'borderColor' => '034667',
