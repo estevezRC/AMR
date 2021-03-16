@@ -86,6 +86,7 @@
                                                 $elementArr = explode('(', $registro->elemento);
                                                 $unidad_medida = str_replace(')', '', $elementArr[1]);
                                                 //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                $unidad_medida = ucfirst($unidad_medida);
                                                 ?>
 
                                                 <tr>
@@ -109,7 +110,7 @@
                         <div class="col-12 col-md-12 mb-5">
                             <div class="card">
                                 <h5 class="card-header">
-                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?> (Metros)</b>
                                 </h5>
                                 <div class="card-body">
                                     <table class="table table-striped p-3">
@@ -128,7 +129,7 @@
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
                                                 <td>
-                                                    <?= $avance->valor; ?> metros
+                                                    <?= $avance->valor; ?>
                                                 </td>
                                             </tr>
 
@@ -142,7 +143,7 @@
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
                                         <tr style="background-color: #0C3E6D;">
-                                            <th colspan="6">Comparativa Mensual</th>
+                                            <th colspan="6">Comparativa Mensual (Metros)</th>
                                         </tr>
                                         <tr>
                                             <th>No.</th>
@@ -160,10 +161,10 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorM; ?> metros</td>
-                                                <td> <?= $avance->valorM1; ?> metros</td>
-                                                <td> <?= $avance->valorM2; ?> metros</td>
+                                                <td> <?= $avance->valor; ?> </td>
+                                                <td> <?= $avance->valorM; ?> </td>
+                                                <td> <?= $avance->valorM1; ?> </td>
+                                                <td> <?= $avance->valorM2; ?></td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -199,6 +200,8 @@
                                             foreach ($estadisticas as $row => $registro) {
                                                 $elementArr = explode('(', $registro->elemento);
                                                 $unidad_medida = str_replace(')', '', $elementArr[1]);
+                                                //$unidad_medida = preg_replace('([^A-Za-z0-9])', '', $elementArr[1]);
+                                                $unidad_medida = ucfirst($unidad_medida);
                                                 ?>
 
                                                 <tr>
@@ -223,7 +226,7 @@
                         <div class="col-12 col-md-12 mb-5">
                             <div class="card">
                                 <h5 class="card-header">
-                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?></b>
+                                    <b>Avance de FO Tramo <?= $_SESSION[NOMBRE_PROYECTO]; ?> (Metros)</b>
                                 </h5>
                                 <div class="card-body">
                                     <table id="example" class="table table-striped p-3">
@@ -247,13 +250,13 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorA; ?> metros</td>
-                                                <td> <?= $avance->valorB; ?> metros</td>
-                                                <td> <?= $avance->valorC; ?> metros</td>
-                                                <td> <?= $avance->valorD; ?> metros</td>
-                                                <td> <?= $avance->valorE; ?> metros</td>
-                                                <td> <?= $avance->valorF; ?> metros</td>
+                                                <td> <?= $avance->valor; ?> </td>
+                                                <td> <?= $avance->valorA; ?> </td>
+                                                <td> <?= $avance->valorB; ?> </td>
+                                                <td> <?= $avance->valorC; ?> </td>
+                                                <td> <?= $avance->valorD; ?> </td>
+                                                <td> <?= $avance->valorE; ?> </td>
+                                                <td> <?= $avance->valorF; ?> </td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -264,7 +267,7 @@
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
                                         <tr style="background-color: #0C3E6D;">
-                                            <th colspan="6">Comparativa Mensual</th>
+                                            <th colspan="6">Comparativa Mensual (Metros)</th>
                                         </tr>
                                         <tr>
                                             <th>No.</th>
@@ -282,10 +285,10 @@
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
                                                 <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> metros</td>
-                                                <td> <?= $avance->valorM; ?> metros</td>
-                                                <td> <?= $avance->valorM1; ?> metros</td>
-                                                <td> <?= $avance->valorM2; ?> metros</td>
+                                                <td> <?= $avance->valor; ?> </td>
+                                                <td> <?= $avance->valorM; ?> </td>
+                                                <td> <?= $avance->valorM1; ?> </td>
+                                                <td> <?= $avance->valorM2; ?> </td>
                                             </tr>
                                             <?
                                             $contador++;
@@ -577,7 +580,7 @@
                         return `<tr>
                                     <td class="text-center">${index + 1}</td>
                                     <td class="text-center">${registro.nombre}</td>
-                                    <td class="text-center">${registro.valor} metros</td>
+                                    <td class="text-center">${registro.valor} Metros</td>
                                 </tr>`
                     }).join('');
 
@@ -610,13 +613,13 @@
                         return `<tr>
                 <td class="text-center">${index + 1}</td>
                 <td class="text-center">${registro.nombre} </td>
-                <td class="text-center"> ${registro.valor} metros</td>
-                <td class="text-center"> ${registro.valorA}  metros</td>
-                <td class="text-center"> ${registro.valorB}  metros</td>
-                <td class="text-center"> ${registro.valorC}  metros</td>
-                <td class="text-center"> ${registro.valorD}  metros</td>
-                <td class="text-center"> ${registro.valorE}  metros</td>
-                <td class="text-center"> ${registro.valorF}  metros</td>
+                <td class="text-center"> ${registro.valor} </td>
+                <td class="text-center"> ${registro.valorA}  </td>
+                <td class="text-center"> ${registro.valorB}  </td>
+                <td class="text-center"> ${registro.valorC}  </td>
+                <td class="text-center"> ${registro.valorD}  </td>
+                <td class="text-center"> ${registro.valorE}  </td>
+                <td class="text-center"> ${registro.valorF}  </td>
                 </tr>`
                     }).join('');
 
