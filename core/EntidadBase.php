@@ -3902,4 +3902,45 @@ SELECT * FROM (
         $query->close();
         return $resultSet;
     }
+
+    public function getAllComponentesReportesByIdReporteAndProyecto($idReporte, $idProyecto) {
+        $resultSet = [];
+        $query1 = " SELECT *
+                FROM (SELECT cr.tipo_Reporte AS tipo_Reporte, cr.id_Proyecto AS id_Proyecto,
+                            rl.id_Gpo_Valores_Reporte AS id_Gpo_Valores_Reporte,
+                            rl.id_Reporte AS id_Reporte, rl.titulo_Reporte AS titulo_Reporte,
+                            cr.nombre_Reporte AS nombre_Reporte, rl.latitud_Reporte AS latitud_Reporte,
+                            rl.longitud_Reporte AS longitud_Reporte, rl2.titulo_Reporte AS Identificador,
+                            rl.fecha_registro AS fecha_registro,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 1,A.valor_Texto_Reporte,NULL)) AS fecha,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 2,A.valor_Texto_Reporte,NULL)) AS hora,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 58,A.valor_Texto_Reporte,NULL)) AS marca,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 59,A.valor_Texto_Reporte,NULL)) AS modelo,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 60,A.valor_Texto_Reporte,NULL)) AS numero_Serie,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 68,A.valor_Texto_Reporte,NULL)) AS familia,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 69,A.valor_Texto_Reporte,NULL)) AS numero_parte,
+                            GROUP_CONCAT(IF(A.id_Campo_Reporte = 70,A.valor_Texto_Reporte,NULL)) AS estado_equipo
+                    FROM Reportes_Llenados rl
+                    
+                    LEFT JOIN (SELECT vrc.valor_Texto_Reporte, vrc.id_Gpo_Valores_Reporte, crc.id_Campo_Reporte
+                            FROM Valores_Reportes_Campos vrc
+                            LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte
+                            ) AS A ON A.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+                    
+                    LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
+                    LEFT JOIN Reportes_Llenados rl2 ON rl2.id_Gpo_Valores_Reporte = rl.id_Gpo_Padre
+                    
+                    WHERE rl.id_Reporte IN (44) AND rl.id_Status_Elemento = 1 AND cr.id_Proyecto = $idProyecto
+                    group by rl.id_Gpo_Valores_Reporte) AS RES
+                WHERE
+                    RES.tipo_Reporte = 3
+                ORDER BY RES.id_Reporte";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+
+        $query->close();
+        return $resultSet;
+    }
 }

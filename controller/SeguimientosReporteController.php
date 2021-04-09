@@ -646,9 +646,7 @@ class SeguimientosReporteController extends ControladorBase
 
     public function getAllComponentesByProyecto() {
         // OBTENER PLAZAS CONFIGURADAS DEL USUARIO
-        $condicion = " AND nombre_Reporte = 'Componente' ";
-
-        $plazasUsuario = $this->EntidadBase->getAllReportesLlenadosByType(3, $this->id_Proyecto_constant, '', $condicion);
+        $plazasUsuario = $this->EntidadBase->getAllComponentesReportesByIdReporteAndProyecto(44, $this->id_Proyecto_constant);
 
         echo json_encode($plazasUsuario);
     }

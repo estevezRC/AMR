@@ -692,7 +692,8 @@ if ($action == "index" || $action == "busqueda") { ?>
 
                 let x = 0;
                 $.each(respuestaJSON, function () {
-                    componentes.append(`<option value='${respuestaJSON[x].id_Gpo_Valores_Reporte}' data-titulo='${respuestaJSON[x].titulo_Reporte}'> ${respuestaJSON[x].titulo_Reporte} </option>`);
+                    componentes.append(`<option value='${respuestaJSON[x].id_Gpo_Valores_Reporte}' data-titulo='${respuestaJSON[x].titulo_Reporte}'
+                    data-serie='${respuestaJSON[x].numero_Serie}' data-familia='${respuestaJSON[x].familia}'>${respuestaJSON[x].numero_Serie} - ${respuestaJSON[x].familia} - ${respuestaJSON[x].titulo_Reporte} </option>`);
                     x++;
                 });
 
