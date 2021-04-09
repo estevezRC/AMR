@@ -285,6 +285,10 @@ class LlenadosReporteController extends ControladorBase
 
         $id = $_REQUEST['Id_Reporte'];
 
+        if(!$id) {
+            Header('Location: index.php?controller=SeguimientosReporte&action=index&tipo=0,1');
+        }
+
         //CONSULTAR FORMULARIO
         $camporeporte = new CampoReporte($this->adapter);
         $allcamposreportes = $camporeporte->getAllCampoReporteByIdReporte($id);

@@ -127,7 +127,7 @@ if ($action == "index" || $action == "busqueda") { ?>
                                         <td><?= $seguimientoreporte->Id_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->nombre_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
-                                        <td><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
+                                        <td><?= $this->formatearFecha($seguimientoreporte->fecha); ?></td>
                                         <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_paterno . " " . $seguimientoreporte->apellido_materno; ?></td>
                                         <td>
                                             <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?php echo $seguimientoreporte->id_Reporte2; ?>"
@@ -205,7 +205,7 @@ if ($action == "index" || $action == "busqueda") { ?>
                                         <td><?= $seguimientoreporte->Id_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->nombre_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
-                                        <td><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
+                                        <td><?= $this->formatearFecha($seguimientoreporte->fecha); ?></td>
                                         <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_paterno . " " . $seguimientoreporte->apellido_materno; ?></td>
                                         <td>
                                             <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>"
@@ -290,7 +290,7 @@ if ($action == "index" || $action == "busqueda") { ?>
                                         <td><?= $seguimientoreporte->Id_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->nombre_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
-                                        <td><?= $this->formatearFecha($seguimientoreporte->Fecha2); ?></td>
+                                        <td><?= $this->formatearFecha($seguimientoreporte->fecha); ?></td>
                                         <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_paterno . " " . $seguimientoreporte->apellido_materno; ?></td>
                                         <td>
                                             <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>"
@@ -377,8 +377,8 @@ if ($action == "index" || $action == "busqueda") { ?>
                                             <td><?= $seguimientoreporte->Id_Reporte; ?></td>
                                             <td><?= $seguimientoreporte->campo_TipoIncidente; ?></td>
                                             <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
-                                            <td><?= $this->formatearFecha($seguimientoreporte->Fecha); ?></td>
-                                            <td><?= $this->formatearHora($seguimientoreporte->Fecha); ?></td>
+                                            <td><?= $this->formatearFecha($seguimientoreporte->fecha_reporte); ?></td>
+                                            <td><?= $this->formatearHora($seguimientoreporte->hora_reporte); ?></td>
                                             <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_Usuario; ?></td>
                                             <td>
                                                 <? require_once 'core/FuncionesCompartidas.php';

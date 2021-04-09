@@ -2277,16 +2277,26 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     {
         $resultSet = array();
         $area2 = "[[:<:]]" . $area . "[[:>:]]";
-        $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
+        $query1 = "SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
             rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa,rl.fecha_registro AS Fecha2, 
             cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte,u.correo_Usuario,
-            eu.nombre as nombre_Usuario, eu.apellido_paterno, eu.apellido_materno
+            eu.nombre as nombre_Usuario, eu.apellido_paterno, eu.apellido_materno,
+            GROUP_CONCAT(IF(A.id_Campo_Reporte = 1,A.valor_Texto_Reporte,NULL)) AS fecha,
+	        GROUP_CONCAT(IF(A.id_Campo_Reporte = 2,A.valor_Texto_Reporte,NULL)) AS hora
             FROM Reportes_Llenados rl
+                LEFT JOIN (SELECT vrc.valor_Texto_Reporte, vrc.id_Gpo_Valores_Reporte, crc.id_Campo_Reporte
+                    FROM Valores_Reportes_Campos vrc
+                    LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte
+                ) AS A ON A.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
                 LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
                 LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
                 LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
             WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1 $noreportes AND cr.id_Proyecto = $proyecto 
-            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas RLIKE \"$area2\" ORDER BY Fecha2 DESC, Id_Reporte DESC");
+            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas RLIKE \"$area2\" 
+            group by rl.id_Gpo_Valores_Reporte
+            ORDER BY Fecha2 DESC, Id_Reporte DESC";
+
+        $query = $this->db->query($query1);
         if ($query != FALSE) {
             while ($row = $query->fetch_object()) {
                 $resultSet[] = $row;
@@ -2414,22 +2424,32 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     {
         $resultSet = array();
         $area2 = "[[:<:]]" . $area . "[[:>:]]";
-        $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha, 
+        $query1 = "SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha, 
         rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa, cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, 
         cr.tipo_Reporte, cr.id_Reporte_Seguimiento, u.correo_Usuario, eu.nombre AS nombre_Usuario,
         CONCAT(eu.apellido_paterno,' ', IFNULL(eu.apellido_materno, '')) AS apellido_Usuario,
-        IFNULL(C.valor_Texto_Reporte, rl.titulo_Reporte) as campo_TipoIncidente
+        IFNULL(C.valor_Texto_Reporte, rl.titulo_Reporte) as campo_TipoIncidente,
+        GROUP_CONCAT(IF(A.id_Campo_Reporte = 1,A.valor_Texto_Reporte,NULL)) AS fecha_reporte,
+	    GROUP_CONCAT(IF(A.id_Campo_Reporte = 2,A.valor_Texto_Reporte,NULL)) AS hora_reporte
         FROM Reportes_Llenados rl 
             LEFT JOIN (
                 SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValoresReportes vavr
                     LEFT JOIN VW_getAllConfReportesCampos vacrc ON vacrc.id_Configuracion_Reporte = vavr.id_Configuracion_Reporte
                         WHERE vacrc.nombre_Campo = 'Tipo de Incidente'
                 ) C ON C.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+                LEFT JOIN (SELECT vrc.valor_Texto_Reporte, vrc.id_Gpo_Valores_Reporte, crc.id_Campo_Reporte
+                    FROM Valores_Reportes_Campos vrc
+                    LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte
+                ) AS A ON A.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
             LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
             LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
             LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
         WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1 AND cr.id_Proyecto = $proyecto AND cr.tipo_Reporte IN ($tipo_Reporte) 
-        AND cr.Areas RLIKE \"$area2\" ORDER BY Fecha DESC, Id_Reporte DESC");
+        AND cr.Areas RLIKE \"$area2\" 
+        GROUP BY rl.id_Gpo_Valores_Reporte
+        ORDER BY Fecha DESC, Id_Reporte DESC";
+
+        $query = $this->db->query($query1);
         //$query = $this->db->query("SELECT @first, @last");
         if ($query != FALSE) {
             while ($row = $query->fetch_object()) {
