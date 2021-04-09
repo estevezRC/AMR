@@ -3930,7 +3930,7 @@ SELECT * FROM (
                     LEFT JOIN Cat_Reportes cr ON cr.id_Reporte = rl.id_Reporte
                     LEFT JOIN Reportes_Llenados rl2 ON rl2.id_Gpo_Valores_Reporte = rl.id_Gpo_Padre
                     
-                    WHERE rl.id_Reporte IN (44) AND rl.id_Status_Elemento = 1 AND cr.id_Proyecto = $idProyecto
+                    WHERE rl.id_Reporte IN ($idReporte) AND rl.id_Status_Elemento = 1 AND cr.id_Proyecto = $idProyecto
                     group by rl.id_Gpo_Valores_Reporte) AS RES
                 WHERE
                     RES.tipo_Reporte = 3

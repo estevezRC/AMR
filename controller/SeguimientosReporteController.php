@@ -645,8 +645,36 @@ class SeguimientosReporteController extends ControladorBase
     }
 
     public function getAllComponentesByProyecto() {
+
+        switch ($this->id_Proyecto_constant) {
+            case 1:
+                $idComponente = 44;
+                break;
+            case 2:
+                $idComponente = 45;
+                break;
+            case 3:
+                $idComponente = 47;
+                break;
+            case 4:
+                $idComponente = 48;
+                break;
+            case 5:
+                $idComponente = 49;
+                break;
+            case 6:
+                $idComponente = 50;
+                break;
+            case 7:
+                $idComponente = 46;
+                break;
+            case 8:
+                $idComponente = 54;
+                break;
+        }
+
         // OBTENER PLAZAS CONFIGURADAS DEL USUARIO
-        $plazasUsuario = $this->EntidadBase->getAllComponentesReportesByIdReporteAndProyecto(44, $this->id_Proyecto_constant);
+        $plazasUsuario = $this->EntidadBase->getAllComponentesReportesByIdReporteAndProyecto($idComponente, $this->id_Proyecto_constant);
 
         echo json_encode($plazasUsuario);
     }
