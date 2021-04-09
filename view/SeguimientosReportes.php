@@ -598,7 +598,7 @@ if ($action == "index" || $action == "busqueda") { ?>
 
                     <div class="form-group" id="container_select_usuarios">
                         <label for="id_reporte" class="col-form-label">
-                            Reporte <small class="text-danger">(* obligatorio)</small>
+                            Plantilla <small class="text-danger">(* obligatorio)</small>
                         </label>
                         <select class="selectpicker form-control" id="id_reporte" name="id_reporte"
                                 data-live-search="true" title="Seleccionar Reporte" onchange="getPlantilla()" required>
@@ -612,7 +612,7 @@ if ($action == "index" || $action == "busqueda") { ?>
 
                     <div class="form-group" id="container_select_usuarios">
                         <label for="id_plantilla" class="col-form-label">
-                            Plantilla <small class="text-danger">(* obligatorio)</small>
+                            Ubicación <small class="text-danger">(* obligatorio)</small>
                         </label>
                         <select class="selectpicker form-control" id="id_Plantilla" name="id_Plantilla"
                                 data-live-search="true" title="Seleccionar Plantilla"  required>
