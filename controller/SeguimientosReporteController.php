@@ -4,6 +4,7 @@ class SeguimientosReporteController extends ControladorBase
 {
     public $conectar;
     public $adapter;
+    public $EntidadBase;
     public $id_Proyecto_constant;
 
     public function __construct()
@@ -12,7 +13,9 @@ class SeguimientosReporteController extends ControladorBase
         $this->conectar = new Conectar();
         $this->adapter = $this->conectar->conexion();
         $this->id_Proyecto_constant = $_SESSION[ID_PROYECTO_SUPERVISOR];
+        $this->EntidadBase = new EntidadBase('', $this->adapter);
         $this->url = $_SERVER["REQUEST_URI"];
+
     }
 
     /*----------------------------------- VISTA DE TODAS LOS SEGUIMIENTOS ------------------------------------------*/
@@ -78,7 +81,7 @@ class SeguimientosReporteController extends ControladorBase
         else {
             $seguimientoreporte = new ReporteLlenado($this->adapter);
             $area = $_SESSION[ID_AREA_SUPERVISOR];
-
+            $reportesUbicacion = [];
             $mensaje = $this->nombreReporteId($tipo_Reporte, 1);
             //EXCLUIR REPORTES
             switch ($tipo_Reporte) {
@@ -97,6 +100,7 @@ class SeguimientosReporteController extends ControladorBase
                         $id_SeguimientoStr = implode(",", $id_Seguimiento);
                         $noreportes = 'AND rl.id_Reporte NOT IN(' . $id_SeguimientoStr . ')';
                     }*/
+
                     $noreportes = '';
                     $tipo_Reporte1 = '0,6,7,9';
                     $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
@@ -107,6 +111,7 @@ class SeguimientosReporteController extends ControladorBase
                     $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
                     break;
                 case '3':
+                    $reportesUbicacion = $seguimientoreporte->getPlantillasByIdProyectoAndTipo($this->id_Proyecto_constant, 2);
                     $noreportes = '';
                     $tipo_Reporte1 = '3';
                     $allseguimientosreportes = $seguimientoreporte->getAllSeguimientoIncidencia($area, $usuario, $id_Proyecto, $tipo_Reporte1, $noreportes);
@@ -162,13 +167,14 @@ class SeguimientosReporteController extends ControladorBase
             }
 
 
+
             if (empty($noElementos)) {
                 $this->redirect('Plantilla', 'index');
             } else {
                 // /*
                 $this->view("index", array(
                     "allseguimientosreporte" => $allseguimientosreportes, "tipo_Reporte" => $tipo_Reporte, "mensaje" => $mensaje,
-                    "id_Reporte" => $id_Reporte, "reportesSinConfigurar" => $reportesSinConfigurar, "codigoPlano" => $tituloReporte
+                    "id_Reporte" => $id_Reporte, "reportesSinConfigurar" => $reportesSinConfigurar, "codigoPlano" => $tituloReporte, 'reportesUbicacion' => $reportesUbicacion
                 ));
 
                 // */
@@ -625,6 +631,60 @@ class SeguimientosReporteController extends ControladorBase
         //echo $activar;
         $this->redirect("LlenadosReporte", "modificarreporte&mensaje=$guardarseguimiento&id_Gpo_Valores_Reporte=$id_Gpo_Valores_Reporte&Id_Reporte=$id_Reporte");
     }
+
+    public function getAllReportesByIdPlantilla() {
+        //getAllReportesLlenadosByType
+        $id_Reporte = $_REQUEST['id_Reporte'];
+
+        // OBTENER PLAZAS CONFIGURADAS DEL USUARIO
+        $condicion = " AND rl.id_Reporte = " . $id_Reporte;
+
+        $plazasUsuario = $this->EntidadBase->getAllReportesLlenadosByType(2, $this->id_Proyecto_constant, '', $condicion);
+
+        echo json_encode($plazasUsuario);
+    }
+
+    public function getAllComponentesByProyecto() {
+        // OBTENER PLAZAS CONFIGURADAS DEL USUARIO
+        $condicion = " AND nombre_Reporte = 'Componente' ";
+
+        $plazasUsuario = $this->EntidadBase->getAllReportesLlenadosByType(3, $this->id_Proyecto_constant, '', $condicion);
+
+        echo json_encode($plazasUsuario);
+    }
+
+    public function setInventarioUbicacion() {
+        $seguimientoModel = new SeguimientoReporte($this->adapter);
+        $idPlantilla = $_REQUEST['id_Plantilla'] ?? 0;
+        $componentes = $_REQUEST['componentes'] ?? 0;
+
+        if ($idPlantilla && $componentes) {
+
+            $contador = 0;
+            foreach ($componentes as $componente) {
+                $resultado = $seguimientoModel->set_Id_Plantilla($idPlantilla)
+                    ->setComponente($componente)
+                    ->saveInventariosUbicacion();
+
+                if($resultado)
+                    $contador++;
+            }
+
+            $mensaje = $contador == 1 ? "Se registro $contador configuración" : "Se registraron $contador configuraciones";
+
+            $response = [
+                'status' => true,
+                'mensaje' => $mensaje
+            ];
+        } else
+            $response = [
+                'status' => false,
+                'mensaje' => 'Ingresar todos los datos obligatorios'
+            ];
+
+        echo json_encode($response);
+    }
+
 
 
 }

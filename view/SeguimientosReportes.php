@@ -1,5 +1,24 @@
 <script src="js/tabla.js"></script>
 <script src="js/mensaje.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+<style>
+    .dropdown-item:hover {
+        color: #43aa8b !important;
+    }
+
+    .selected {
+        padding: 3px 3px !important;
+        transform: none;
+    }
+</style>
+
 <?php
 if ($action == "index" || $action == "busqueda") { ?>
     <?php
@@ -243,6 +262,12 @@ if ($action == "index" || $action == "busqueda") { ?>
                                        href="descargables/seguimientosexcel.php?tipo_Reporte=<?php echo $tipo_Reporte; ?>"
                                        data-trigger="hover" data-content="Descargar lista" data-toggle="popover">
                                         <i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+                                <? }
+                                if (getAccess(16, $decimal)) { ?>
+                                    <a class="px-2 m-1 h4 text-white"
+                                       href="#" data-trigger="hover" data-content="Vincular inventario ubicación"
+                                       data-toggle="popover" onclick="popover('myModalAddConfiguracion')">
+                                        <i class="fas fa-link" aria-hidden="true"></i></a>
                                 <? } ?>
                             </div>
                         </div>
@@ -553,4 +578,158 @@ if ($action == "index" || $action == "busqueda") { ?>
             <? break;
     }
 } ?>
+
+
+
+
+<!-- ************************************** MODAL PARA NUEVA CONFIGURACION ***************************************** -->
+<div class="modal fade" id="myModalAddConfiguracion" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="myModalLabel"> Nueva Configuración </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="nueva_configuracion">
+
+                    <div class="form-group" id="container_select_usuarios">
+                        <label for="id_reporte" class="col-form-label">
+                            Reporte <small class="text-danger">(* obligatorio)</small>
+                        </label>
+                        <select class="selectpicker form-control" id="id_reporte" name="id_reporte"
+                                data-live-search="true" title="Seleccionar Reporte" onchange="getPlantilla()" required>
+                            <? array_map(function ($ubicacion) {
+                                echo "<option value='$ubicacion->id_Reporte' data-nombre='$ubicacion->nombre_Reporte'>
+                                        $ubicacion->nombre_Reporte
+                                    </option>";
+                            }, $reportesUbicacion); ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="container_select_usuarios">
+                        <label for="id_plantilla" class="col-form-label">
+                            Plantilla <small class="text-danger">(* obligatorio)</small>
+                        </label>
+                        <select class="selectpicker form-control" id="id_Plantilla" name="id_Plantilla"
+                                data-live-search="true" title="Seleccionar Plantilla"  required>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="container_select_plazas">
+                        <label for="componentes" class="col-form-label">
+                            Componentes <small class="text-danger">(* obligatorio)</small>
+                        </label>
+                        <select class="selectpicker form-control" id="componentes" name="componentes[]" data-live-search="true"
+                                multiple title="Seleccionar Componentes" required>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger float-right my-auto shadow">
+                        <i class="fa fa-floppy-o" aria-hidden="true"></i> Guardar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***************************************** END MODAL PARA NUEVA CONFIGURACION ********************************** -->
+
+
+<script>
+    jQuery.validator.setDefaults({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+            error.addClass('invalid-feedback');
+            element.closest('.form-group').append(error);
+        },
+        highlight: function (element) {
+            $(element).addClass('is-invalid');
+            $(element).removeClass('is-valid');
+        },
+        unhighlight: function (element) {
+            $(element).removeClass('is-invalid');
+            $(element).addClass('is-valid');
+        }
+    });
+
+    function getPlantilla() {
+        let idReporte = $('#id_reporte').val();
+        $.ajax({
+            data: {id_Reporte: idReporte},
+            url: "index.php?controller=SeguimientosReporte&action=getAllReportesByIdPlantilla",
+            method: "POST",
+            success: function (response) {
+                let respuestaJSON = $.parseJSON(response);
+                //console.log(respuestaJSON);
+                let id_Plantilla = $("#id_Plantilla");
+                id_Plantilla.empty();
+
+                let x = 0;
+                $.each(respuestaJSON, function () {
+                    id_Plantilla.append(`<option value='${respuestaJSON[x].id_Gpo_Valores_Reporte}' data-titulo='${respuestaJSON[x].titulo_Reporte}'> ${respuestaJSON[x].titulo_Reporte} </option>`);
+                    x++;
+                });
+
+                $('.selectpicker').selectpicker('refresh');
+                getComponentes();
+            }
+        });
+    }
+
+    function getComponentes() {
+        $.ajax({
+            url: "index.php?controller=SeguimientosReporte&action=getAllComponentesByProyecto",
+            method: "GET",
+            success: function (response) {
+                let respuestaJSON = $.parseJSON(response);
+                //console.log(respuestaJSON);
+                let componentes = $("#componentes");
+                componentes.empty();
+
+                let x = 0;
+                $.each(respuestaJSON, function () {
+                    componentes.append(`<option value='${respuestaJSON[x].id_Gpo_Valores_Reporte}' data-titulo='${respuestaJSON[x].titulo_Reporte}'> ${respuestaJSON[x].titulo_Reporte} </option>`);
+                    x++;
+                });
+
+                $('.selectpicker').selectpicker('refresh');
+            }
+        });
+    }
+
+    function sendData(data, event) {
+        event.preventDefault();
+        const datas = new FormData(data);
+
+        const response = $.ajax({
+            method: 'POST',
+            url: 'index.php?controller=SeguimientosReporte&action=setInventarioUbicacion',
+            contentType: false,
+            data: datas,  // mandamos el objeto formdata que se igualo a la variable data
+            processData: false,
+            cache: false
+        });
+
+        response.done(function (data) {
+            let response = $.parseJSON(data);
+            //console.log(response);
+
+            if (response.status) {
+                alertify.success(response.mensaje);
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } else {
+                alertify.error(response.mensaje);
+            }
+        });
+    }
+
+
+    $("#nueva_configuracion").validate({submitHandler: sendData});
+</script>
 

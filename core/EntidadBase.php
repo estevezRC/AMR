@@ -3891,4 +3891,15 @@ SELECT * FROM (
     }
 
     // END FUNCIONES PARA EL TIEMPO PROMEDIO DE ATENCION A INCIDENTES
+    public function getPlantillasByIdProyectoAndTipo($id_Proyecto, $tipo_Reporte)
+    {
+        $resultSet = [];
+        $query = $this->db->query("SELECT * FROM Cat_Reportes WHERE id_Proyecto = $id_Proyecto AND tipo_Reporte = $tipo_Reporte");
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+
+        $query->close();
+        return $resultSet;
+    }
 }
