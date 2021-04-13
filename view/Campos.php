@@ -5,6 +5,7 @@
 <script src="js/mensaje.js"></script>
 
 <script>
+    $('[data-toggle="tooltip"]').tooltip();
     $(document).ready(function () {
         var insercion = <?php echo $insercion; ?>;
         var elemento = '<?php echo $newElemento; ?>';
@@ -334,7 +335,7 @@
                             <!--<th style="width:15%;">Proyecto</th>-->
                             <th>Nombre del Campo</th>
                             <th>Tipo del Reactivo</th>
-                            <th>Valor Predeterminado</th>
+                            <th >Valores</th>
                             <th>Acciones</th>
                         </tr>
                         </thead>
@@ -351,7 +352,9 @@
                                     <td>
                                         <?php echo $this->nombreCampo($campo->tipo_Reactivo_Campo); ?>
                                     </td>
-                                    <td><?php echo $campo->Valor_Default; ?></td>
+                                    <td title="<?= $campo->Valor_Default; ?>"
+                                        data-placement="right"
+                                        data-toggle="tooltip"><?= substr($campo->Valor_Default, 0, 120) . '...'; ?></td>
 
                                     <td>
                                         <a href="#" data-trigger="hover" data-content="Modificar" data-toggle="popover"
