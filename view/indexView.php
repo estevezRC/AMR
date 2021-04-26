@@ -482,6 +482,12 @@ if ($controller_vistas == "Estadisticas") {
     include 'Estadisticas.php';
 }
 
+/* ------------------------------ MAPAS ---------------------------*/
+/* MAPAS */
+if ($controller_vistas == "Mapas") {
+    include 'Mapas.php';
+}
+
 ?>
 
 <script>

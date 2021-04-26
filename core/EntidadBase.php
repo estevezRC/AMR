@@ -2707,7 +2707,7 @@ AND tipo_Reporte = 2 ORDER BY titulo_Reporte ASC");
     }
 
     /*--- SEGUIMIENTO REPORTES: MAPA---*/
-    public function getUbicacionesmapaReportes($id_Proyecto, $id_Usuario, $fecha)
+    public function getUbicacionesmapaReportes($id_Proyecto, $id_Usuario, $fecha, $tipoReport)
     {
         $resultSet = array();
         $query1 = "SELECT * FROM(
@@ -2724,8 +2724,9 @@ AND tipo_Reporte = 2 ORDER BY titulo_Reporte ASC");
                             FROM Valores_Reportes_Campos vrc 
                        LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte 
                     WHERE crc.id_Campo_Reporte = 1) F ON F.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
-                ) RES WHERE RES.tipo_Reporte = 0 AND RES.latitud_Reporte != 0 AND RES.id_Proyecto = $id_Proyecto 
+                ) RES WHERE RES.tipo_Reporte IN ($tipoReport) AND RES.latitud_Reporte != 0 AND RES.id_Proyecto = $id_Proyecto 
             AND RES.id_Usuario IN ($id_Usuario) $fecha ORDER BY RES.fecha_registro";
+
         $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
