@@ -184,7 +184,7 @@
                             } */ ?>
 
                             <li>
-                                <a class="dropdown-item" href="index.php?controller=Graficas&action=mapa">
+                                <a class="dropdown-item" href="index.php?controller=Mapas&action=index">
                                     <i class="fa fa-map"></i>
                                     Mapa de ubicaciones
                                 </a>
@@ -192,7 +192,7 @@
 
                             <?php if (getAccess(1024, $decimal)) { ?>
                                 <li>
-                                    <a class="dropdown-item" href="index.php?controller=Graficas&action=mapaReportes">
+                                    <a class="dropdown-item" href="index.php?controller=Mapas&action=reportes">
                                         <!-- data-toggle="modal" data-target="#myModalMapaReportes" onclick="obtenerUsuariosLLenadosReportes()" -->
                                         <i class="fas fa-map-marked-alt"></i>
                                         Mapa de Reportes
