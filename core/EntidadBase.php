@@ -2717,13 +2717,16 @@ AND tipo_Reporte = 2 ORDER BY titulo_Reporte ASC");
             rl.nombre_Usuario AS nombre_Usuario, rl.apellido_Usuario AS apellido_Usuario,
             rl.latitud_Reporte AS latitud_Reporte, rl.longitud_Reporte AS longitud_Reporte,
             rl.Identificador AS Identificador, rl.fecha_registro AS fecha_registro,
-            F.valor_Texto_Reporte AS fechaValores
+            GROUP_CONCAT(IF(F.id_Campo_Reporte = 1,F.valor_Texto_Reporte,NULL)) AS fechaValores,
+            GROUP_CONCAT(IF(F.id_Campo_Reporte = 32,F.valor_Texto_Reporte,NULL)) AS tipoSistema
             FROM VW_getAllReportesLlenados rl
                 LEFT JOIN (
-                    SELECT vrc.valor_Texto_Reporte,vrc.id_Gpo_Valores_Reporte 
-                            FROM Valores_Reportes_Campos vrc 
-                       LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte 
-                    WHERE crc.id_Campo_Reporte = 1) F ON F.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+                    SELECT vrc.valor_Texto_Reporte,vrc.id_Gpo_Valores_Reporte, crc.id_Campo_Reporte
+						FROM Valores_Reportes_Campos vrc 
+				   LEFT JOIN Conf_Reportes_Campos crc ON crc.id_Configuracion_Reporte = vrc.id_Configuracion_Reporte 
+                   ) F ON F.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
+			    
+			    group by rl.id_Gpo_Valores_Reporte
                 ) RES WHERE RES.tipo_Reporte IN ($tipoReport) AND RES.latitud_Reporte != 0 AND RES.id_Proyecto = $id_Proyecto 
             AND RES.id_Usuario IN ($id_Usuario) $fecha ORDER BY RES.fecha_registro";
 

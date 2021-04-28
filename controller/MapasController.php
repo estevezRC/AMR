@@ -139,7 +139,23 @@ class MapasController extends ControladorBase
 
             switch ($ubicacion->nombre_Reporte) {
                 case('Sistema'):
-                    $icon = "sistema";
+                        switch ($ubicacion->tipoSistema) {
+                            case('PTZ'):
+                                $icon = "ptz";
+                                break;
+                            case('DO'):
+                                $icon = "adosamiento";
+                                break;
+                            case('COPLE'):
+                                $icon = "cople";
+                                break;
+                            case('REGISTRO FO'):
+                                $icon = "registrofo";
+                                break;
+                            default:
+                                $icon = "sistema";
+                        }
+
                     break;
                 case('Ubicación ITS'):
                     $icon = "its";

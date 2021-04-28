@@ -200,12 +200,19 @@ if ($action == "index" || $action == "busqueda") { ?>
                                 </thead>
                                 <tbody>
                                 <? if (is_array($allseguimientosreporte) || is_object($allseguimientosreporte)) {
-                                    foreach ($allseguimientosreporte as $seguimientoreporte) { ?>
+                                    foreach ($allseguimientosreporte as $seguimientoreporte) {
+                                        if($seguimientoreporte->fecha) {
+                                            $fechaSeguimiento = $seguimientoreporte->fecha;
+                                        } else {
+                                            $fechaSeguimiento = $seguimientoreporte->Fecha;
+                                        }
+                                        ?>
                                         <tr style="color:<?php echo $color; ?>;">
                                         <td><?= $seguimientoreporte->Id_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->nombre_Reporte; ?></td>
                                         <td><?= $seguimientoreporte->titulo_Reporte; ?></td>
-                                        <td><?= $this->formatearFecha($seguimientoreporte->fecha); ?></td>
+
+                                        <td><?= $this->formatearFecha($fechaSeguimiento); ?></td>
                                         <td><?= $seguimientoreporte->nombre_Usuario . " " . $seguimientoreporte->apellido_paterno . " " . $seguimientoreporte->apellido_materno; ?></td>
                                         <td>
                                             <a href="index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=<?= $seguimientoreporte->Id_Reporte; ?>&Id_Reporte=<?= $seguimientoreporte->id_Reporte2; ?>"

@@ -129,6 +129,8 @@
             var greenIcon = new indicadorMapa({iconUrl: 'img/leaflet/indicador_circulo_verde_shadow.png'});
             var yellowIcon = new indicadorMapa({iconUrl: 'img/leaflet/indicador_circulo_amarillo.png'});
             var greyIcon = new indicadorMapa({iconUrl: 'img/leaflet/indicador_circulo_gris.png'});
+            var pinkIcon = new indicadorMapa({iconUrl: 'img/leaflet/indicador_circulo_rosa.png'});
+            var orangeIcon = new indicadorMapa({iconUrl: 'img/leaflet/indicador_circulo_naranja.png'});
 
 
             $.ajax({
@@ -137,7 +139,6 @@
                 data: {'tipoReporte' : 2},
                 dataType: 'JSON',
                 success: function (data) {
-                    console.log(data);
                     data.map(({latlng, description, icon}) => {
                         let coordenadas = [parseFloat(latlng[1]),parseFloat(latlng[0])];
                         console.log(coordenadas, icon);
@@ -149,6 +150,22 @@
                             case("sistema"):
                                 iconomapa = greenIcon;
                                 icons = "Sistema";
+                                break;
+                            case("ptz"):
+                                iconomapa = orangeIcon;
+                                icons = "PTZ";
+                                break;
+                            case("adosamiento"):
+                                iconomapa = redIcon;
+                                icons = "Adosamiento";
+                                break;
+                            case("cople"):
+                                iconomapa = greyIcon;
+                                icons = "Cople";
+                                break;
+                            case("registrofo"):
+                                iconomapa = pinkIcon;
+                                icons = "Registro FO";
                                 break;
                             case("its"):
                                 iconomapa = yellowIcon;
