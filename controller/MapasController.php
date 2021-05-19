@@ -139,22 +139,22 @@ class MapasController extends ControladorBase
 
             switch ($ubicacion->nombre_Reporte) {
                 case('Sistema'):
-                        switch ($ubicacion->tipoSistema) {
-                            case('PTZ'):
-                                $icon = "ptz";
-                                break;
-                            case('DO'):
-                                $icon = "adosamiento";
-                                break;
-                            case('COPLE'):
-                                $icon = "cople";
-                                break;
-                            case('REGISTRO FO'):
-                                $icon = "registrofo";
-                                break;
-                            default:
-                                $icon = "sistema";
-                        }
+                    switch ($ubicacion->tipoSistema) {
+                        case('PTZ'):
+                            $icon = "ptz";
+                            break;
+                        case('DO'):
+                            $icon = "adosamiento";
+                            break;
+                        case('COPLE'):
+                            $icon = "cople";
+                            break;
+                        case('REGISTRO FO'):
+                            $icon = "registrofo";
+                            break;
+                        default:
+                            $icon = "sistema";
+                    }
 
                     break;
                 case('Ubicación ITS'):
@@ -173,8 +173,7 @@ class MapasController extends ControladorBase
                 'description' => "<strong> " . $ubicacion->titulo_Reporte . "</strong> &nbsp; <a target='_blank' href='index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=$ubicacion->id_Gpo_Valores_Reporte&Id_Reporte=$ubicacion->id_Reporte'> <i class='fa fa-search'></i> </a> <br><br>" .
                     $ubicacion->nombre_Reporte . "<br> <br>" .
                     $this->formatearFecha($ubicacion->fecha_registro) . " " . $this->formatearHora($ubicacion->fecha_registro) . "<br> <br>" .
-                    $ubicacion->nombre_Usuario . " " . $ubicacion->apellido_Usuario . "<br> <br>" .
-                    "<table style='width: 100%'><tr><td align='center'><img src='img/leaflet/Thales_Logo.png' class='imgThales'></td></tr></table>",
+                    $ubicacion->nombre_Usuario . " " . $ubicacion->apellido_Usuario . "<br> <br>" ,
                 "icon" => "" . $icon . ""
             ];
         }

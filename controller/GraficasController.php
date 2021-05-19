@@ -189,7 +189,7 @@ class GraficasController extends ControladorBase
         // *****************************************TABLA COMPARATIVA MENSUAL*******************************************
         setlocale(LC_TIME, 'es_ES');
         //******************** MES ACTUAL ****************
-        $split_fechames = explode('-', $fechaactuali);
+        $split_fechames = explode('-', $fechaactualf);
         $a = $split_fechames[0];
         $m = $split_fechames[1];
         $compamensualmp = $this->connectorDB->getJsonAvancesMensual($idReportesFO, $a, $m);
@@ -197,7 +197,7 @@ class GraficasController extends ControladorBase
         $m = strtoupper(strftime("%B", $nameMes->getTimestamp()));
 
         //********************* MENOS 1 MES *****************
-        $fechaDias = date("Y-m-d", strtotime($fechaactuali . "- 3 days"));
+        $fechaDias = date("Y-m-d", strtotime($fechaactualf . "- 3 days"));
         $mesmenos1 = date("Y-m-d", strtotime($fechaDias . "- 1 month"));
         $split_fechames = explode('-', $mesmenos1);
         $a1 = $split_fechames[0];
@@ -214,6 +214,7 @@ class GraficasController extends ControladorBase
         $compamensualm2 = $this->connectorDB->getJsonAvancesMensual($idReportesFO, $a2, $m2);
         $nameMes2 = DateTime::createFromFormat('!m', $m2);
         $m2 = strtoupper(strftime("%B", $nameMes2->getTimestamp()));
+
         // ******************* OBTENER INFORMACION DE ACTIVIDADES POR MES *********************
         $avanceJsonMACTUAL = $this->getActividadFromRegistro($compamensualmp);
         $avanceJsonM1 = $this->getActividadFromRegistro($compamensualm1);

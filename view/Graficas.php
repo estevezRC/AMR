@@ -143,7 +143,7 @@
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
                                         <tr style="background-color: #0C3E6D;">
-                                            <th colspan="6">Comparativa Mensual (Metros)</th>
+                                            <th colspan="6">Comparativa Mensual (Metroyuyguygyus)</th>
                                         </tr>
                                         <tr>
                                             <th>No.</th>
@@ -543,11 +543,7 @@
             var fechafin = $('#fechafin1').val();
             var idReporteInc = $('#idReporteInc').val();
 
-            if (fechainicio < '2020-10-19') {
-                alertify.notify('La Fecha Inicio debe ser mayor o igual a la fecha de inicio del proyecto', 'error', 10, null);
-            } else if (fechafin > '2021-04-30') {
-                alertify.notify('La Fecha Fin debe ser mayor o igual a la fecha fin del proyecto', 'error', 10, null);
-            } else if (fechainicio > fechafin) {
+            if (fechainicio > fechafin) {
                 alertify.notify('La Fecha Inicio Debe ser Menor a la Fecha Fin ', 'error', 3, null);
             } else {
                 var fechainicio = $('#fechainicio1').val();
@@ -573,6 +569,8 @@
                     // ASIGNACION DE FECHAS
                     let fechainicio = `<h6><strong>Fecha Inicio:</strong> ` + resultado.fechaactuali + ` </h6>`;
                     let fechafin = `<h6><strong>Fecha Fin:</strong> ` + resultado.fechaactualf + ` </h6>`;
+
+                    alertify.success('Se han filtrado las estadisticas De: ' + fechainicio + ' Al: ' + fechafin);
 
 
                     // CAMBIAR DATOS DE TABLA DE AVANCES DE FO POR PROYECTO

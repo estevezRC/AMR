@@ -10276,10 +10276,9 @@ table {
   padding: 10px; }
   .form-reporte .container-file:hover {
     background: #870e0612;
-    box-shadow: 5px 5px 10px #e0e0e0, -5px -5px 10px #ffffff; }
+    box-shadow: 5px 5px 10px #e0e0e0,
+ -5px -5px 10px #ffffff; }
 
-.panel-resumen-content .form-group {
-  border-bottom: 1px solid #005A94; }
 
 .linea-separadora {
   display: block;

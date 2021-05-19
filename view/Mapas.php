@@ -103,7 +103,7 @@
             let zoom = 5
             let token = "pk.eyJ1IjoiZ2V0aXRjb21wYW55IiwiYSI6ImNraHo4MXNxcDI0dGgycm4zOXR3YWhrcGgifQ.gjogsvX2eGpg8AJ9yM8LnA"
             let map = L.map('mapid').setView(latitudInicial, zoom, {});
-            let server = `https://${document.domain}/supervisor/thales`;
+            let server = `https://${document.domain}/supervisor/amr`;
 
 
             ///////////////////////////////////////////////////////////////
@@ -241,7 +241,7 @@
             let zoom = 5
             let token = "pk.eyJ1IjoiZ2V0aXRjb21wYW55IiwiYSI6ImNraHo4MXNxcDI0dGgycm4zOXR3YWhrcGgifQ.gjogsvX2eGpg8AJ9yM8LnA"
             let map = L.map('mapid').setView(latitudInicial, zoom, {});
-            let server = `https://${document.domain}/supervisor/thales`;
+            let server = `https://${document.domain}/supervisor/amr`;
 
 
             ///////////////////////////////////////////////////////////////
