@@ -54,14 +54,8 @@
         overflow-y: hidden;
     }
 
-    .leaflet-popup-content-wrapper {
-        height: 200px;
-        overflow-x: scroll;
-    }
-
     .imgThales {
         width: 130px !important;
-        margin-left: 25px;
         margin-top: 6px;
     }
 
@@ -82,6 +76,7 @@
 
     <div class="container-fluid flex-column justify-content-center animated fadeIn margin-top-6 slow p-0">
         <div id="mapid" class="nt-6" style="height: 100vh;"></div>
+
     </div>
 
     <script>
@@ -156,7 +151,7 @@
                                 icons = "PTZ";
                                 break;
                             case("adosamiento"):
-                                iconomapa = redIcon;
+                                iconomapa = greenIcon;
                                 icons = "Adosamiento";
                                 break;
                             case("cople"):

@@ -170,10 +170,11 @@ class MapasController extends ControladorBase
 
             $arraUbicaciones[] = [
                 'latlng' => [$ubicacion->longitud_Reporte, $ubicacion->latitud_Reporte],
-                'description' => "<strong> " . $ubicacion->titulo_Reporte . "</strong> &nbsp; <a target='_blank' href='index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=$ubicacion->id_Gpo_Valores_Reporte&Id_Reporte=$ubicacion->id_Reporte'> <i class='fa fa-search'></i> </a> <br>" .
-                    $ubicacion->nombre_Reporte . "<br>" .
-                    $this->formatearFecha($ubicacion->fecha_registro) . " " . $this->formatearHora($ubicacion->fecha_registro) . "<br>" .
-                    $ubicacion->nombre_Usuario . " " . $ubicacion->apellido_Usuario,
+                'description' => "<strong> " . $ubicacion->titulo_Reporte . "</strong> &nbsp; <a target='_blank' href='index.php?controller=ReportesLlenados&action=verreportellenado&id_Gpo_Valores_Reporte=$ubicacion->id_Gpo_Valores_Reporte&Id_Reporte=$ubicacion->id_Reporte'> <i class='fa fa-search'></i> </a> <br><br>" .
+                    $ubicacion->nombre_Reporte . "<br> <br>" .
+                    $this->formatearFecha($ubicacion->fecha_registro) . " " . $this->formatearHora($ubicacion->fecha_registro) . "<br> <br>" .
+                    $ubicacion->nombre_Usuario . " " . $ubicacion->apellido_Usuario . "<br> <br>" .
+                    "<table style='width: 100%'><tr><td align='center'><img src='img/leaflet/Thales_Logo.png' class='imgThales'></td></tr></table>",
                 "icon" => "" . $icon . ""
             ];
         }

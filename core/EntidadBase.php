@@ -1489,9 +1489,9 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllCampoReporteByAreaTipo($id_Proyecto, $id_Area, $tipo_Reporte, $noreportes)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $id_Area . "[[:>:]]";
+        $area2 = "%" . $id_Area . "%";
         $query = $this->db->query("SELECT * FROM  VW_getAllConfReportesCampos WHERE id_Proyecto = $id_Proyecto 
-        AND tipo_Reporte IN ($tipo_Reporte) $noreportes AND Areas RLIKE \"$area2\" GROUP BY id_Reporte ORDER BY nombre_Reporte ASC");
+        AND tipo_Reporte IN ($tipo_Reporte) $noreportes AND Areas LIKE \"$area2\" GROUP BY id_Reporte ORDER BY nombre_Reporte ASC");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }
@@ -1505,9 +1505,9 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllCampoReporteByIdProyectoAndArea($id_Proyecto, $id_Area)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $id_Area . "[[:>:]]";
+        $area2 = "%" . $id_Area . "%";
         $query = $this->db->query("SELECT * FROM  VW_getAllConfReportesCampos WHERE id_Proyecto = $id_Proyecto 
-                                    AND Areas RLIKE \"$area2\" GROUP BY id_Reporte ORDER BY nombre_Reporte ASC");
+                                    AND Areas LIKE \"$area2\" GROUP BY id_Reporte ORDER BY nombre_Reporte ASC");
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
         }
@@ -2048,7 +2048,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     {
         $resultSet = array();
         $consulta = "CALL sp_QueryDinamic_Reportes('$nombre_reporte','$fecha_inicio','$fecha_final','$Id_Area',$identificador_reporte,$proyecto,'$tipo_Reporte')";
-        $query = $this->db->query("$consulta");
+        $query = $this->db->query($consulta);
         if ($query != FALSE) {
             while ($row = $query->fetch_object()) {
                 $resultSet[] = $row;
@@ -2276,7 +2276,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllSeguimientoIncidencia($area, $usuario, $proyecto, $tipo_Reporte, $noreportes)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $area . "[[:>:]]";
+        $area2 = "%" . $area . "%";
         $query1 = "SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
             rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa,rl.fecha_registro AS Fecha2, 
             cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte,u.correo_Usuario,
@@ -2292,7 +2292,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
                 LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
                 LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
             WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1 $noreportes AND cr.id_Proyecto = $proyecto 
-            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas RLIKE \"$area2\" 
+            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas LIKE \"$area2\" 
             group by rl.id_Gpo_Valores_Reporte
             ORDER BY Fecha2 DESC, Id_Reporte DESC";
 
@@ -2310,7 +2310,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllReportesLlenadosPapelera($area, $proyecto, $tipo_Reporte, $status)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $area . "[[:>:]]";
+        $area2 = "%" . $area . "%";
         $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS id_Gpo_Valores_Reporte, 
         rl.fecha_registro AS Fecha, rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa, 
             cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte,u.correo_Usuario,
@@ -2320,7 +2320,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
                 LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
                 LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
             WHERE rl.id_Status_Elemento = $status AND cr.id_Status_Reporte = 1 AND cr.id_Proyecto = $proyecto 
-            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas RLIKE \"$area2\" ORDER BY Fecha DESC, id_Gpo_Valores_Reporte DESC");
+            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas LIKE \"$area2\" ORDER BY Fecha DESC, id_Gpo_Valores_Reporte DESC");
         if ($query != FALSE) {
             while ($row = $query->fetch_object()) {
                 $resultSet[] = $row;
@@ -2377,7 +2377,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllSeguimientoReporteIncidencia($area, $proyecto, $tipo_Reporte, $noreportes)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $area . "[[:>:]]";
+        $area2 = "%" . $area . "%";
         $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
             rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa, IFNULL(B.valor_Texto_Reporte,rl.fecha_registro) AS Fecha2,
             cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte, cr.id_Reporte_Seguimiento, u.correo_Usuario,
@@ -2409,7 +2409,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
                 LEFT JOIN Usuarios u ON ((`u`.`id_Usuario` = rl.`id_Usuario`))
                 LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
             WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1 $noreportes AND cr.id_Proyecto = $proyecto 
-            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas RLIKE \"$area2\" ORDER BY Fecha2 DESC, Id_Reporte DESC");
+            AND cr.tipo_Reporte IN ($tipo_Reporte) AND cr.Areas LIKE \"$area2\" ORDER BY Fecha2 DESC, Id_Reporte DESC");
         if ($query) {
             while ($row = $query->fetch_object()) {
                 $resultSet[] = $row;
@@ -2423,7 +2423,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllSeguimientoReporteIncidencia2($area, $proyecto, $tipo_Reporte)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $area . "[[:>:]]";
+        $area2 = "%" . $area . "%";
         $query1 = "SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha, 
         rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa, cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, 
         cr.tipo_Reporte, cr.id_Reporte_Seguimiento, u.correo_Usuario, eu.nombre AS nombre_Usuario,
@@ -2445,7 +2445,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
             LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
             LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
         WHERE rl.id_Status_Elemento = 1 AND cr.id_Status_Reporte = 1 AND cr.id_Proyecto = $proyecto AND cr.tipo_Reporte IN ($tipo_Reporte) 
-        AND cr.Areas RLIKE \"$area2\" 
+        AND cr.Areas LIKE \"$area2\" 
         GROUP BY rl.id_Gpo_Valores_Reporte
         ORDER BY Fecha DESC, Id_Reporte DESC";
 
@@ -2464,7 +2464,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     public function getAllPlanosByTituloReporte($area, $proyecto, $tipo_Reporte, $tituloReporte)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $area . "[[:>:]]";
+        $area2 = "%" . $area . "%";
         $query = $this->db->query("SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha_registro AS Fecha,
         rl.id_Usuario, rl.id_Reporte AS id_Reporte2, rl.titulo_Reporte, rl.id_Etapa, IFNULL(B.valor_Texto_Reporte,rl.fecha_registro) AS Fecha2,
         C.valor_Texto_Reporte AS Hora, cr.id_Proyecto, cr.Areas, cr.nombre_Reporte, cr.tipo_Reporte, cr.id_Reporte_Seguimiento,
@@ -2490,7 +2490,7 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
             LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
             LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
          WHERE rl.id_Status_Elemento = 1 AND cr.id_Proyecto = $proyecto AND cr.tipo_Reporte IN ($tipo_Reporte)
-         AND rl.titulo_Reporte = '$tituloReporte' AND cr.Areas RLIKE \"$area2\" ORDER BY Fecha2 DESC, Id_Reporte DESC");
+         AND rl.titulo_Reporte = '$tituloReporte' AND cr.Areas LIKE \"$area2\" ORDER BY Fecha2 DESC, Id_Reporte DESC");
         if ($query) {
             while ($row = $query->fetch_object()) {
                 $resultSet[] = $row;
@@ -2607,7 +2607,7 @@ WHERE rl.id_Gpo_Valores_Reporte = $id_Gpo_Valores_Reporte");
     public function getAllSeguimientoElementosByUbiAndInv($area, $id_Proyecto, $id_Reporte)
     {
         $resultSet = array();
-        $area2 = "[[:<:]]" . $area . "[[:>:]]";
+        $area2 = "%" . $area . "%";
         $query = $this->db->query("SELECT 
   rl.id_Registro_Reporte,
   rl.id_Gpo_Valores_Reporte AS Id_Reporte,
@@ -2639,7 +2639,7 @@ SELECT vavr.valor_Texto_Reporte,vavr.id_Gpo_Valores_Reporte FROM VW_getAllValore
     LEFT JOIN Usuarios u ON u.id_Usuario = rl.id_Usuario
 LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
   WHERE rl.id_Status_Elemento = 1 AND cr.id_Proyecto = $id_Proyecto AND cr.tipo_Reporte IN (2,3) AND rl.id_Reporte = $id_Reporte
-  AND cr.Areas RLIKE \"$area2\" ORDER BY Fecha2 DESC;");
+  AND cr.Areas LIKE \"$area2\" ORDER BY Fecha2 DESC;");
         //$query = $this->db->query("SELECT @first, @last");
         if ($query != FALSE) {
             while ($row = $query->fetch_object()) {

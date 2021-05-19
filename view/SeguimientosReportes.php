@@ -36,6 +36,19 @@ if ($action == "index" || $action == "busqueda") { ?>
                                     Búsqueda
                                 </h4>
                             </div>
+                            <div class="col-sm-2 d-flex justify-content-center align-items-center">
+
+                                <? if (getAccess(16, $decimal)) {
+                                    $urlWord = "descargables/reporte_busqueda_xlsx.php?id_Reporte={$_REQUEST['id_Reporte']}" .
+                                        "&fecha_Inicio={$_REQUEST['fecha_Inicio']}&fecha_Final={$_REQUEST['fecha_Final']}" .
+                                        "&palabras_clave={$_REQUEST['palabras_clave']}&identificador_reporte={$_REQUEST['identificador_reporte']}";
+                                    ?>
+                                    <a class="px-2 m-1 h4 text-white"
+                                       href="<?=$urlWord?>"
+                                       data-trigger="hover" data-content="Descargar lista" data-toggle="popover">
+                                        <i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+                                <? } ?>
+                            </div>
                         </div>
                         <div class="p-2 table-responsive-md">
                             <p class="m-0 mb-3 px-1 py-2 bg-light"><?= $mensaje; ?></p>
