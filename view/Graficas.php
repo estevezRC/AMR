@@ -143,28 +143,34 @@
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
                                         <tr style="background-color: #0C3E6D;">
-                                            <th colspan="6">Comparativa Mensual (Metroyuyguygyus)</th>
+                                            <th colspan="<?= ($totalMeses + 4)?>" id="countTitulo">Comparativa Mensual (Metros)</th>
                                         </tr>
-                                        <tr>
+                                        <tr id="mesContainer">
                                             <th>No.</th>
                                             <th>Material</th>
                                             <th>Total Avance</th>
-                                            <th id="mesactual"> <?= $m . ' ' . $a; ?></th>
-                                            <th id="mesuno"> <?= $m1 . ' ' . $a1; ?></th>
-                                            <th id="mesdos"><?= $m2 . ' ' . $a2; ?></th>
+
+                                            <?php
+                                            foreach ($arrayAvancesFOM['meses'] as $month) {
+                                                echo "<th id='mes".$month['identificador']."'>".$month['mes']."</th>";
+                                            }
+                                            ?>
+
                                         </tr>
                                         </thead>
                                         <tbody id="fomeses">
                                         <?
                                         $contador = 1;
-                                        foreach ($arrayAvancesFOM as $avance) { ?>
+                                        foreach ($arrayAvancesFOM['avance'] as $avance) { ?>
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
-                                                <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> </td>
-                                                <td> <?= $avance->valorM; ?> </td>
-                                                <td> <?= $avance->valorM1; ?> </td>
-                                                <td> <?= $avance->valorM2; ?></td>
+                                                <td> <?= $avance['nombre']; ?> </td>
+                                                <td> <?= $avance['Valor'] ?? 0; ?> </td>
+                                                <?php
+                                                    foreach ($arrayAvancesFOM['meses'] as $idMonth) {
+                                                        echo '<td>'.$avance[$idMonth['identificador']].'</td>';
+                                                    }
+                                                ?>
                                             </tr>
                                             <?
                                             $contador++;
@@ -267,28 +273,34 @@
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
                                         <tr style="background-color: #0C3E6D;">
-                                            <th colspan="6">Comparativa Mensual (Metros)</th>
+                                            <th colspan="<?= ($totalMeses + 4)?>">Comparativa Mensual (Metros)</th>
                                         </tr>
                                         <tr>
                                             <th>No.</th>
                                             <th>Material</th>
                                             <th>Total Avance</th>
-                                            <th id="mesactual"> <?= $m . ' ' . $a; ?></th>
-                                            <th id="mesuno"> <?= $m1 . ' ' . $a1; ?></th>
-                                            <th id="mesdos"><?= $m2 . ' ' . $a2; ?></th>
+                                            <div id="mesContainer">
+                                                <?php
+                                                foreach ($arrayAvancesFOM['meses'] as $month) {
+                                                    echo "<th id='mes".$month['identificador']."'>".$month['mes']."</th>";
+                                                }
+                                                ?>
+                                            </div>
                                         </tr>
                                         </thead>
                                         <tbody id="fomeses">
                                         <?
                                         $contador = 1;
-                                        foreach ($arrayAvancesFOM as $avance) { ?>
+                                        foreach ($arrayAvancesFOM['avance'] as $avance) { ?>
                                             <tr>
                                                 <td> <?= $contador; ?> </td>
-                                                <td> <?= $avance->nombre; ?> </td>
-                                                <td> <?= $avance->valor; ?> </td>
-                                                <td> <?= $avance->valorM; ?> </td>
-                                                <td> <?= $avance->valorM1; ?> </td>
-                                                <td> <?= $avance->valorM2; ?> </td>
+                                                <td> <?= $avance['nombre']; ?> </td>
+                                                <td> <?= $avance['Valor'] ?? 0; ?> </td>
+                                                <?php
+                                                foreach ($arrayAvancesFOM['meses'] as $idMonth) {
+                                                    echo '<td>'.$avance[$idMonth['identificador']].'</td>';
+                                                }
+                                                ?>
                                             </tr>
                                             <?
                                             $contador++;
@@ -630,20 +642,43 @@
                     }).join('');
 
 
-                    var fomeses = Object.values(resultado.arrayAvancesFOM).map((registro, index) => {
-                        return `<tr>
-                     <td class="text-center">${index + 1}</td>
-                    <td class="text-center">${registro.nombre} </td>
-                    <td class="text-center">${registro.valor} </td>
-                    <td class="text-center">${registro.valorM}</td>
-                    <td class="text-center">${registro.valorM1}</td>
-                    <td class="text-center">${registro.valorM2}</td>
-                </tr>`
+                    var sumaCols =  (parseInt(resultado.totalMeses, 10) + 4)
+                    $('#countTitulo').attr('colspan', sumaCols)
+
+                    var mesesCM = ` <th>No.</th>
+                                    <th>Material</th>
+                                    <th>Total Avance</th>`;
+
+                    mesesCM += Object.values(resultado.arrayAvancesFOM.meses).map((registro) => {
+                        return `
+                            <th id="mes">${registro.mes}</th>
+                        `;
                     }).join('');
 
-                    var mesactual = ` ` + resultado.m + ' ' + resultado.a + ` `;
-                    var mesuno = ` ` + resultado.m1 + ' ' + resultado.a1 + ` `;
-                    var mesdos = ` ` + resultado.m2 + ' ' + resultado.a2 + ` `;
+                    $('#mesContainer').html(mesesCM);
+
+                    console.log(resultado.arrayAvancesFOM);
+
+                    avancesCM = Object.values(resultado.arrayAvancesFOM.avance).map((registro, index) => {
+                        avanceInicial = `
+                            <tr>
+                                 <td class="text-center">${index + 1}</td>
+                                <td class="text-center">${registro.nombre} </td>
+                                <td class="text-center">${registro.Valor} </td>`;
+
+                        avanceInicial += Object.values(resultado.arrayAvancesFOM.meses).map(({mes, identificador}) => {
+                            var ids = identificador;
+                            return `<td class="text-center">${registro[ids]} </td>`;
+                        }).join('');
+
+                        avanceInicial += `</tr>`;
+
+                        return avanceInicial;
+
+                    }).join('');
+
+                    console.log(avancesCM);
+                    $('#fomeses').html(avancesCM);
 
 
                     var promedio = resultado.tiempoPromedioIncidencia.map((registro) => {
@@ -655,10 +690,7 @@
                     }).join('');
 
                     $('#promedio').html(promedio);
-                    $('#mesuno').html(mesuno);
-                    $('#mesdos').html(mesdos);
-                    $('#mesactual').html(mesactual);
-                    $('#fomeses').html(fomeses);
+
                     $('#tiempoproyecto').html(tiempoproyecto);
                     $('#tiemporesta').html(tiemporesta);
                     $('#totalincidentes').html(totalincidentes);

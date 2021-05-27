@@ -34,7 +34,7 @@ class GraficasController extends ControladorBase
         return $avanceJson;
     }
 
-    public function index()
+    public function indexBP()
     {
 
         $estadisticasExt = new Estadisticas();
@@ -268,6 +268,243 @@ class GraficasController extends ControladorBase
             'arrayAvancesFOM' => $arrayAvancesFOM, 'm' => $m, 'm1' => $m1, 'm2' => $m2, 'a' => $a, 'a1' => $a1, 'a2' => $a2,
             'tiempoPromedioIncidencia' => $tiempoPromedioIncidencia
         );
+
+        if ($_REQUEST['bandera'])
+            echo json_encode($datos);
+        else
+            $this->view("index", $datos);
+    }
+
+    public function index()
+    {
+
+        $estadisticasExt = new Estadisticas();
+
+        //date_default_timezone_set('America/Mexico_City');
+        $fechaInicio = $_REQUEST['fechainicio'];
+        $fechaFinal = $_REQUEST['fechafin'];
+        $idReporteInc = $_REQUEST['idReporteInc'];
+        $fecha_inicio_proyecto = '2020-10-19';
+
+        if (empty($fechaInicio) || empty($fechaFinal)) {
+            $fechaactuali = $fecha_inicio_proyecto . ' 00:00:00';//date('Y-m') . '-01' . ' 00:00:00';
+            $fechaactualf = date('Y-m-d') . ' 23:59:59';
+        } else {
+            $fechaactuali = $fechaInicio . ' 00:00:00';
+            $fechaactualf = $fechaFinal . ' 23:59:59';
+        }
+
+
+        $mensaje = $_GET['mensaje'];
+        if (empty($mensaje)) {
+            $mensaje = "<i class='fa fa-bar-chart' aria-hidden='true'></i> Dashboard ";
+        }
+
+
+        // ************************************* GRAFICA DE USUARIOS ***************************************************
+        $allUser = $this->connectorDB->getAllUsuariosReportesTotal($this->id_Proyecto_constant);
+        $resul = array();
+        $i = 0;
+        $n = 0;
+        $nuevoResultado = [];
+        if (is_array($allUser) || is_object($allUser)) {
+            foreach ($allUser as $user) {
+                $resul[$i][0] = $user->nombre;
+                $resul[$i][1] = $user->total;
+                array_push($nuevoResultado, ['user' => $user->nombre, 'reportes' => $user->total]);
+                $i++;
+            }
+        }
+        $resulNombre = array();
+        if (is_array($allUser) || is_object($allUser)) {
+            foreach ($allUser as $username) {
+                $resulNombrel[$n][0] = $username->nombre;
+                $n++;
+            }
+        }
+
+
+        // *************************************** GRAFICA DE REPORTES *************************************************
+        $allReportes = $this->connectorDB->getGraficaReportes($this->id_Proyecto_constant);
+        //var_dump($allReportes);
+        $reportes = [];
+        if (is_array($allReportes) || is_object($allReportes)) {
+            foreach ($allReportes as $key => $reporte) {
+                if ($key < 7) {
+                    $arrayreportes[$key][0] = $reporte->nombre_Reporte;
+                    $arrayreportes[$key][1] = $reporte->cantidad;
+                    array_push($reportes, ['nombre' => $reporte->nombre_Reporte, 'cantidad' => $reporte->cantidad]);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // *************************************************************************************************************
+        // *************************************************************************************************************
+        // ***************************** SECCION DE ASIGNACION DE IDS DE REPORTES POR PROYECTO *************************
+        // *************************************************************************************************************
+
+        if ($this->id_Proyecto_constant == 1) { // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+            $idReportesInv = 41;
+            $idReportesFO = 4;
+            $idReporteInc = 2;
+            $idProyecto = 1;
+        }
+        if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
+            $idReportesInv = 68;
+            $idReportesFO = 8;
+            $idReporteInc = 9;
+            $idProyecto = 2;
+        }
+        if ($this->id_Proyecto_constant == 3) { // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+            $idReportesInv = 78;
+            $idReportesFO = 13;
+            $idReporteInc = 15;
+            $idProyecto = 3;
+        }
+        if ($this->id_Proyecto_constant == 4) { // PROYECTO Tramo D. Matamoros - Reynosa
+            $idReportesInv = 84;
+            $idReportesFO = 29;
+            $idReporteInc = 30;
+            $idProyecto = 4;
+        }
+        if ($this->id_Proyecto_constant == 5) { // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+            $idReportesInv = 90;
+            $idReportesFO = 24;
+            $idReporteInc = 25;
+            $idProyecto = 5;
+        }
+        if ($this->id_Proyecto_constant == 6) { // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+            $idReportesInv = 96;
+            $idReportesFO = 19;
+            $idReporteInc = 20;
+            $idProyecto = 6;
+        }
+        if ($this->id_Proyecto_constant == 8) { // PROYECTO Entrenamiento
+            $idReportesInv = 57;
+            $idReportesFO = 59;
+            $idReporteInc = '2,9,15,30,25,20';
+            $idProyecto = '1,2,3,4,5,6';
+        }
+        if ($this->id_Proyecto_constant == 10) { // PROYECTO Administración
+            $idReportesInv = '41,68,78,84,90,96,57';
+            $idReportesFO = '4,8,13,29,24,19,59';
+            $idReporteInc = '2,9,15,30,25,20';
+            $idProyecto = '1,2,3,4,5,6';
+        }
+
+        // ************************************ FECHAS PARA DIVERSOS CASOS *********************************************
+        $fecha = " AND fecha_registro >= '$fechaactuali' AND fecha_registro <= '$fechaactualf'";
+        $fechainv = " AND fecha >= '$fechaactuali' AND fecha <= '$fechaactualf'";
+        $fechaFO = " fecha >= '$fechaactuali' AND fecha <= '$fechaactualf'";
+        $fechaIncidente = "AND CONCAT(A.valor_Texto_Reporte,' ', B.valor_Texto_Reporte) >= '$fechaactuali' AND CONCAT(A.valor_Texto_Reporte,' ', B.valor_Texto_Reporte) <= '$fechaactualf'";
+
+        // ************************************** DATOS PARA TABLA DE INVENTARIO ***************************************
+        $estadisticas = $this->connectorDB->getEstadisticasReportes($idReportesInv, $fechainv);
+
+        // ********************************** AVANCES DEL REPORTE DE FO POR PORYECTO ***********************************
+        $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO, $fechaFO);
+        $avanceJson = $this->getActividadFromRegistro($resultados);
+        $arrayAvancesFO = $estadisticasExt->procesarJsonByProyectoFO($avanceJson);
+
+        // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
+        $resultadosgeneral = $this->connectorDB->getJsonAvancesFO($idReportesFO, $fechaFO);
+        $resultadoA = $this->connectorDB->getJsonAvancesFO(4, $fechaFO);
+        $resultadoB = $this->connectorDB->getJsonAvancesFO(8, $fechaFO);
+        $resultadoC = $this->connectorDB->getJsonAvancesFO(13, $fechaFO);
+        $resultadoD = $this->connectorDB->getJsonAvancesFO(29, $fechaFO);
+        $resultadoE = $this->connectorDB->getJsonAvancesFO(24, $fechaFO);
+        $resultadoF = $this->connectorDB->getJsonAvancesFO(19, $fechaFO);
+
+        // OBTENER JSON DE REGISTROS
+        $avanceJsonG = $this->getActividadFromRegistro($resultadosgeneral);
+        $avanceJsonA = $this->getActividadFromRegistro($resultadoA);
+        $avanceJsonB = $this->getActividadFromRegistro($resultadoB);
+        $avanceJsonC = $this->getActividadFromRegistro($resultadoC);
+        $avanceJsonD = $this->getActividadFromRegistro($resultadoD);
+        $avanceJsonE = $this->getActividadFromRegistro($resultadoE);
+        $avanceJsonF = $this->getActividadFromRegistro($resultadoF);
+        $arrayAvancesFOG = $estadisticasExt->procesarJsonProyectoVG($avanceJsonG, $avanceJsonA, $avanceJsonB, $avanceJsonC, $avanceJsonD, $avanceJsonE, $avanceJsonF);
+
+        // *****************************************TABLA COMPARATIVA MENSUAL*******************************************
+        setlocale(LC_TIME, 'es_ES');
+        //******************** MES ACTUAL ****************
+
+        // SE ARMA PARA VER LA DIFERENCIA ENTRE DOS FECHAS
+        $fechainicial = new DateTime($fechaactuali);
+        $fechafinal = new DateTime($fechaactualf);
+        $diferencia = $fechainicial->diff($fechafinal);
+        $meses = $diferencia->format('%m');
+
+        $arrayInformacion = [];
+        for ($i = 0; $i <= $meses; $i++) {
+            $mesmenos1 = date("Y-m-d", strtotime($fechaactualf . "- $i month"));
+            $split_fechames = explode('-', $mesmenos1);
+            $a = $split_fechames[0];
+            $m = $split_fechames[1];
+            $compamensualm1 = $this->connectorDB->getJsonAvancesMensual($idReportesFO, $a, $m);
+            $nameMes1 = DateTime::createFromFormat('!m', $m);
+            $m1 = strtoupper(strftime("%B", $nameMes1->getTimestamp()));
+            $avanceJson = $this->getActividadFromRegistro($compamensualm1);
+
+            $arrayInformacion[] = ['meses' => $m1 . ' ' . $a, 'identificador' => $m.$a,  'avanceJson' => $avanceJson];
+        }
+
+
+        $arrayAvancesFOM = $estadisticasExt->procesarJsonMensualBackup($arrayInformacion);
+
+
+
+        //*********************************Tiempo Transcurrido del proyecto*********************************************
+        $fechaactual = date('Y-m-d');
+        $tiempoproyecto = $this->connectorDB->gettipotranscurridoproyecto($fechaactual)[0];
+
+        // ************************************** DATO INCIDENCIA CERRADO/ABIERTO***************************************
+        // INCIDENTES ABIERTOS - CERADOS
+        $totalabierto = $this->connectorDB->getAllIncidentesByStatus($idReporteInc, $fecha, 2)[0];
+        $totalcerrado = $this->connectorDB->getAllIncidentesByStatus($idReporteInc, $fecha,5)[0];
+        $totalincidentes = $totalabierto->registro_incidentes + $totalcerrado->registro_incidentes;
+
+        // OBTENER TIEMPO PROMEDIO DE ATENCION DE INCIDENCIA
+        $tiempoPromedioIncidencia = $estadisticasExt->tiempoPromedioIncidente($fechaIncidente, $idProyecto);
+
+        //*************************************** TOTAL DE REGISTROS ***************************************************
+        $idreportes = $this->connectorDB->getidsreporte($idProyecto);
+        if ($idreportes) {
+            $res = array();
+            for ($i = 0; $i < count($idreportes); $i++) {
+                $res[$i] = $idreportes[$i]->id_Reporte;
+            }
+            $idsstring = implode(",", $res);
+            $getregistros = $this->connectorDB->getregistros($idsstring, $fecha);
+            $resgistropormes = 0;
+            for ($i = 0; $i < count($getregistros); $i++) {
+                $resgistropormes = $resgistropormes + $getregistros[$i]->id_Status_Elemento;
+            }
+            //*****************registros por usuario******************
+            $resgistroporusuario = $this->connectorDB->getregistrosporusuarios($idsstring, $fecha);
+        }
+
+        // ************************************* CAMBIO DE FORMATO DE FECHAS *******************************************
+        $originalDateI = $fechaactuali;
+        $fechaactuali = date("d/m/Y", strtotime($originalDateI)) . ' ' . '00:00:00';
+        $originalDateF = $fechaactualf;
+        $fechaactualf = date("d/m/Y", strtotime($originalDateF)) . ' ' . ' 23:59:59';
+
+        // ***************************** ARRAY DE DATOS CON TODOS LOS CALCULOS *****************************************
+
+        $datos = array(
+            'resul' => $resul, 'resulNombrel' => $resulNombrel, 'allReportes' => $arrayreportes, 'mensaje' => $mensaje,
+            'nuevoResul' => $nuevoResultado, 'reportes' => $reportes, 'estadisticas' => $estadisticas,
+            'arrayAvancesFO' => $arrayAvancesFO, 'totalabierto' => $totalabierto, 'totalincidentes' => $totalincidentes,
+            'totalcerrado' => $totalcerrado, 'idReporteInc' => $idReporteInc, 'resgistropormes' => $resgistropormes,
+            'resgistroporusuario' => $resgistroporusuario, 'tiempoproyecto' => $tiempoproyecto,
+            'arrayAvancesFOG' => $arrayAvancesFOG, 'fechaactuali' => $fechaactuali, 'fechaactualf' => $fechaactualf,
+            'arrayAvancesFOM' => $arrayAvancesFOM, 'totalMeses' => $meses, 'tiempoPromedioIncidencia' => $tiempoPromedioIncidencia
+        );
+
+
 
         if ($_REQUEST['bandera'])
             echo json_encode($datos);

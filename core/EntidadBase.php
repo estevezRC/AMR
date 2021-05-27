@@ -3886,6 +3886,7 @@ SELECT * FROM (
                         WHERE vacrc.nombre_Campo = 'Hora'
                         ) B ON B.id_Gpo_Valores_Reporte = rl.id_Gpo_Valores_Reporte
             WHERE rl.id_Etapa = 5 AND vrc.valor_Texto_Reporte = '$tipo' AND id_Proyecto IN($idProyecto) $fechaIncidente";
+
         $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
             $resultado[] = $row;

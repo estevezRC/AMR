@@ -521,6 +521,134 @@ class Estadisticas extends ControladorBase
         return $arrayAvancesFOM;
     }
 
+
+    // FUNCION PARA PROCESAR JSON ESTADISTICAS TRIMESTAL
+    public function procesarJsonMensualBackup($avanceJsonMACTUAL)
+    {
+        $arrayMonth = [];
+        $arrayAvancesFOM = [
+            0 => [
+                'nombre' => 'Tritubo',
+                'Valor' => 0,
+            ],
+            1 => [
+                'nombre' => 'Pruebas',
+                'Valor' => 0,
+            ],
+            2 => [
+                'nombre' => 'Inmersión FO',
+                'Valor' => 0,
+            ],
+            3 => [
+                'nombre' => 'Reposición de asfalto',
+                'Valor' => 0,
+            ],
+            4 => [
+                'nombre' => 'Relleno fluido',
+                'Valor' => 0,
+            ],
+            5 => [
+                'nombre' => 'Cople',
+                'Valor' => 0,
+            ],
+            6 => [
+                'nombre' => 'Registro',
+                'Valor' => 0,
+            ],
+            7 => [
+                'nombre' => 'Zanjado',
+                'Valor' => 0,
+            ],
+        ];
+
+        $trituboCount = 0;
+        $pruebasCount = 0;
+        $inmersionFOCount = 0;
+        $reposicionASCount = 0;
+        $rellenoFluidoCount = 0;
+        $copleCount = 0;
+        $regisCount = 0;
+        $zanjadoCount = 0;
+
+        foreach ($avanceJsonMACTUAL as $avanceCM) {
+            $mes = $avanceCM['meses'];
+            $identificador = $avanceCM['identificador'];
+            $avanceCMJson = $avanceCM['avanceJson'];
+
+            for ($i = 0; $i < count($arrayAvancesFOM); $i++) {
+                $arrayAvancesFOM[$i][$identificador] = 0;
+            }
+
+            $arrayMonth[] = ['mes' => $mes, 'identificador' => $identificador];
+            if ($avanceCMJson) {
+                foreach ($avanceCMJson as $registro) {
+                    if (is_array($registro->Valores) || is_object($registro->Valores)) {
+                        foreach ($registro->Valores as $valor) {
+                            foreach ($valor->Valor as $opcionesCampos) {
+
+                                if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo') {
+                                    $tritubo = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[0][$identificador] += $tritubo;
+                                    $trituboCount += $tritubo;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas') {
+                                    $pruebas = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[1][$identificador] += $pruebas;
+                                    $pruebasCount += $pruebas;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO') {
+                                    $inmersionFO = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[2][$identificador] += $inmersionFO;
+                                    $inmersionFOCount += $inmersionFO;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
+                                    $reposicionAsfalto = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[3][$identificador] += $reposicionAsfalto;
+                                    $reposicionASCount += $reposicionAsfalto;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
+                                    $zanjado = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[4][$identificador] += $zanjado;
+                                    $zanjadoCount += $zanjado;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
+                                    $rellenoFluido = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[5][$identificador] += $rellenoFluido;
+                                    $rellenoFluidoCount += $rellenoFluido;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Cople') {
+                                    $cople = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[6][$identificador] += $cople;
+                                    $copleCount += $cople;
+
+                                } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
+                                    $regiss = $this->diffCadenamiento($valor->Valor);
+                                    $arrayAvancesFOM[7][$identificador] = $regiss;
+                                    $regisCount += $regiss;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                for ($i = 0; $i < count($arrayAvancesFOM); $i++) {
+                    $arrayAvancesFOM[$i][$identificador] = 0;
+                }
+            }
+        }
+        $arrayAvancesFOM[0]['Valor'] = $trituboCount;
+        $arrayAvancesFOM[1]['Valor'] = $pruebasCount;
+        $arrayAvancesFOM[2]['Valor'] = $inmersionFOCount;
+        $arrayAvancesFOM[3]['Valor'] = $reposicionASCount;
+        $arrayAvancesFOM[4]['Valor'] = $rellenoFluidoCount;
+        $arrayAvancesFOM[5]['Valor'] = $copleCount;
+        $arrayAvancesFOM[6]['Valor'] = $regisCount;
+        $arrayAvancesFOM[7]['Valor'] = $zanjadoCount;
+
+        return ['avance' => $arrayAvancesFOM, 'meses' => $arrayMonth];
+    }
+
     public function tratamientoTiempo($valor, $texto1, $texto2)
     {
         if ($valor == 0)
@@ -574,12 +702,16 @@ class Estadisticas extends ControladorBase
         foreach ($tipoIncidentes as $tipo) {
             // OBTENER TODOS LOS INCIDENTES POR TIPO
             $registrosIncidentes = $registro->getAllIncidentesByTipo($tipo, $idProyecto, $fechaIncidente);
+
+
             if ($registrosIncidentes) {
                 foreach ($registrosIncidentes as $incidente) {
                     $cantidadIncidencia++;
                     // OBTENER ULTIMO SEGUIMIENTO (ES QUE VALIDO EL INCIDENTE)
                     $seguimiento = $registro->getSeguimientoValidadoByIncidente($incidente->id_Gpo_Valores_Reporte)[0];
+
                     $incidente_seguimiento[] = ['incidente' => $incidente, 'seguimiento' => $seguimiento];
+
 
                     // REALIZAR RESTA ENTRE FECHA/HORA INCIDENTE  -  FECHA/HORA SEGUIMIENTO
                     $date1 = new DateTime("{$incidente->fecha_reporte}");
@@ -593,6 +725,7 @@ class Estadisticas extends ControladorBase
                         $dias = $diff->days;
 
                     $sumaIncidencia += ($dias * 24 * 60 * 60) + ($diff->h * 60 * 60) + ($diff->i * 60) + $diff->s;
+
                 }
 
                 // REALIZAR LA DIVISION DE LA SUMA/CANTIDAD-INCIDENTE POR CADA TIPO DE INCIDENTE
