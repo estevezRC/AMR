@@ -273,19 +273,19 @@
                                     <table id="example" class="table table-striped p-3">
                                         <thead class="bg-primary text-light">
                                         <tr style="background-color: #0C3E6D;">
-                                            <th colspan="<?= ($totalMeses + 4)?>">Comparativa Mensual (Metros)</th>
+                                            <th colspan="<?= ($totalMeses + 4)?>" id="countTitulo">Comparativa Mensual (Metro)</th>
                                         </tr>
-                                        <tr>
+                                        <tr id="mesContainer">
                                             <th>No.</th>
                                             <th>Material</th>
                                             <th>Total Avance</th>
-                                            <div id="mesContainer">
-                                                <?php
-                                                foreach ($arrayAvancesFOM['meses'] as $month) {
-                                                    echo "<th id='mes".$month['identificador']."'>".$month['mes']."</th>";
-                                                }
-                                                ?>
-                                            </div>
+
+                                            <?php
+                                            foreach ($arrayAvancesFOM['meses'] as $month) {
+                                                echo "<th id='mes".$month['identificador']."'>".$month['mes']."</th>";
+                                            }
+                                            ?>
+
                                         </tr>
                                         </thead>
                                         <tbody id="fomeses">

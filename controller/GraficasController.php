@@ -284,16 +284,14 @@ class GraficasController extends ControladorBase
         $fechaInicio = $_REQUEST['fechainicio'];
         $fechaFinal = $_REQUEST['fechafin'];
         $idReporteInc = $_REQUEST['idReporteInc'];
-        $fecha_inicio_proyecto = '2020-10-19';
 
         if (empty($fechaInicio) || empty($fechaFinal)) {
-            $fechaactuali = $fecha_inicio_proyecto . ' 00:00:00';//date('Y-m') . '-01' . ' 00:00:00';
+            $fechaactuali = '2020-10-19 00:00:00';//date('Y-m') . '-01' . ' 00:00:00';
             $fechaactualf = date('Y-m-d') . ' 23:59:59';
         } else {
             $fechaactuali = $fechaInicio . ' 00:00:00';
             $fechaactualf = $fechaFinal . ' 23:59:59';
         }
-
 
         $mensaje = $_GET['mensaje'];
         if (empty($mensaje)) {
@@ -344,55 +342,60 @@ class GraficasController extends ControladorBase
         // *************************************************************************************************************
         // ***************************** SECCION DE ASIGNACION DE IDS DE REPORTES POR PROYECTO *************************
         // *************************************************************************************************************
+        $idProyecto = $this->id_Proyecto_constant;
+        switch ($this->id_Proyecto_constant) {
+            case 1:
+                // PROYECTO Tramo A. Monterrey - Nuevo Laredo
+                $idReportesInv = 41;
+                $idReportesFO = 4;
+                $idReporteInc = 2;
+                break;
+            case 2:
+                // PROYECTO Tramo B. Cadereyta - Reynosa
+                $idReportesInv = 68;
+                $idReportesFO = 8;
+                $idReporteInc = 9;
+                break;
+            case 3:
+                // PROYECTO Tramo C. Libramiento de Reynosa Sur II
+                $idReportesInv = 78;
+                $idReportesFO = 13;
+                $idReporteInc = 15;
+                break;
+            case 4:
+                // PROYECTO Tramo D. Matamoros - Reynosa
+                $idReportesInv = 84;
+                $idReportesFO = 29;
+                $idReporteInc = 30;
+                break;
+            case 5:
+                // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
+                $idReportesInv = 90;
+                $idReportesFO = 24;
+                $idReporteInc = 25;
+                break;
+            case 6:
+                // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
+                $idReportesInv = 96;
+                $idReportesFO = 19;
+                $idReporteInc = 20;
+                break;
+            case 8:
+                // PROYECTO Entrenamiento
+                $idReportesInv = 57;
+                $idReportesFO = 59;
+                $idReporteInc = '2,9,15,30,25,20';
+                $idProyecto = '1,2,3,4,5,6';
+                break;
+            case 10:
+                // PROYECTO Administración
+                $idReportesInv = '41,68,78,84,90,96,57';
+                $idReportesFO = '4,8,13,29,24,19,59';
+                $idReporteInc = '2,9,15,30,25,20';
+                $idProyecto = '1,2,3,4,5,6';
+                break;
+        }
 
-        if ($this->id_Proyecto_constant == 1) { // PROYECTO Tramo A. Monterrey - Nuevo Laredo
-            $idReportesInv = 41;
-            $idReportesFO = 4;
-            $idReporteInc = 2;
-            $idProyecto = 1;
-        }
-        if ($this->id_Proyecto_constant == 2) { // PROYECTO Tramo B. Cadereyta - Reynosa
-            $idReportesInv = 68;
-            $idReportesFO = 8;
-            $idReporteInc = 9;
-            $idProyecto = 2;
-        }
-        if ($this->id_Proyecto_constant == 3) { // PROYECTO Tramo C. Libramiento de Reynosa Sur II
-            $idReportesInv = 78;
-            $idReportesFO = 13;
-            $idReporteInc = 15;
-            $idProyecto = 3;
-        }
-        if ($this->id_Proyecto_constant == 4) { // PROYECTO Tramo D. Matamoros - Reynosa
-            $idReportesInv = 84;
-            $idReportesFO = 29;
-            $idReporteInc = 30;
-            $idProyecto = 4;
-        }
-        if ($this->id_Proyecto_constant == 5) { // PROYECTO Tramo E. Puente Internacional Reynosa - Pharr
-            $idReportesInv = 90;
-            $idReportesFO = 24;
-            $idReporteInc = 25;
-            $idProyecto = 5;
-        }
-        if ($this->id_Proyecto_constant == 6) { // PROYECTO Tramo F. Puente internacional Ignacio Zaragoza
-            $idReportesInv = 96;
-            $idReportesFO = 19;
-            $idReporteInc = 20;
-            $idProyecto = 6;
-        }
-        if ($this->id_Proyecto_constant == 8) { // PROYECTO Entrenamiento
-            $idReportesInv = 57;
-            $idReportesFO = 59;
-            $idReporteInc = '2,9,15,30,25,20';
-            $idProyecto = '1,2,3,4,5,6';
-        }
-        if ($this->id_Proyecto_constant == 10) { // PROYECTO Administración
-            $idReportesInv = '41,68,78,84,90,96,57';
-            $idReportesFO = '4,8,13,29,24,19,59';
-            $idReporteInc = '2,9,15,30,25,20';
-            $idProyecto = '1,2,3,4,5,6';
-        }
 
         // ************************************ FECHAS PARA DIVERSOS CASOS *********************************************
         $fecha = " AND fecha_registro >= '$fechaactuali' AND fecha_registro <= '$fechaactualf'";
@@ -407,6 +410,7 @@ class GraficasController extends ControladorBase
         $resultados = $this->connectorDB->getJsonAvancesFO($idReportesFO, $fechaFO);
         $avanceJson = $this->getActividadFromRegistro($resultados);
         $arrayAvancesFO = $estadisticasExt->procesarJsonByProyectoFO($avanceJson);
+
 
         // ******************************** DATOS PARA SECCION DE AVANCES DE FO ****************************************
         $resultadosgeneral = $this->connectorDB->getJsonAvancesFO($idReportesFO, $fechaFO);

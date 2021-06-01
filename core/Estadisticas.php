@@ -135,9 +135,6 @@ class Estadisticas extends ControladorBase
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
                             $arrayAvancesFOG->reposicionAsfalto->valor += $this->diffCadenamiento($valor->Valor);
 
-                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
-                            $arrayAvancesFOG->zanjado->valor += $this->diffCadenamiento($valor->Valor);
-
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
                             $arrayAvancesFOG->rellenofluido->valor += $this->diffCadenamiento($valor->Valor);
 
@@ -146,6 +143,8 @@ class Estadisticas extends ControladorBase
 
                         } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
                             $arrayAvancesFOG->registro->valor += $this->diffCadenamiento($valor->Valor);
+                        } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
+                            $arrayAvancesFOG->zanjado->valor += $this->diffCadenamiento($valor->Valor);
 
                         }
                     }
@@ -589,42 +588,42 @@ class Estadisticas extends ControladorBase
                                 if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Tritubo') {
                                     $tritubo = $this->diffCadenamiento($valor->Valor);
                                     $arrayAvancesFOM[0][$identificador] += $tritubo;
-                                    $trituboCount += $tritubo;
+                                    $arrayAvancesFOM[0]['Valor'] += $tritubo;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Pruebas') {
                                     $pruebas = $this->diffCadenamiento($valor->Valor);
                                     $arrayAvancesFOM[1][$identificador] += $pruebas;
-                                    $pruebasCount += $pruebas;
+                                    $arrayAvancesFOM[1]['Valor'] += $pruebas;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Inmersión FO') {
                                     $inmersionFO = $this->diffCadenamiento($valor->Valor);
                                     $arrayAvancesFOM[2][$identificador] += $inmersionFO;
-                                    $inmersionFOCount += $inmersionFO;
+                                    $arrayAvancesFOM[2]['Valor'] += $inmersionFO;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Reposición de asfalto') {
                                     $reposicionAsfalto = $this->diffCadenamiento($valor->Valor);
                                     $arrayAvancesFOM[3][$identificador] += $reposicionAsfalto;
-                                    $reposicionASCount += $reposicionAsfalto;
+                                    $arrayAvancesFOM[3]['Valor'] += $reposicionAsfalto;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Zanjado') {
                                     $zanjado = $this->diffCadenamiento($valor->Valor);
-                                    $arrayAvancesFOM[4][$identificador] += $zanjado;
-                                    $zanjadoCount += $zanjado;
+                                    $arrayAvancesFOM[7][$identificador] += $zanjado;
+                                    $arrayAvancesFOM[7]['Valor'] += $zanjado;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Relleno fluido') {
                                     $rellenoFluido = $this->diffCadenamiento($valor->Valor);
-                                    $arrayAvancesFOM[5][$identificador] += $rellenoFluido;
-                                    $rellenoFluidoCount += $rellenoFluido;
+                                    $arrayAvancesFOM[4][$identificador] += $rellenoFluido;
+                                    $arrayAvancesFOM[4]['Valor'] += $rellenoFluido;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Cople') {
                                     $cople = $this->diffCadenamiento($valor->Valor);
-                                    $arrayAvancesFOM[6][$identificador] += $cople;
-                                    $copleCount += $cople;
+                                    $arrayAvancesFOM[5][$identificador] += $cople;
+                                    $arrayAvancesFOM[5]['Valor'] += $cople;
 
                                 } else if ($opcionesCampos->idCampo == 35 && $opcionesCampos->valorCampo == 'Registro') {
                                     $regiss = $this->diffCadenamiento($valor->Valor);
-                                    $arrayAvancesFOM[7][$identificador] = $regiss;
-                                    $regisCount += $regiss;
+                                    $arrayAvancesFOM[6][$identificador] = $regiss;
+                                    $arrayAvancesFOM[6]['Valor'] += $regiss;
                                 }
                             }
                         }
@@ -637,14 +636,14 @@ class Estadisticas extends ControladorBase
                 }
             }
         }
-        $arrayAvancesFOM[0]['Valor'] = $trituboCount;
+        /*$arrayAvancesFOM[0]['Valor'] = $trituboCount;
         $arrayAvancesFOM[1]['Valor'] = $pruebasCount;
         $arrayAvancesFOM[2]['Valor'] = $inmersionFOCount;
         $arrayAvancesFOM[3]['Valor'] = $reposicionASCount;
         $arrayAvancesFOM[4]['Valor'] = $rellenoFluidoCount;
         $arrayAvancesFOM[5]['Valor'] = $copleCount;
         $arrayAvancesFOM[6]['Valor'] = $regisCount;
-        $arrayAvancesFOM[7]['Valor'] = $zanjadoCount;
+        $arrayAvancesFOM[7]['Valor'] = $zanjadoCount; */
 
         return ['avance' => $arrayAvancesFOM, 'meses' => $arrayMonth];
     }
