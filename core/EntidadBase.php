@@ -449,7 +449,13 @@ SELECT rl.id_Registro_Reporte, rl.id_Gpo_Valores_Reporte AS Id_Reporte, rl.fecha
     /*--- USUARIOS: LOGUEAR ---*/
     public function LogUser($correo, $password)
     {
-        $query = $this->db->query("CALL SP_logUser('$correo', '$password')");
+        $query = $this->db->query("SELECT u.id_Usuario, u.id_Empresa, u.id_Area, eu.nombre, 
+        eu.apellido_paterno, eu.apellido_materno, u.correo_Usuario, u.password_Usuario, u.nip_Usuario, u.fecha_Usuario, 
+        u.fotografia_Usuario, u.id_Status_Usuario
+        FROM Usuarios u
+            LEFT JOIN Areas_Empresas a ON a.id_Area = u.id_Area
+            LEFT JOIN empleados_usuarios eu ON eu.id_usuario = u.id_Usuario
+        WHERE u.correo_Usuario = '$correo' AND u.password_Usuario = AES_ENCRYPT('$password','getitcom_2017')");
         if (!$query) {
             $row_cnt = 0;
         } else {
@@ -3960,6 +3966,18 @@ SELECT * FROM (
                 WHERE
                     RES.tipo_Reporte = 3
                 ORDER BY RES.id_Reporte";
+        $query = $this->db->query($query1);
+        while ($row = $query->fetch_object()) {
+            $resultSet[] = $row;
+        }
+
+        $query->close();
+        return $resultSet;
+    }
+
+    public function getCampoEspecialJsonByIdGpoAndIdConf($id_Gpo, $id_Configuracion) {
+        $resultSet = [];
+        $query1 = "SELECT * FROM Valores_Reportes_Campos WHERE id_Gpo_Valores_Reporte = $id_Gpo AND id_Configuracion_Reporte = $id_Configuracion";
         $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;

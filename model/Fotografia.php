@@ -276,6 +276,14 @@ class Fotografia extends EntidadBase
         return $mensaje;
     }
 
+    public function updateIdGpoValoresFoto($idGpoOld, $id_GpoNew) {
+        $query = "UPDATE Fotografias SET id_Fotografia = $id_GpoNew WHERE id_Fotografia = $idGpoOld";
+        $save = $this->db()->query($query);
+        $mensaje = "Se guardo la clasificación";
+        //$this->db()->error;
+        return $mensaje;
+    }
+
 }
 
 ?>

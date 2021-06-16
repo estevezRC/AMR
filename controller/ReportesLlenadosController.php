@@ -369,7 +369,7 @@ class ReportesLlenadosController extends ControladorBase
             "logos" => $logos, "porcentajeReporte" => $porcentaje, "id_Reporte_Seguimiento" => $id_Reporte_Seguimiento,
             "datosIdAndName" => $datosIdAndName, "allRegistrosTablas" => $allRegistrosTablas,
             "allEmpleados" => $allEmpleados, "horasTrabajadas" => $horasTrabajadas, "subCamposMultiple" => $subcampos, "id_Reporte" => $id_Reporte,
-            "anteriorPagina" => $previousPage, "siguientePagina" =>$nextPage
+            "anteriorPagina" => $previousPage, "siguientePagina" => $nextPage
         ));
         // */
 
@@ -409,85 +409,85 @@ class ReportesLlenadosController extends ControladorBase
 //        $last_id = $guardarcomentario['Resultado'];
         //var_dump($guardarcomentario);
 //        if ($last_id != 0 || $last_id != NULL) {
-            //echo $last_id;
+        //echo $last_id;
 
-            //FOTOGRAFIA
-            if (!empty($_FILES["img_comentario"]['name'])) {
+        //FOTOGRAFIA
+        if (!empty($_FILES["img_comentario"]['name'])) {
 
-                $fecha_mes = date("F");
-                $fecha_mes = strtolower($fecha_mes);
-                $fecha_mes = substr($fecha_mes, 0, 3);
-                $año_dia = date("dy");
-                $hora = date("His");
+            $fecha_mes = date("F");
+            $fecha_mes = strtolower($fecha_mes);
+            $fecha_mes = substr($fecha_mes, 0, 3);
+            $año_dia = date("dy");
+            $hora = date("His");
 
-                // Obtener ultimo Comentario insertado
-                $ultimoComentario = $comentario->getAllValorMaxComentarios();
+            // Obtener ultimo Comentario insertado
+            $ultimoComentario = $comentario->getAllValorMaxComentarios();
 
-                //CARGAR IMAGEN
-                $nombre_img = $_FILES["img_comentario"]['name'];
-                $tipo_img = $_FILES['img_comentario']['type'];
-                $extension = explode(".", $nombre_img);
-                $nombre_imagen = $id_Gpo . "_" . $fecha_mes . $año_dia . "_" . $hora . "." . $extension[1];
-                $nombre_imagen = str_replace(' ', '', $nombre_imagen);
-                $target_path = "img/comentarios/";
+            //CARGAR IMAGEN
+            $nombre_img = $_FILES["img_comentario"]['name'];
+            $tipo_img = $_FILES['img_comentario']['type'];
+            $extension = explode(".", $nombre_img);
+            $nombre_imagen = $id_Gpo . "_" . $fecha_mes . $año_dia . "_" . $hora . "." . $extension[1];
+            $nombre_imagen = str_replace(' ', '', $nombre_imagen);
+            $target_path = "img/comentarios/";
 
-                if (!is_dir($target_path)) {
-                    mkdir($target_path, 0777, true);
-                }
-
-                $target_path = $target_path . basename($nombre_imagen);
-                $img = "img/comentarios/" . $nombre_imagen;
-                if (move_uploaded_file($_FILES["img_comentario"]['tmp_name'], $target_path)) {
-                    $foto = 1;
-
-                    //REGISTRAR FOTO EN TABLA FOTOGRAFIAS
-                    $llenadofotografia = new Fotografia($this->adapter);
-                    $llenadofotografia->set_id_Usuario($_SESSION[ID_USUARIO_SUPERVISOR]);
-                    $llenadofotografia->set_id_Modulo(7);
-                    $llenadofotografia->set_identificador_Fotografia($ultimoComentario);
-                    $llenadofotografia->set_directorio_Fotografia('');
-                    $nombre_Fotografia = str_replace('img/comentarios/', '', $img);
-                    $llenadofotografia->set_nombre_Fotografia($nombre_Fotografia);
-                    $llenadofotografia->set_descripcion_Fotografia(NULL);
-                    $llenadofotografia->set_orientacion_Fotografia(0);
-                    $save_fotografia = $llenadofotografia->saveNewFotografia();
-
-                } else {
-                    $foto = 0;
-                }
-
+            if (!is_dir($target_path)) {
+                mkdir($target_path, 0777, true);
             }
 
+            $target_path = $target_path . basename($nombre_imagen);
+            $img = "img/comentarios/" . $nombre_imagen;
+            if (move_uploaded_file($_FILES["img_comentario"]['tmp_name'], $target_path)) {
+                $foto = 1;
 
-        $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
-
-    }
-
-   /* public function guardarfotocomentario()
-    {
-        $id_Usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
-        $last_id = $_GET['last_id'];
-        $img = $_GET['img'];
-        $foto = $_GET['foto'];
-        $id_Gpo = $_GET['id_Gpo_Valores_Reporte'];
-        $id_Reporte = $_GET['Id_Reporte'];
-        if ($last_id != 0 || $last_id != NULL) {
-            if ($foto == 1) {
+                //REGISTRAR FOTO EN TABLA FOTOGRAFIAS
                 $llenadofotografia = new Fotografia($this->adapter);
-                $llenadofotografia->set_id_Usuario($id_Usuario);
+                $llenadofotografia->set_id_Usuario($_SESSION[ID_USUARIO_SUPERVISOR]);
                 $llenadofotografia->set_id_Modulo(7);
-                $llenadofotografia->set_identificador_Fotografia($last_id);
+                $llenadofotografia->set_identificador_Fotografia($ultimoComentario);
                 $llenadofotografia->set_directorio_Fotografia('');
                 $nombre_Fotografia = str_replace('img/comentarios/', '', $img);
                 $llenadofotografia->set_nombre_Fotografia($nombre_Fotografia);
                 $llenadofotografia->set_descripcion_Fotografia(NULL);
                 $llenadofotografia->set_orientacion_Fotografia(0);
                 $save_fotografia = $llenadofotografia->saveNewFotografia();
+
+            } else {
+                $foto = 0;
             }
+
         }
 
+
         $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
-    }*/
+
+    }
+
+    /* public function guardarfotocomentario()
+     {
+         $id_Usuario = $_SESSION[ID_USUARIO_SUPERVISOR];
+         $last_id = $_GET['last_id'];
+         $img = $_GET['img'];
+         $foto = $_GET['foto'];
+         $id_Gpo = $_GET['id_Gpo_Valores_Reporte'];
+         $id_Reporte = $_GET['Id_Reporte'];
+         if ($last_id != 0 || $last_id != NULL) {
+             if ($foto == 1) {
+                 $llenadofotografia = new Fotografia($this->adapter);
+                 $llenadofotografia->set_id_Usuario($id_Usuario);
+                 $llenadofotografia->set_id_Modulo(7);
+                 $llenadofotografia->set_identificador_Fotografia($last_id);
+                 $llenadofotografia->set_directorio_Fotografia('');
+                 $nombre_Fotografia = str_replace('img/comentarios/', '', $img);
+                 $llenadofotografia->set_nombre_Fotografia($nombre_Fotografia);
+                 $llenadofotografia->set_descripcion_Fotografia(NULL);
+                 $llenadofotografia->set_orientacion_Fotografia(0);
+                 $save_fotografia = $llenadofotografia->saveNewFotografia();
+             }
+         }
+
+         $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
+     }*/
 
 
     public function editarcomentario()
@@ -579,6 +579,150 @@ class ReportesLlenadosController extends ControladorBase
 
         //echo $guardarconf;
         $this->redirect("ReportesLlenados", "verreportellenado&id_Gpo_Valores_Reporte=$id_Gpo&Id_Reporte=$id_Reporte");
+    }
+
+    public function migrateinformationReports()
+    {
+        $reportesLlenados = new ReporteLlenado($this->adapter);
+        $entidadBase = new EntidadBase('', $this->adapter);
+        $llenadoreporte = new LlenadoReporte($this->adapter);
+        $fotografia = new Fotografia($this->adapter);
+
+        $OLD_id_Gpo = [2113,2112,2108,2101,2099,2096,2068,2060,2057,2056,2048,2047,2046,2038,2037,2036,2035,2030,1955,1954,1938,1937,1936,1814,1813,1802,1794,1793,1207,1199,1187,1163,1162,1080,1032,1004,1003,998,947,946,814,813,805,804,738,693,692,691,690];
+        $id_Reporte = 66;
+
+        $arraNewIDs = [];
+
+        for($i = 0; $i < count($OLD_id_Gpo); $i++) {
+            sleep(2);
+            // Se saca la informacion del campo especial para el cadenamiento inicial
+            $jsonCadenamiento = $entidadBase->getCampoEspecialJsonByIdGpoAndIdConf($OLD_id_Gpo[$i], 56)[0];
+            $json = $jsonCadenamiento->valor_Texto_Reporte;
+            $json = json_decode($json, true);
+            foreach ($json as $dataValores) {
+                foreach ($dataValores[0]['Valor'] as $dataValor) {
+                    if ($dataValor['idCampo'] == 29) {
+                        $cadenamientoInicial = $dataValor['valorCampo'];
+                    }
+                }
+            }
+
+            $arraCamposOLD = [];
+            // Se extraen los valores pasados del registro a migrar al nuevo
+            $valoresReportesOld = $entidadBase->getReporteLlenadoById($OLD_id_Gpo[$i]);
+            foreach ($valoresReportesOld as $dataOldReport) {
+                if ($dataOldReport->id_Configuracion_Reporte != 56 && $dataOldReport->id_Configuracion_Reporte != 57) {
+                    $arraCamposOLD[] = [
+                        'reactivo' => $dataOldReport->tipo_Reactivo_Campo,
+                        'valor' => $dataOldReport->valor_Texto_Reporte,
+                        'descripcion' => $dataOldReport->descripcion_Campo
+                    ];
+                }
+            }
+
+
+            $arraCamposOLD[] = [
+                'reactivo' => 'text-cadenamiento',
+                'valor' => $cadenamientoInicial,
+                'descripcion' => 'Cadenamiento_Inicial'
+            ];
+            $arraCamposOLD[] = [
+                'reactivo' => 'select',
+                'valor' => 'REGISTRO FO',
+                'descripcion' => 'Tipo'
+            ];
+
+
+            $camposReporte = $entidadBase->getAllCampoReporteByIdReporte($id_Reporte);
+            $NEW_id_Gpo_Valores = $entidadBase->getUltimoReporteLlenado();
+            $NEW_id_Gpo_Valores += 1;
+
+
+            foreach ($camposReporte as $campo) {
+                $campoimagen = $campo->tipo_Reactivo_Campo;
+                $idconfiguracionreporte = $campo->id_Configuracion_Reporte;
+                $descripcionCampo = $campo->descripcion_Campo;
+                foreach ($arraCamposOLD as $camposOld) {
+                    $reactivo =  $camposOld['reactivo'];
+                    $valorCampo = $camposOld['valor'];
+                    $descriptiva = $camposOld['descripcion'];
+                    if ($campoimagen == "date" && $reactivo == "date") {
+                        echo $campoimagen . ' FECHA ' . $idconfiguracionreporte . '<br>';
+                        $llenadoreporte->set_id_Proyecto('2');
+                        $llenadoreporte->set_id_Configuracion_Reporte($idconfiguracionreporte);
+                        $llenadoreporte->set_valor_Entero_Reporte('NULL');
+                        $llenadoreporte->set_valor_Texto_Reporte($valorCampo);
+                        $llenadoreporte->set_id_Gpo_Valores_Reporte($NEW_id_Gpo_Valores);
+                        $save = $llenadoreporte->saveNewLlenado();
+                    }
+
+                    if ($campoimagen == "time" && $reactivo == "time") {
+                        echo $campoimagen . ' TIME ' . $idconfiguracionreporte . '<br>';
+                        $llenadoreporte->set_id_Proyecto('2');
+                        $llenadoreporte->set_id_Configuracion_Reporte($idconfiguracionreporte);
+                        $llenadoreporte->set_valor_Entero_Reporte('NULL');
+                        $llenadoreporte->set_valor_Texto_Reporte($valorCampo);
+                        $llenadoreporte->set_id_Gpo_Valores_Reporte($NEW_id_Gpo_Valores);
+                        $save = $llenadoreporte->saveNewLlenado();
+                    }
+
+                    if ($campoimagen == "textarea" && $reactivo == "textarea") {
+                        if($descripcionCampo == "Descripción" && $descriptiva == "Descripción") {
+                            echo $campoimagen . ' Descripcion TxtArea ' . $idconfiguracionreporte . '<br>';
+                            $llenadoreporte->set_id_Proyecto('2');
+                            $llenadoreporte->set_id_Configuracion_Reporte($idconfiguracionreporte);
+                            $llenadoreporte->set_valor_Entero_Reporte('NULL');
+                            $llenadoreporte->set_valor_Texto_Reporte($valorCampo);
+                            $llenadoreporte->set_id_Gpo_Valores_Reporte($NEW_id_Gpo_Valores);
+                            $save = $llenadoreporte->saveNewLlenado();
+                        }
+
+                        if($descripcionCampo == "Observaciones" && $descriptiva == "Observaciones") {
+                            echo $campoimagen . ' Observaciones textarea ' . $idconfiguracionreporte . '<br>';
+                            $llenadoreporte->set_id_Proyecto('2');
+                            $llenadoreporte->set_id_Configuracion_Reporte($idconfiguracionreporte);
+                            $llenadoreporte->set_valor_Entero_Reporte('NULL');
+                            $llenadoreporte->set_valor_Texto_Reporte($valorCampo);
+                            $llenadoreporte->set_id_Gpo_Valores_Reporte($NEW_id_Gpo_Valores);
+                            $save = $llenadoreporte->saveNewLlenado();
+                        }
+                    }
+
+                    if ($campoimagen == "select" && $reactivo == "select") {
+                        echo $campoimagen . ' SELECT ' . $idconfiguracionreporte . '<br>';
+                        $llenadoreporte->set_id_Proyecto('2');
+                        $llenadoreporte->set_id_Configuracion_Reporte($idconfiguracionreporte);
+                        $llenadoreporte->set_valor_Entero_Reporte('NULL');
+                        $llenadoreporte->set_valor_Texto_Reporte($valorCampo);
+                        $llenadoreporte->set_id_Gpo_Valores_Reporte($NEW_id_Gpo_Valores);
+                        $save = $llenadoreporte->saveNewLlenado();
+                    }
+
+                    if ($campoimagen == "text-cadenamiento" && $reactivo == "text-cadenamiento") {
+                        echo $campoimagen . ' text-cadenamiento ' . $idconfiguracionreporte . '<br>';
+                        $llenadoreporte->set_id_Proyecto('2');
+                        $llenadoreporte->set_id_Configuracion_Reporte($idconfiguracionreporte);
+                        $llenadoreporte->set_valor_Entero_Reporte('NULL');
+                        $llenadoreporte->set_valor_Texto_Reporte($valorCampo);
+                        $llenadoreporte->set_id_Gpo_Valores_Reporte($NEW_id_Gpo_Valores);
+                        $save = $llenadoreporte->saveNewLlenado();
+                    }
+                }
+            }
+
+            $fotografia->updateIdGpoValoresFoto($OLD_id_Gpo[$i], $NEW_id_Gpo_Valores);
+
+            $reportesLlenados->changeTypeReportByIdGpoAndIdReport($OLD_id_Gpo[$i], $NEW_id_Gpo_Valores ,$id_Reporte, 2);
+
+            $arraNewIDs[] = ['gpoValores' => $NEW_id_Gpo_Valores, 'status' => 'True'];
+        }
+
+
+
+        echo '<pre>';
+        print_r($arraNewIDs);
+        echo '<pre>';
+
     }
 
 }

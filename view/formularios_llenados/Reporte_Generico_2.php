@@ -119,7 +119,7 @@ if ($noarchivos > 0 || $noimg > 0) {
 
             <div class="form-group" id="lbl_title" data-id="lbl_title">
                 <label class="font-weight-bold">Título:</label>
-                <label> <?php echo $allreportellenado[0]->titulo_Reporte; ?></label>
+                <label> <?= $allreportellenado[0]->id_Gpo_Valores_Reporte . ' - ' . $allreportellenado[0]->titulo_Reporte; ?></label>
             </div>
 
             <?php if ($allreportellenado[0]->Identificador != '') { ?>

@@ -267,6 +267,19 @@ class ReporteLlenado extends EntidadBase
 
     }
 
+    public function changeTypeReportByIdGpoAndIdReport($id_Gpo, $new_Id_Gpo, $id_Report, $clas_Reporte) {
+        $query = "INSERT INTO Reportes_Llenados (id_Gpo_Valores_Reporte, Comentarios_Reporte, id_Status_Elemento, 
+        fecha_registro, id_Usuario, id_Reporte, titulo_Reporte, reporte_Modificado, id_Tiempo, id_Etapa,
+        id_Gpo_Padre, latitud_Reporte, longitud_Reporte, clas_Reporte) 
+        SELECT $new_Id_Gpo AS id_Gpo_Valores_Reporte, rl.Comentarios_Reporte, rl.id_Status_Elemento, 
+        rl.fecha_registro, rl.id_Usuario, $id_Report AS id_Reporte, rl.titulo_Reporte, 
+        rl.reporte_Modificado, rl.id_Tiempo, rl.id_Etapa, rl.id_Gpo_Padre, rl.latitud_Reporte, rl.longitud_Reporte, $clas_Reporte AS clas_Reporte
+        FROM Reportes_Llenados as rl
+        WHERE rl.id_Gpo_Valores_Reporte = $id_Gpo";
+        $save = $this->db()->query($query);
+    }
+
+
 }
 
 ?>

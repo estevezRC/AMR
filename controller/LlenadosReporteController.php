@@ -1402,7 +1402,8 @@ class LlenadosReporteController extends ControladorBase
                 $llenadoreporte->set_valor_Entero_Reporte('NULL');
                 $llenadoreporte->set_valor_Texto_Reporte($valores);
                 $llenadoreporte->set_id_Gpo_Valores_Reporte($grupovalores);
-                // ***** QUITAR COMENTARIO       $save = $llenadoreporte->modificarLlenado();
+
+                $save = $llenadoreporte->modificarLlenado();
                 if ($idconfiguracionreporte == $arrayreportellenado[$contador]->id_Configuracion_Reporte) {
                     $contador++;
                 }
