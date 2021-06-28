@@ -95,14 +95,42 @@ class ReportesController extends ControladorBase
     /*-------------------------------------- MANUALES DEL SISTEMA -----------------------------------------*/
     public function ayuda()
     {
-        $registros = $this->connectorDB->getAllVideosManuales();
-        $mensaje = "Material de Ayuda";
+        $bandera = $_REQUEST['bandera'];
+        $palabrasClave = $_REQUEST['palabrasClave'];
+        $clasificacion = $_REQUEST['clasificacion'];
+        $plataforma = $_REQUEST['plataforma'];
+        $condicion = "";
+
+        if($bandera) {
+            if(!empty($clasificacion) && $clasificacion != '')
+                $condicion .= " AND clasificacion = '{$clasificacion}'";
+
+            if(!empty($plataforma) && $plataforma != ''){
+
+                $condicion .= " AND plataforma IN({$plataforma})";
+            }
 
 
-        $this->view("index", array(
-            "mensaje" => $mensaje,
-            'registros' => $registros
-        ));
+            if(!empty($palabrasClave) && $palabrasClave != '')
+                $condicion .= " AND MATCH(palabras_clave) AGAINST ('{$palabrasClave}' IN NATURAL LANGUAGE MODE)";
+
+
+            $registros = $this->connectorDB->getAllVideosManuales($condicion);
+
+        } else
+            $registros = $this->connectorDB->getAllVideosManuales('');
+
+        $mensaje = "Manuales y Tutoriales";
+
+        if($bandera) {
+            echo json_encode(['mensaje' => 'Elementos filtrados correctamente', 'status' => true, 'data' => $registros]);
+        } else {
+            $this->view("index", array(
+                "mensaje" => $mensaje,
+                'registros' => $registros
+            ));
+        }
+
     }
 
     /*-------------------------------------------- VISTA MODIFICAR REPORTE -------------------------------------------*/
@@ -519,6 +547,11 @@ class ReportesController extends ControladorBase
         $extension = '';
         $mReporte = new Reporte($this->adapter);
         $tituloVideo = $_REQUEST['tituloVideo'];
+        $descripcion = $_REQUEST['descripcion'];
+        $palabrasClave = $_REQUEST['palabrasClave'];
+        $clasifiacion = $_REQUEST['clasificacion'];
+        $plataforma = $_REQUEST['plataforma'];
+        $version = $_REQUEST['version'];
         if ($_FILES['video_file']['tmp_name']) {
             $nombre_archivo = $_FILES['video_file']['name'];
             $nombre_archivo = strtolower(str_replace(' ', '_', $nombre_archivo));
@@ -545,6 +578,11 @@ class ReportesController extends ControladorBase
             if (move_uploaded_file($_FILES['video_file']['tmp_name'], $ruta)) {
                 $mReporte->setTitulo($tituloVideo)
                     ->setRutaVideo($extension.'/'.$nombre_archivo)
+                    ->setDescripcion($descripcion)
+                    ->setPalabrasClave($palabrasClave)
+                    ->setClasificacion($clasifiacion)
+                    ->setPlataforma($plataforma)
+                    ->setVersion($version)
                     ->saveNewVideoManual();
 
                 $data = array(

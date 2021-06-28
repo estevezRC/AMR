@@ -18,7 +18,13 @@ class Reporte extends EntidadBase
     private $id_video;
     private $titulo;
     private $ruta_video;
+    private $descripcion;
+    private $palabrasClave;
+    private $clasificacion;
+    private $plataforma;
+    private $version;
     private $status;
+
 
 
     public function __construct($adapter)
@@ -194,6 +200,36 @@ class Reporte extends EntidadBase
         return $this;
     }
 
+    public function setDescripcion($descripcion): Reporte
+    {
+        $this->descripcion = $descripcion;
+        return $this;
+    }
+
+    public function setPalabrasClave($palabrasClave): Reporte
+    {
+        $this->palabrasClave = $palabrasClave;
+        return $this;
+    }
+
+    public function setClasificacion($clasificacion): Reporte
+    {
+        $this->clasificacion = $clasificacion;
+        return $this;
+    }
+
+    public function setPlataforma($plataforma): Reporte
+    {
+        $this->plataforma = $plataforma;
+        return $this;
+    }
+
+    public function setVersion($version): Reporte
+    {
+        $this->version = $version;
+        return $this;
+    }
+
     public function setStatus($status): Reporte
     {
         $this->status = $status;
@@ -255,12 +291,14 @@ class Reporte extends EntidadBase
 
     public function saveNewVideoManual()
     {
-        $query = "INSERT INTO videos_manuales (titulo, ruta_video, status) VALUES ('$this->titulo', '$this->ruta_video', '1')";
-        if ($this->db()->query($query)) {
+        $query = "INSERT INTO videos_manuales (titulo, ruta_video, descripcion, palabras_clave, clasificacion, plataforma, version, status) 
+            VALUES ('$this->titulo', '$this->ruta_video', '$this->descripcion', '$this->palabrasClave', '$this->clasificacion', 
+            '$this->plataforma', '$this->version', '1')";
+        if ($this->db()->query($query))
             return true;
-        } else {
+        else
             return false;
-        }
+
     }
 
    public function truncateTable() {

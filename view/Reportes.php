@@ -1,6 +1,140 @@
 <script src="js/tabla.js"></script>
 
 <script src="js/mensaje.js"></script>
+<script src="js/utils/utils.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js" integrity="sha512-VvWznBcyBJK71YKEKDMpZ0pCVxjNuKwApp4zLF3ul+CiflQi6aIJR+aZCP/qWsoFBA28avL5T5HA+RE+zrGQYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+
+    .label-info {
+        background-color: #5bc0de;
+    }
+
+    .label {
+        display: inline;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+    }
+
+    .bootstrap-tagsinput {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        display: inline-block;
+        padding: 4px 6px;
+        color: #555;
+        vertical-align: middle;
+        border-radius: 4px;
+        max-width: 100%;
+        line-height: 22px;
+        cursor: text;
+    }
+    .bootstrap-tagsinput input {
+        border: none;
+        box-shadow: none;
+        outline: none;
+        background-color: transparent;
+        padding: 0 6px;
+        margin: 0;
+        width: auto;
+        max-width: inherit;
+    }
+    .bootstrap-tagsinput.form-control input::-moz-placeholder {
+        color: #777;
+        opacity: 1;
+    }
+    .bootstrap-tagsinput.form-control input:-ms-input-placeholder {
+        color: #777;
+    }
+    .bootstrap-tagsinput.form-control input::-webkit-input-placeholder {
+        color: #777;
+    }
+    .bootstrap-tagsinput input:focus {
+        border: none;
+        box-shadow: none;
+    }
+    .bootstrap-tagsinput .tag {
+        margin-right: 2px;
+        color: white;
+    }
+    .bootstrap-tagsinput .tag [data-role="remove"] {
+        margin-left: 8px;
+        cursor: pointer;
+    }
+    .bootstrap-tagsinput .tag [data-role="remove"]:after {
+        content: "x";
+        padding: 0px 2px;
+    }
+    .bootstrap-tagsinput .tag [data-role="remove"]:hover {
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    .bootstrap-tagsinput .tag [data-role="remove"]:hover:active {
+        box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    }
+
+    /*
+ * bootstrap-tagsinput v0.8.0
+ *
+ */
+
+    .twitter-typeahead .tt-query,
+    .twitter-typeahead .tt-hint {
+        margin-bottom: 0;
+    }
+
+    .twitter-typeahead .tt-hint
+    {
+        display: none;
+    }
+
+    .tt-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        float: left;
+        min-width: 160px;
+        padding: 5px 0;
+        margin: 2px 0 0;
+        list-style: none;
+        font-size: 14px;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+        background-clip: padding-box;
+        cursor: pointer;
+    }
+
+    .tt-suggestion {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: normal;
+        line-height: 1.428571429;
+        color: #333333;
+        white-space: nowrap;
+    }
+
+    .tt-suggestion:hover,
+    .tt-suggestion:focus {
+        color: #ffffff;
+        text-decoration: none;
+        outline: 0;
+        background-color: #428bca;
+    }
+
+</style>
 
 <?php
 $accion = $_GET['accion'];
@@ -500,8 +634,130 @@ $accion = $_GET['accion'];
 
         });
 
+        $('#formFiltersAyuda').submit(function(evento) {
+            evento.preventDefault();
+            const $inputs = $('#formFiltersAyuda').serializeArray();
+            const test = $('#formFiltersAyuda');
+            let dataFormToSend = {
+                plataforma: '',
+                palabrasClave: '',
+            };
+            $inputs.map( (input) => {
+                console.log(input)
+                if (input.name === 'movil' || input.name === 'web') {
+                    dataFormToSend.plataforma += input.name ? input.name+',' : '';
+                } else {
+                dataFormToSend[input.name] = input.value ? input.value : '';
+                }
+            } );
+            dataFormToSend.plataforma = dataFormToSend.plataforma.substring(0, dataFormToSend.plataforma.length - 1)
+            dataFormToSend['bandera'] = true;
 
+            $.ajax({
+                type: 'POST',  // Envío con método POST
+                url: "./index.php?controller=Reportes&action=ayuda",
+                data: dataFormToSend, // Datos que se envían
+            }).done(function (msg) {
+                const json = JSON.parse(msg);
+                console.log(json)
+                const newTemplateManuales = json.data.map( (e) => {
+                    const urlAssetArray = e.ruta_video.split('.');
+                    const currentExtensionFile = urlAssetArray[urlAssetArray.length - 1];
+                    const option =
+                        (currentExtensionFile === 'mp4' || currentExtensionFile === 'jpeg')
+                            ? 'visual' : 'documento';
+
+                    const objectOptions = {
+                        visual: generateHtmlVideo(e),
+                        documento: generateHtmlDocument(e),
+                    };
+                    return objectOptions[option];
+                });
+
+                function generateHtmlVideo(e) {
+                    return `
+                        <div class="col-6 mb-3">
+                            <div class="card p-3 rounded">
+                                <div class="col-12">
+                                        <video controls style="height: 200px; width: 100%;">
+                                            <source src="videoManuales/${e.ruta_video}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-center align-items-center">
+                                        <div class="col-12">
+                                            <p class="card-text"><b>Título: </b>${e.titulo}</p>
+                                            <p class="card-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="${e.description}">
+                                            <b>Descripción: </b>
+                                             ${e.descripcion.substring(0, 50)}
+                                            </p>
+                                            <p class="card-text"><b>Clasificación: </b>${e.clasificacion}</p>
+                                            <p class="card-text"><b>Versión: </b>${e.version}</p>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                function generateHtmlDocument(e) {
+                    const urlAssetArray = e.ruta_video.split('.');
+                    const currentExtensionFile = urlAssetArray[urlAssetArray.length - 1];
+                    return `
+                        <div class="col-sm-6" style="padding-bottom: 3em;">
+                            <div class="card text-center rounded">
+                                <div class="row">
+                                    <div class="card-body d-flex justify-content-center align-items-center col-8">
+                                        <a style="text-decoration: none" href="videoManuales/${e.ruta_video}"
+                                        target="_blank">
+                                            <p class="card-text"><b>Título: </b>${e.titulo}</p>
+                                            <p class="card-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="${e.description}">
+                                                <b>Descripción: </b>
+                                                ${e.descripcion.substring(0, 50)}
+                                            </p>
+                                            <p class="card-text"><b>Clasificación: </b>${e.clasificacion}</p>
+                                            <p class="card-text"><b>Versión: </b>${e.version}</p>
+                                        </a>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-center align-items-center">
+                                        <a class="w-100 p-4" href="videoManuales/${e.ruta_video}" target="_blank">
+                                            <img src="videoManuales/file-${currentExtensionFile}.svg"
+                                            class="text-danger" alt="Imagen Extension">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+
+                const containerManuales = $('#dataFiltered');
+                const resultadosContainer = $('#resultadosContainer');
+                const mainResultsContainer = $('#mainResultsContainer');
+
+                resultadosContainer.removeClass('hidden');
+                resultadosContainer.addClass('show');
+                mainResultsContainer.removeClass('show');
+                mainResultsContainer.addClass('hidden');
+
+                containerManuales.html(newTemplateManuales);
+              }).fail(function (jqXHR, textStatus, errorThrown) { // Función que se ejecuta si algo ha ido mal
+                $("#consola").html("The following error occured: " + textStatus + " " + errorThrown);
+            });
+        });
     });
+
+    function changeClassesResults() {
+        const resultadosContainer = $('#resultadosContainer');
+        const mainResultsContainer = $('#mainResultsContainer');
+
+        resultadosContainer.removeClass('show');
+        resultadosContainer.addClass('hidden');
+        mainResultsContainer.removeClass('hidden');
+        mainResultsContainer.addClass('show');
+    }
 
     function enviarDatosForDuplicar() {
         let accion = 0;
@@ -818,6 +1074,34 @@ $accion = $_GET['accion'];
                             <label for="tituloVideo" class="form-control-label">Titulo</label>
                             <input type="text" name="tituloVideo" id="tituloVideo" class="form-control">
                         </div>
+                        <div class="col-lg-12">
+                            <label for="descripcion" class="form-control-label">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" class="form-control" rows="4" cols="50"></textarea>
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="palabrasClave" class="form-control-label">Palabras Clave</label>
+                            <input type="text" name="palabrasClave" id="palabrasClave" class="form-control">
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="clasificacion" class="form-control-label">Clasificación</label>
+                            <select name="clasificacion" id="clasificacion" class="form-control">
+                                <option value="Administracion">Administración</option>
+                                <option value="Usuarios">Usuarios</option>
+                                <option value="Fotografias">Cargar Fotografías</option>
+                                <option value="Configuracion">Configuración</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="plataforma" class="form-control-label">Plataforma</label>
+                            <select name="plataforma" id="plataforma" class="form-control">
+                                <option value="Web">Web</option>
+                                <option value="Movil">Móvil</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="version" class="form-control-label">Versión</label>
+                            <input type="text" name="version" id="version" class="form-control">
+                        </div>
                         <div class="col-lg-12 mt-1">
                             <label for="Cargar archivo" class="form-control-label">Cargar Archivo</label>
                             <input type="file" name="video_file" id="video_file" class="form-control">
@@ -941,6 +1225,7 @@ if (($action == "index") || ($action == "modificar")) { ?>
     <div class="container-fluid flex-column justify-content-center p-3 animated fadeIn slow">
         <div class="row pt-4 d-flex justify-content-center">
             <div class="col-11 p-0 shadow">
+
                 <div class="w-100 d-flex justify-content-between mb-3 bg-gradient-secondary rounded-top">
                     <div class="col-sm-10 d-flex align-items-center">
                         <h4 class="text-white m-0 py-2">
@@ -958,106 +1243,263 @@ if (($action == "index") || ($action == "modificar")) { ?>
                 </div>
 
                 <div class="card ">
-                    <div class="w-100 d-flex justify-content-between mb-3 bg-primary rounded-top">
-                        <div class="col-sm-10 d-flex align-items-center">
-                            <h4 class="text-white m-0 py-2">
-                                <i class="fas fa-book"></i> Manuales de ayuda </h4>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <?php
-                            $info = '';
-                            $extension = '';
-                            if (is_array($registros) || is_object($registros)) {
-                                foreach ($registros as $registroVideo) {
-                                    $info = new SplFileInfo($registroVideo->ruta_video);
-                                    $extension = $info->getExtension();
-                                    if ($extension == 'docx' || $extension == 'xlsx' || $extension == 'pdf') {
-                                        ?>
-                                        <div class="col-sm-3" style="padding-bottom: 3em;">
-                                            <div class="card text-center">
-                                                <a href="videoManuales/<?php echo $registroVideo->ruta_video; ?>" style="padding: 5%" target="_blank">
-                                                    <img src="videoManuales/file-<?= $extension; ?>.svg"
-                                                         class="text-danger" alt="Imagen Extension" style="max-width: 55%;">
-                                                </a>
-                                                <div class="card-body text-center" style="margin-top: 0em;">
-                                                    <h5 class="card-title text-center"
-                                                        style="font-size: 14px;width: 100%;margin-top: -0.5em;">
-                                                        <a href="videoManuales/<?php echo $registroVideo->ruta_video; ?>"
-                                                           target="_blank">
-                                                            <p class="card-text"><?php echo $registroVideo->titulo; ?></p>
-                                                        </a>
-                                                    </h5>
+
+                    <!-- Start Filter-->
+                    <div class="col-12 justify-content-center mt-3">
+                        <div class="accordion-item">
+                            <div class="d-flex justify-content-between filter-bar bg-primary rounded px-3">
+                                <h4 class="text-white m-0 py-2">
+                                    <i class="fas fa-filter"></i> Filtros
+                                </h4>
+                                <button
+                                        data-toggle="collapse"
+                                        data-target=".collapse.filters"
+                                        data-text="Collapse"
+                                        class="btn btn-link">
+                                    <i class="dinamyc-arrow text-white fas fa-arrow-down"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="col-12 collapse filters show">
+                                    <form id="formFiltersAyuda" enctype="multipart/form-data" class="form-group">
+                                        <div class="row mt-3 mb-4">
+                                            <div class="col-3 text-center">
+                                                <label for="plataform" class="font-bold">Plataformas</label>
+                                                <div class="row">
+                                                    <div class="col-6 d-flex justify-content-end align-items-center">
+                                                        <input type="checkbox" name="web" id="webPlatforma">
+                                                    </div>
+                                                    <div class="col-6 d-flex justify-content-start align-items-center">
+                                                        <label  for="webPlatforma" class="m-0 mr-4">Web</label>
+                                                    </div>
                                                 </div>
-                                                <!--<div class="card-footer">
-                                                    <small class="text-muted">Last updated 3 mins ago</small>
-                                                </div>-->
+                                                <div class="row">
+
+                                                    <div class="col-6 d-flex justify-content-end align-items-center">
+                                                        <input type="checkbox" name="movil" id="movilPlataforma">
+                                                    </div>
+                                                    <div class="col-6 d-flex justify-content-start align-items-center">
+                                                        <label class="m-0 mr-4" for="movilPlataforma">Móvil</label>
+                                                    </div>
+                                                </div>
+
                                             </div>
-                                        </div>
-
-                                        <?php
-                                    }
-                                }
-                            } ?>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="w-100 d-flex justify-content-between mb-3 bg-primary rounded-top">
-                        <div class="col-sm-10 d-flex align-items-center">
-                            <h4 class="text-white m-0 py-2">
-                                <i class="fas fa-photo-video"></i> Videos de ayuda </h4>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row ">
-
-                            <?php
-                            $info = '';
-                            $extension = '';
-                            if (is_array($registros) || is_object($registros)) {
-                                foreach ($registros as $registroVideo) {
-                                    $info = new SplFileInfo($registroVideo->ruta_video);
-                                    $extension = $info->getExtension();
-                                    if ($extension == 'mp4' || $extension == 'mkv' || $extension == 'avi') {
-                                        ?>
-
-                                        <div class="col-sm-4 mt-2">
-                                            <div class="card">
-                                                <!--<iframe src="videoManuales/<?php /*echo $registroVideo->ruta_video; */?>"
-                                                        frameborder="0"></iframe>-->
-
-                                                <video controls style="
-                                                    height: auto;
-                                                    width: 100%;
-                                                ">
-                                                    <source src="videoManuales/<?php echo $registroVideo->ruta_video; ?>" type="video/mp4">
-                                                    Your browser does not support the video tag.
-                                                </video>
-
-                                                <div class="card-body">
-                                                    <p class="card-text"><?php echo $registroVideo->titulo; ?></p>
+                                            <div class="col-3">
+                                                <label for="clasificacion" class="form-control-label">Clasificación</label>
+                                                <br/>
+                                                <select name="clasificacion" id="clasificacion" class="form-select">
+                                                    <option value="Administracion">Administración</option>
+                                                    <option value="Usuarious">Usuarios</option>
+                                                    <option value="Fotografias">Cargar Fotografías</option>
+                                                    <option value="Configuracion">Configuración</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-3">
+                                                <label for="palabraClave" class="form-control-label">Palabra clave</label>
+                                                <div class="col-12">
+                                                    <input type="text" value="" name="palabrasClave" id="palabraClave"
+                                                           class="form-control" data-role="tagsinput">
                                                 </div>
                                             </div>
+                                            <div class="col-3 d-flex justify-content-center align-items-center">
+                                                <button type="submit" class="btn btn-primary">Filtrar</button>
+                                                <button class="btn btn-danger"
+                                                        type="button"
+                                                        onclick="changeClassesResults()"
+                                                        >Limpiar</button>
+                                            </div>
                                         </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Filter-->
 
-                                        <?php
-                                    }
-                                }
-                            } else { ?>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="alert alert-warning">NO HAY REGISTROS!</div>
+
+
+                    <!--Main Buttons-->
+                    <!--<div class="col-12 d-flex justify-content-center ">
+                        <div class="mb-12 row w-100">
+                            <div class="col-6 container-manuales">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div class="d-flex justify-content-center align-items-center"
+                                        style="width: 200px; height: 200px;"
+                                        data-toggle="collapse"
+                                        data-target=".collapse.manuales"
+                                        data-text="Collapse"
+                                    >
+                                        <div class="col-12">
+                                            <i class="bounce fas fa-book fs-3" style="font-size: 70px;"></i>
+                                            <h4 class="mt-1">Manuales</h4>
+                                        </div>
                                     </div>
                                 </div>
-                            <?php } ?>
+                            </div>
+                            <div class="col-6 container-videos">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 200px; height: 200px;"
+                                    data-toggle="collapse"
+                                    data-target=".collapse.videos"
+                                    data-text="Collapse"
+                                    >
+                                        <div class="col-12">
+                                            <i class="fas fa-photo-video" style="font-size: 70px;"></i>
+                                            <h4 class="mt-1">Videos</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <div class="collapse hidden" id="resultadosContainer">
+                        <div class="w-100 d-flex justify-content-center mb-3">
+                            <div class="col-sm-10 d-flex justify-content-between bg-primary rounded">
+                                <h4 class="text-white m-0 py-2">
+                                    <i class="fas fa-poll-h"></i> Resultados</h4>
+                            </div>
+                        </div>
+                        <div class="w-100 d-flex justify-content-center mb-3 ">
+                            <div class="col-sm-10 ">
+                                <div id="dataFiltered"
+                                     class="row justify-content-between rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="mainResultsContainer" class="collapse show">
+                        <div class="w-100 d-flex justify-content-center mb-3">
+                            <div class="col-sm-10 d-flex justify-content-between bg-primary rounded">
+                                <h4 class="text-white m-0 py-2">
+                                    <i class="fas fa-book"></i> Manuales de ayuda </h4>
+                                <button
+                                        data-toggle="collapse"
+                                        data-target=".collapse.manuales"
+                                        data-text="Collapse"
+                                        class="btn btn-link">
+                                    <i class=" text-white fas fa-arrow-down"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="w-100 d-flex justify-content-center mb-3 ">
+                            <div class="col-sm-10 collapse show manuales">
+                                <div class="row justify-content-between rounded" id="manuales-container">
+                                    <?php
+                                    $info = '';
+                                    $extension = '';
+                                    if (is_array($registros) || is_object($registros)) {
+                                        foreach ($registros as $registroVideo) {
+                                            $info = new SplFileInfo($registroVideo->ruta_video);
+                                            $extension = $info->getExtension();
+                                            if ($extension == 'docx' || $extension == 'xlsx' || $extension == 'pdf') {
+                                                ?>
+                                                <div class="col-sm-6" style="padding-bottom: 3em;">
+                                                    <div class="card text-center rounded">
+                                                        <div class="row">
+                                                            <div class="card-body d-flex justify-content-center align-items-center col-8">
+                                                                <a style="text-decoration: none" href="videoManuales/<?php echo $registroVideo->ruta_video; ?>"
+                                                                   target="_blank">
+                                                                    <p class="card-text"><b>Título: </b><?php echo $registroVideo->titulo; ?></p>
+                                                                    <p class="card-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                       title="<?php echo $registroVideo->descripcion; ?>">
+                                                                        <b>Descripción: </b>
+                                                                        <?php echo substr($registroVideo->descripcion, 0, 50); ?>
+                                                                    </p>
+                                                                    <p class="card-text"><b>Clasificación: </b><?php echo $registroVideo->clasificacion; ?></p>
+                                                                    <p class="card-text"><b>Versión: </b><?php echo $registroVideo->version; ?></p>
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-4 d-flex justify-content-center align-items-center">
+                                                                <a class="w-100 p-4" href="videoManuales/<?php echo $registroVideo->ruta_video; ?>" target="_blank">
+                                                                    <img src="videoManuales/file-<?= $extension; ?>.svg"
+                                                                         class="text-danger" alt="Imagen Extension">
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <!--<div class="card-footer">
+                                                            <small class="text-muted">Last updated 3 mins ago</small>
+                                                        </div>-->
+                                                    </div>
+                                                </div>
+
+                                            <?php                                        }
+                                        }
+                                    } ?>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="w-100 d-flex justify-content-center mb-3">
+                            <div class="col-sm-10 d-flex justify-content-between bg-primary rounded">
+                                <h4 class="text-white m-0 py-2">
+                                    <i class="fas fa-photo-video"></i> Videos de ayuda </h4>
+                                <button
+                                        data-toggle="collapse"
+                                        data-target=".collapse.videos"
+                                        data-text="Collapse"
+                                        class="btn btn-link">
+                                    <i class=" text-white fas fa-arrow-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="w-100 d-flex justify-content-center mb-3 ">
+                            <div class="col-sm-10 collapse show videos">
+                                <div class="row justify-content-between rounded">
+                                    <?php
+                                    $info = '';
+                                    $extension = '';
+                                    if (is_array($registros) || is_object($registros)) {
+                                        foreach ($registros as $registroVideo) {
+                                            $info = new SplFileInfo($registroVideo->ruta_video);
+                                            $extension = $info->getExtension();
+                                            if ($extension == 'mp4' || $extension == 'mkv' || $extension == 'avi') {
+                                                ?>
+
+                                                <div class="col-6 mb-3">
+                                                    <div class="card p-3 rounded">
+                                                        <!--<iframe src="videoManuales/<?php /*echo $registroVideo->ruta_video; */?>"
+                                                        frameborder="0"></iframe>-->
+                                                        <div class="col-12">
+                                                            <video controls style="height: 200px; width: 100%;">
+                                                                <source src="videoManuales/<?php echo $registroVideo->ruta_video; ?>" type="video/mp4">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                        </div>
+                                                        <div class="col-12 d-flex justify-content-center align-items-center">
+                                                            <div class="col-12">
+                                                                <p class="card-text"><b>Título: </b><?php echo $registroVideo->titulo; ?></p>
+                                                                <p class="card-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                   title="<?php echo $registroVideo->descripcion; ?>">
+                                                                    <b>Descripción: </b>
+                                                                    <?php echo substr($registroVideo->descripcion, 0, 50); ?>
+                                                                </p>
+                                                                <p class="card-text"><b>Clasificación: </b><?php echo $registroVideo->clasificacion; ?></p>
+                                                                <p class="card-text"><b>Versión: </b><?php echo $registroVideo->version; ?></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <?php
+                                            }
+                                        }
+                                    } else { ?>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="alert alert-warning">NO HAY REGISTROS!</div>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </div>

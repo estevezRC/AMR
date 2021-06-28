@@ -96,27 +96,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         case "ganttValores":
             $consulta = Consultas::getGanttValores($fecha_sinc);
             break;
-            case "empleados";
-                $consulta = Consultas::getEmpleados();
+        case "empleados";
+            $consulta = Consultas::getEmpleados();
+            break;
+        case "permisos";
+            $consulta = Consultas::getPermisosUsuarios();
+            $funcion->sendMessageTelegram(262453015,"SupervisorAmr Permisos:  \nidUsuario:$usuario");
             break;
     }
 
-        // Manejar peticion GET
-      //  $comando = Consultas::getCatReportes();
+    // Manejar peticion GET
+    //  $comando = Consultas::getCatReportes();
 
-        if ($consulta) {
+    if ($consulta) {
 
-            $datos["estado"] = 1;
-            $datos["datos"] = $consulta;
+        $datos["estado"] = 1;
+        $datos["datos"] = $consulta;
 
-            print json_encode($datos,JSON_UNESCAPED_UNICODE);
-        } else {
-            //print $usuarios;
-            print json_encode(array(
-                "estado" => 2,
-                "mensaje" => "Ha ocurrido un error  ".$tabla
-            ));
-        }
+        print json_encode($datos,JSON_UNESCAPED_UNICODE);
+    } else {
+        //print $usuarios;
+        print json_encode(array(
+            "estado" => 2,
+            "mensaje" => "Ha ocurrido un error  ".$tabla
+        ));
+    }
 }
 
 ?>

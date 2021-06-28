@@ -3732,10 +3732,10 @@ WHERE Id_Reporte IN ($id)");
     // *****************************************************************************************************************
     // ********************************************* SECCION DE CARGA DE VIDEO ******************************************
     // *****************************************************************************************************************
-    public function getAllVideosManuales()
+    public function getAllVideosManuales($condicion)
     {
         $resultSet = array();
-        $query1 = "SELECT * FROM videos_manuales WHERE status = 1";
+        $query1 = "SELECT * FROM videos_manuales WHERE status = 1 $condicion";
         $query = $this->db->query($query1);
         while ($row = $query->fetch_object()) {
             $resultSet[] = $row;
