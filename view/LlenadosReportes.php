@@ -330,8 +330,16 @@ if ($action == "mostrarreporte" || $action == "mostrarreportenuevo") {
 
     var accion = '<?php echo $action; ?>';
     if (accion == 'mostrarreportenuevo') {
-        navigator.geolocation.getCurrentPosition(success, error, options);
-
+        var coordenadas = localStorage.getItem('coordenadas');
+        if(coordenadas) {
+            let position = coordenadas.split(',');
+            console.log(position[0], position[1]);
+            $("#latitudm").val(position[0]);
+            $("#longitudm").val(position[1]);
+            localStorage.removeItem('coordenadas');
+        } else {
+            navigator.geolocation.getCurrentPosition(success, error, options);
+        }
     }
 
     $(".form-reporte").submit(function () {

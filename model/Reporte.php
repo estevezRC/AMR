@@ -301,14 +301,17 @@ class Reporte extends EntidadBase
 
     }
 
-   public function truncateTable() {
-       $query = "TRUNCATE videos_manuales";
-       if ($this->db()->query($query)) {
-           return true;
-       } else {
-           return false;
-       }
-   }
+
+    public function editDataVideo() {
+        $query = "UPDATE videos_manuales SET titulo = '$this->titulo', descripcion = '$this->descripcion', 
+            palabras_clave = '$this->palabrasClave', clasificacion = '$this->clasificacion', plataforma = '$this->plataforma', 
+            version = '$this->version' WHERE id = '$this->id_video'";
+
+        if ($this->db()->query($query))
+            return true;
+        else
+            return false;
+    }
 }
 
 ?>

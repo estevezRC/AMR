@@ -105,15 +105,11 @@ class ReportesController extends ControladorBase
             if(!empty($clasificacion) && $clasificacion != '')
                 $condicion .= " AND clasificacion = '{$clasificacion}'";
 
-            if(!empty($plataforma) && $plataforma != ''){
-
-                $condicion .= " AND plataforma IN({$plataforma})";
-            }
-
+            if(!empty($plataforma) && $plataforma != '')
+                $condicion .= " AND MATCH(plataforma) AGAINST ('{$plataforma}' IN NATURAL LANGUAGE MODE)";
 
             if(!empty($palabrasClave) && $palabrasClave != '')
                 $condicion .= " AND MATCH(palabras_clave) AGAINST ('{$palabrasClave}' IN NATURAL LANGUAGE MODE)";
-
 
             $registros = $this->connectorDB->getAllVideosManuales($condicion);
 
@@ -123,7 +119,7 @@ class ReportesController extends ControladorBase
         $mensaje = "Manuales y Tutoriales";
 
         if($bandera) {
-            echo json_encode(['mensaje' => 'Elementos filtrados correctamente', 'status' => true, 'data' => $registros]);
+            echo json_encode(['mensaje' => 'Elementos filtrados correctamente', 'status' => true, 'data' => $registros, 'condicion' => $condicion]);
         } else {
             $this->view("index", array(
                 "mensaje" => $mensaje,
@@ -603,11 +599,64 @@ class ReportesController extends ControladorBase
         echo json_encode($data);
     }
 
-    public function truncateTable() {
-        $mReporte = new Reporte($this->adapter);
-        $mReporte->truncateTable();
+    public function editVideo() {
+        $mReporte       = new Reporte($this->adapter);
+        $idVideo        = $_REQUEST['idVideo'];
+        $tituloVideo    = $_REQUEST['tituloVideo'];
+        $descripcion    = $_REQUEST['descripcion'];
+        $palabrasClave  = $_REQUEST['palabrasClave'];
+        $clasifiacion   = $_REQUEST['clasificacion'];
+        $plataforma     = $_REQUEST['plataforma'];
+        $version        = $_REQUEST['version'];
 
+        if($idVideo) {
+            $mReporte->setTitulo($tituloVideo)
+                ->setDescripcion($descripcion)
+                ->setPalabrasClave($palabrasClave)
+                ->setClasificacion($clasifiacion)
+                ->setPlataforma($plataforma)
+                ->setVersion($version)
+                ->setIdVideo($idVideo)
+                ->editDataVideo();
+
+
+            if($mReporte) {
+                $data = array(
+                    'mensaje' => 'Los datos se han actualizado correctamente!',
+                    'status' => true
+                );
+            } else {
+                $data = array(
+                    'mensaje' => 'Los datos no se han actualizado!',
+                    'status' => false
+                );
+            }
+        } else {
+            $data = array(
+                'mensaje' => 'No se ha recibido un ID para actualizar!',
+                'status' => false
+            );
+        }
+        echo json_encode($data);
     }
+
+    public function getDataVideoById() {
+        $idVideo = $_REQUEST['idVideo'];
+        $condicion = " AND id = $idVideo";
+
+        $registros = $this->connectorDB->getAllVideosManuales($condicion);
+
+        if ($registros) {
+            $data = ['status' => true, 'data' => $registros];
+        } else {
+            $data = ['status' => false, 'mensaje' => 'No se ha encontrado video!'];
+        }
+
+        echo json_encode($data);
+    }
+
+
+
 }
 
 ?>
